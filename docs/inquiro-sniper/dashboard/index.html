@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INQUIRO SNIPER — Funding Dashboard</title>
+<style>
+  :root {
+    --bg: #0d0f14; --surface: #161920; --surface2: #1e2230;
+    --border: #2a2f3e; --text: #e2e6f0; --muted: #6b7280;
+    --sniper: #22c55e; --sniper-bg: #052e16; --sniper-border: #166534;
+    --evaluate: #f59e0b; --evaluate-bg: #1c1204; --evaluate-border: #92400e;
+    --stretch: #64748b; --stretch-bg: #0f172a;
+    --danger: #ef4444; --warning: #f59e0b;
+    --blue: #3b82f6; --blue-bg: #1e3a5f;
+    --radius: 8px; --font: 'Inter', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Base 16px (12pt) — readable from 18+ inches. All other sizes scale up from here. */
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.4; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── HEADER ── */
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 18px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  header h1 { font-size: 19px; font-weight: 700; letter-spacing: 0.05em; color: var(--sniper); }
+  header span { color: var(--muted); font-size: 14px; }
+  .stats-bar { display: flex; gap: 22px; margin-left: auto; align-items: center; }
+  .stat { display: flex; flex-direction: column; align-items: center; }
+  .stat-val { font-size: 24px; font-weight: 700; line-height: 1; }
+  .stat-lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 3px; }
+  .stat-val.green { color: var(--sniper); }
+  .stat-val.amber { color: var(--evaluate); }
+  .stat-val.red { color: var(--danger); }
+  .header-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 7px 13px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; }
+  .header-btn:hover { border-color: var(--blue); }
+  .header-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .header-btn.scraping { border-color: var(--evaluate); color: var(--evaluate); }
+  .scrape-spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--evaluate); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; vertical-align: -1px; margin-right: 4px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── DIGEST CARD ── */
+  #digest-card { background: var(--surface2); border-bottom: 1px solid var(--sniper-border); padding: 10px 18px; display: flex; gap: 28px; align-items: center; font-size: 14px; flex-shrink: 0; }
+  #digest-card.hidden { display: none; }
+  .digest-section { display: flex; align-items: center; gap: 7px; }
+  .digest-title { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
+  .digest-close { margin-left: auto; cursor: pointer; color: var(--muted); font-size: 20px; }
+
+  /* ── LAYOUT ── */
+  .main { display: grid; grid-template-columns: 320px 1fr 340px; flex: 1; overflow: hidden; }
+  .panel { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
+  .panel:last-child { border-right: none; }
+  .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); background: var(--surface); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .panel-header span { margin-left: auto; }
+  .panel-body { overflow-y: auto; flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── FILTERS ── */
+  .filter-bar { padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; flex-shrink: 0; }
+  select, input[type=range] { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 4px; font-size: 14px; cursor: pointer; }
+  select:focus { outline: 1px solid var(--blue); }
+  .filter-label { font-size: 13px; color: var(--muted); }
+  .show-all-toggle { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+  input[type=checkbox] { cursor: pointer; width: 16px; height: 16px; }
+
+  /* ── OPPORTUNITY CARD ── */
+  .opp-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; transition: border-color 0.15s; }
+  .opp-card:hover { border-color: var(--blue); }
+  .opp-card.sniper { border-left: 3px solid var(--sniper); }
+  .opp-card.evaluate { border-left: 3px solid var(--evaluate); }
+  .opp-card.stretch { border-left: 3px solid var(--stretch); opacity: 0.78; }
+  .card-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .tier-badge { font-size: 12px; font-weight: 700; padding: 3px 7px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.05em; }
+  .tier-badge.sniper { background: var(--sniper-bg); color: var(--sniper); border: 1px solid var(--sniper-border); }
+  .tier-badge.evaluate { background: var(--evaluate-bg); color: var(--evaluate); border: 1px solid var(--evaluate-border); }
+  .tier-badge.stretch { background: var(--stretch-bg); color: var(--stretch); }
+  .score-num { font-size: 28px; font-weight: 800; color: var(--text); flex-shrink: 0; line-height: 1; }
+  .score-num.sniper { color: var(--sniper); }
+  .score-num.evaluate { color: var(--evaluate); }
+  .opp-title { font-size: 16px; font-weight: 600; line-height: 1.35; }
+  .opp-meta { font-size: 13px; color: var(--muted); margin-top: 5px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .opp-meta .badge { background: var(--surface2); border: 1px solid var(--border); padding: 2px 7px; border-radius: 3px; font-size: 12px; }
+  .deadline { font-size: 13px; font-weight: 600; }
+  .deadline.critical { color: var(--danger); }
+  .deadline.warning  { color: var(--evaluate); }
+  .deadline.ok       { color: var(--sniper); }
+  .card-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+  .btn { padding: 6px 13px; border-radius: 4px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-dismiss { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .btn-dismiss:hover { color: var(--danger); border-color: var(--danger); }
+  .btn-link { background: none; border: none; color: var(--blue); cursor: pointer; font-size: 13px; padding: 0; text-decoration: underline; }
+  .divergence-flag { color: var(--warning); font-size: 12px; font-weight: 700; }
+  .keywords-matched { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .kw-tag { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 6px; margin: 2px; font-size: 12px; }
+
+  /* ── PIPELINE PANEL ── */
+  .pipeline-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+  .pipeline-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; line-height: 1.3; }
+  .status-badge { font-size: 12px; font-weight: 700; padding: 3px 7px; border-radius: 3px; letter-spacing: 0.04em; }
+  .status-badge.watching  { background: #1e3a5f; color: #60a5fa; }
+  .status-badge.drafting  { background: #1c1204; color: #fbbf24; }
+  .status-badge.in_review { background: #1a1040; color: #a78bfa; }
+  .status-badge.submitted { background: #052e16; color: var(--sniper); }
+  .status-badge.awarded   { background: #052e16; color: #4ade80; border: 1px solid #166534; }
+  .status-badge.rejected  { background: #1f0e0e; color: #f87171; }
+  .pipeline-meta { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .pipeline-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+  select.status-select { font-size: 13px; padding: 4px 8px; }
+  .empty-state { text-align: center; color: var(--muted); padding: 44px 22px; font-size: 14px; }
+  .empty-state-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+
+  /* ── DIFF PANEL ── */
+  .diff-entry { padding: 10px 12px; border-left: 3px solid var(--border); margin-bottom: 8px; border-radius: 0 4px 4px 0; background: var(--surface); font-size: 14px; }
+  .diff-entry.new { border-left-color: var(--sniper); }
+  .diff-entry.closed { border-left-color: var(--muted); opacity: 0.65; }
+  .diff-entry.changed { border-left-color: var(--blue); }
+  .diff-entry.closing_soon { border-left-color: var(--evaluate); }
+  .diff-entry.warning { border-left-color: var(--danger); }
+  .diff-type { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .diff-type.new { color: var(--sniper); }
+  .diff-type.closed { color: var(--muted); }
+  .diff-type.changed { color: var(--blue); }
+  .diff-type.closing_soon { color: var(--evaluate); }
+  .diff-type.warning { color: var(--danger); }
+  .diff-title { font-weight: 500; line-height: 1.35; }
+  .diff-detail { color: var(--muted); font-size: 13px; margin-top: 3px; }
+  .diff-window { display: flex; gap: 8px; align-items: center; }
+  .diff-window select { font-size: 13px; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 26px; width: 580px; max-height: 86vh; overflow-y: auto; }
+  .modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 18px; }
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .modal-field input, .modal-field textarea, .modal-field select { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 11px; border-radius: 6px; font-size: 15px; font-family: var(--font); }
+  .modal-field textarea { height: 90px; resize: vertical; }
+  .modal-field input:focus, .modal-field textarea:focus, .modal-field select:focus { outline: 1px solid var(--blue); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+  .btn-modal { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 15px; font-weight: 600; }
+  .btn-modal.primary { background: var(--blue); color: #fff; }
+  .btn-modal.secondary { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  .radio-group { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+  .radio-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .radio-group input[type=radio] { width: 16px; height: 16px; }
+  .score-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 10px 0; }
+  .score-dim { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center; }
+  .score-dim-val { font-size: 24px; font-weight: 800; }
+  .score-dim-lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ INQUIRO SNIPER</h1>
+  <span id="header-date"></span>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val green" id="stat-snipers">—</div><div class="stat-lbl">Snipers</div></div>
+    <div class="stat"><div class="stat-val amber" id="stat-evaluates">—</div><div class="stat-lbl">Evaluate</div></div>
+    <div class="stat"><div class="stat-val red" id="stat-closing">—</div><div class="stat-lbl">Closing</div></div>
+    <div class="stat"><div class="stat-val" id="stat-pipeline">—</div><div class="stat-lbl">Pipeline</div></div>
+    <button class="header-btn" id="scrape-btn" onclick="runScrape()">🔄 Scrape Now</button>
+    <button class="header-btn" onclick="showROI()">📊 ROI</button>
+    <button class="header-btn" onclick="showLessons()">📖 Lessons</button>
+  </div>
+</header>
+
+<div id="scrape-banner" style="display:none;background:var(--evaluate-bg);border-bottom:1px solid var(--evaluate-border);padding:10px 18px;font-size:14px;color:var(--evaluate)">
+  <span id="scrape-banner-text">Scrape running…</span>
+  <span id="scrape-banner-detail" style="color:var(--muted);margin-left:10px;font-size:13px"></span>
+</div>
+
+<div id="digest-card" class="hidden">
+  <div class="digest-section">
+    <span class="digest-title">Daily Brief</span>
+    <span id="digest-date" style="color: var(--muted)"></span>
+  </div>
+  <div class="digest-section">🟢 <strong id="digest-snipers">0</strong> new SNIPER</div>
+  <div class="digest-section">🟡 <strong id="digest-evaluates">0</strong> new EVALUATE</div>
+  <div id="digest-warnings" class="digest-section" style="color: var(--danger);"></div>
+  <span class="digest-close" onclick="document.getElementById('digest-card').classList.add('hidden')">✕</span>
+</div>
+
+<div class="main">
+  <!-- ── LEFT: PIPELINE ── -->
+  <div class="panel">
+    <div class="panel-header">📋 Pipeline <span id="pipeline-count">0</span></div>
+    <div class="panel-body scrollbar-thin" id="pipeline-list"></div>
+  </div>
+
+  <!-- ── CENTER: OPPORTUNITIES ── -->
+  <div class="panel">
+    <div class="filter-bar">
+      <select id="filter-source" onchange="loadOpps()">
+        <option value="">All Sources</option>
+        <option value="sbir_gov">SBIR.gov</option>
+        <option value="sam_gov">SAM.gov</option>
+        <option value="grants_gov">Grants.gov</option>
+        <option value="nsf_seedfund">NSF</option>
+        <option value="dasa_uk">DASA UK</option>
+        <option value="diana_nato">NATO DIANA</option>
+        <option value="diu">DIU</option>
+        <option value="spacewerx">SpaceWERX</option>
+        <option value="afwerx">AFWERX</option>
+      </select>
+      <select id="filter-agency" onchange="loadOpps()">
+        <option value="">All Agencies</option>
+        <option>DOD</option><option>NASA</option><option>NSF</option>
+        <option>DOE</option><option>DHS</option><option>UK MOD</option><option>NATO</option>
+      </select>
+      <select id="filter-program" onchange="loadOpps()">
+        <option value="">All Programs</option>
+        <option>SBIR</option><option>STTR</option><option>D2P2</option>
+        <option>BAA</option><option>CSO</option><option>Open Call</option><option>Grant</option>
+      </select>
+      <label class="filter-label">Score ≥ <span id="score-val">0</span></label>
+      <input type="range" id="filter-score" min="0" max="100" value="0" oninput="document.getElementById('score-val').textContent=this.value" onchange="loadOpps()" style="width:80px">
+      <label class="show-all-toggle">
+        <input type="checkbox" id="show-all" onchange="loadOpps()"> Show All Tiers
+      </label>
+    </div>
+    <div class="panel-header">🎯 Opportunities <span id="opp-count">—</span></div>
+    <div class="panel-body scrollbar-thin" id="opp-list"></div>
+  </div>
+
+  <!-- ── RIGHT: DIFF FEED ── -->
+  <div class="panel">
+    <div class="panel-header">
+      📡 Diff Feed
+      <span class="diff-window">
+        <select id="diff-window" onchange="loadDiffs()" style="font-size:11px">
+          <option value="7">7 days</option>
+          <option value="14">14 days</option>
+          <option value="30">30 days</option>
+        </select>
+      </span>
+    </div>
+    <div class="panel-body scrollbar-thin" id="diff-list"></div>
+  </div>
+</div>
+
+<!-- ── PIPELINE ADD MODAL ── -->
+<div class="modal-overlay hidden" id="pipeline-modal">
+  <div class="modal">
+    <h2>➕ Add to Pipeline</h2>
+    <input type="hidden" id="pm-opp-id">
+    <div class="modal-field"><label>Title</label><input type="text" id="pm-title" readonly></div>
+    <div class="modal-field"><label>Source</label><input type="text" id="pm-source" readonly></div>
+    <div class="modal-field"><label>Proposal Deadline</label><input type="date" id="pm-deadline"></div>
+    <div class="modal-field"><label>Funding Amount ($)</label><input type="number" id="pm-funding" placeholder="e.g. 750000"></div>
+    <div class="modal-field"><label>Notes</label><textarea id="pm-notes" placeholder="Initial thoughts, contacts, approach..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-modal secondary" onclick="closePipelineModal()">Cancel</button>
+      <button class="btn-modal primary" onclick="submitPipeline()">Add to Pipeline</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── OUTCOME CAPTURE MODAL ── -->
+<div class="modal-overlay hidden" id="outcome-modal">
+  <div class="modal">
+    <h2>📊 Record Outcome</h2>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px">This is required before archiving. Your answers train the scoring engine.</p>
+    <input type="hidden" id="om-pipeline-id">
+    <input type="hidden" id="om-opp-id">
+    <div class="modal-field"><label>Title</label><input type="text" id="om-title" readonly></div>
+    <div class="modal-field">
+      <label>Result</label>
+      <div class="radio-group">
+        <label><input type="radio" name="outcome" value="awarded"> 🏆 Awarded</label>
+        <label><input type="radio" name="outcome" value="rejected"> ❌ Rejected</label>
+        <label><input type="radio" name="outcome" value="withdrawn"> 🔙 Withdrawn</label>
+        <label><input type="radio" name="outcome" value="no_response"> 🔕 No Response</label>
+      </div>
+    </div>
+    <div class="modal-field"><label>If rejected, why? (brief)</label><textarea id="om-reason" rows="2" placeholder="Too early stage, wrong domain, budget mismatch..."></textarea></div>
+    <div class="modal-field"><label>What worked?</label><textarea id="om-worked" rows="2" placeholder="Sandbox validation was a differentiator..."></textarea></div>
+    <div class="modal-field"><label>What didn't work?</label><textarea id="om-failed" rows="2" placeholder="Budget too low, needed university partner..."></textarea></div>
+    <div class="modal-field">
+      <label>Would you submit to this topic again?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="resubmit" value="1"> Yes</label>
+        <label><input type="radio" name="resubmit" value="0"> No</label>
+      </div>
+    </div>
+    <div class="modal-field"><label>Hours spent on this proposal</label><input type="number" id="om-hours" placeholder="e.g. 40"></div>
+    <div class="modal-field"><label>Actual funding amount (if awarded, $)</label><input type="number" id="om-funding" placeholder="e.g. 750000"></div>
+    <div class="modal-actions">
+      <button class="btn-modal secondary" onclick="closeOutcomeModal()">Cancel</button>
+      <button class="btn-modal primary" onclick="submitOutcome()">Save Outcome</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── OPP DETAIL MODAL ── -->
+<div class="modal-overlay hidden" id="detail-modal">
+  <div class="modal" style="width:640px">
+    <h2 id="dm-title"></h2>
+    <div class="score-grid" id="dm-scores"></div>
+    <div id="dm-body" style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px;max-height:300px;overflow-y:auto"></div>
+    <div class="modal-actions">
+      <button class="btn-modal secondary" onclick="document.getElementById('detail-modal').classList.add('hidden')">Close</button>
+      <a id="dm-link" href="#" target="_blank" class="btn-modal primary" style="text-decoration:none">Open Source ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROI MODAL ── -->
+<div class="modal-overlay hidden" id="roi-modal">
+  <div class="modal">
+    <h2>📊 Proposal ROI</h2>
+    <div id="roi-body" style="font-size:13px"></div>
+    <div class="modal-actions"><button class="btn-modal secondary" onclick="document.getElementById('roi-modal').classList.add('hidden')">Close</button></div>
+  </div>
+</div>
+
+<!-- ── LESSONS MODAL ── -->
+<div class="modal-overlay hidden" id="lessons-modal">
+  <div class="modal" style="width:600px">
+    <h2>📖 Lessons Ledger</h2>
+    <div id="lessons-body" style="font-size:12px;max-height:500px;overflow-y:auto"></div>
+    <div class="modal-actions"><button class="btn-modal secondary" onclick="document.getElementById('lessons-modal').classList.add('hidden')">Close</button></div>
+  </div>
+</div>
+
+<script>
+const TERMINAL_STATUSES = ['awarded', 'rejected', 'withdrawn', 'no_response'];
+let allOpps = [];
+let pipelineData = [];
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'short',month:'short',day:'numeric'});
+  await Promise.all([loadStats(), loadOpps(), loadPipeline(), loadDiffs(), loadDigest()]);
+  // Pick up a scrape already in progress (e.g. user hit refresh).
+  pollScrapeStatus().then(() => {
+    fetch('/api/scrape/status').then(r => r.json()).then(s => {
+      if (s && s.state === 'running') beginScrapePolling();
+    }).catch(() => {});
+  });
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  const data = await fetch('/api/stats').then(r => r.json()).catch(() => ({}));
+  document.getElementById('stat-snipers').textContent = data.snipers ?? '—';
+  document.getElementById('stat-evaluates').textContent = data.evaluates ?? '—';
+  document.getElementById('stat-closing').textContent = data.closing ?? '—';
+  document.getElementById('stat-pipeline').textContent = data.pipeline ?? '—';
+}
+
+// ── OPPORTUNITIES ─────────────────────────────────────────────────────────────
+async function loadOpps() {
+  const source = document.getElementById('filter-source').value;
+  const agency = document.getElementById('filter-agency').value;
+  const program = document.getElementById('filter-program').value;
+  const minScore = document.getElementById('filter-score').value;
+  const showAll = document.getElementById('show-all').checked;
+  const params = new URLSearchParams();
+  if (source) params.set('source', source);
+  if (agency) params.set('agency', agency);
+  // Program filter is fuzzy on backend (matches program/phase/title/description),
+  // so SBIR catches "SBIR Phase I" too.
+  if (program) params.set('program', program);
+  if (minScore > 0) params.set('min_score', minScore);
+  if (showAll) params.set('show_all', '1');
+
+  const data = await fetch('/api/opportunities?' + params).then(r => r.json()).catch(() => ({ opportunities: [] }));
+  allOpps = data.opportunities || [];
+  document.getElementById('opp-count').textContent = allOpps.length;
+  renderOpps(allOpps, data.empty_state, data.message);
+}
+
+function renderOpps(opps, emptyState, message) {
+  const container = document.getElementById('opp-list');
+  if (!opps.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-title">No opportunities</div><div>${message || 'Try adjusting filters or run a scrape.'}</div></div>`;
+    return;
+  }
+  if (emptyState && message) {
+    container.innerHTML = `<div style="padding:8px 10px;background:var(--evaluate-bg);border:1px solid var(--evaluate-border);border-radius:var(--radius);font-size:11px;color:var(--evaluate);margin-bottom:8px;">ℹ️ ${message}</div>`;
+  } else { container.innerHTML = ''; }
+
+  for (const opp of opps) {
+    const tier = opp.score_tier?.toLowerCase() || 'skip';
+    const days = opp.days_remaining;
+    const deadlineClass = days === null ? '' : days <= 7 ? 'critical' : days <= 14 ? 'warning' : 'ok';
+    const deadlineText = opp.is_rolling ? '🔄 Rolling' : days === null ? 'No deadline' : days < 0 ? '⛔ Closed' : `📅 ${days}d left`;
+    const kws = (opp.keywords_matched || []).slice(0, 4);
+    const funding = opp.funding_min || opp.funding_max ? `$${fmt(opp.funding_min || 0)}–$${fmt(opp.funding_max || 0)}` : 'Funding TBD';
+
+    const card = document.createElement('div');
+    card.className = `opp-card ${tier}`;
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="score-num ${tier}">${opp.fit_score}</div>
+          <div class="tier-badge ${tier}">${opp.score_tier}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="opp-title" onclick="showDetail(${JSON.stringify(opp.id).replace(/"/g,'&quot;')})">${opp.title}</div>
+          <div class="opp-meta">
+            <span class="badge">${sourceBadge(opp.source)}</span>
+            ${opp.agency ? `<span>${opp.agency}${opp.sub_agency ? ' / ' + opp.sub_agency : ''}</span>` : ''}
+            ${opp.program ? `<span class="badge">${opp.program}${opp.phase ? ' ' + opp.phase : ''}</span>` : ''}
+          </div>
+          <div class="opp-meta" style="margin-top:4px">
+            <span class="deadline ${deadlineClass}">${deadlineText}</span>
+            <span style="color:var(--muted)">${funding}</span>
+            ${opp.divergence_flag ? '<span class="divergence-flag">⚠️ Score divergence</span>' : ''}
+          </div>
+          ${kws.length ? `<div class="keywords-matched">${kws.map(k => `<span class="kw-tag">${k}</span>`).join('')}</div>` : ''}
+        </div>
+      </div>
+      <div class="card-actions">
+        ${opp.added_to_pipeline ? `<span style="color:var(--sniper);font-size:11px;font-weight:600">✓ In Pipeline (${opp.pipeline_status})</span>` : `<button class="btn btn-primary" onclick="openPipelineModal('${opp.id}','${esc(opp.title)}','${opp.source}')">+ Pipeline</button>`}
+        <button class="btn btn-dismiss" onclick="dismiss('${opp.id}', this)">Dismiss 90d</button>
+        ${opp.source_url ? `<a href="${opp.source_url}" target="_blank" class="btn-link">Source ↗</a>` : ''}
+      </div>`;
+    container.appendChild(card);
+  }
+}
+
+// ── PIPELINE ──────────────────────────────────────────────────────────────────
+async function loadPipeline() {
+  pipelineData = await fetch('/api/pipeline').then(r => r.json()).catch(() => []);
+  document.getElementById('pipeline-count').textContent = pipelineData.filter(p => !TERMINAL_STATUSES.includes(p.status)).length;
+  renderPipeline(pipelineData);
+}
+
+function renderPipeline(items) {
+  const container = document.getElementById('pipeline-list');
+  if (!items.length) { container.innerHTML = '<div class="empty-state"><div class="empty-state-title">Empty Pipeline</div><div>Add opportunities from the center panel.</div></div>'; return; }
+  container.innerHTML = '';
+  for (const item of items) {
+    const days = item.days_to_deadline;
+    const deadlineClass = days === null ? '' : days <= 7 ? 'critical' : days <= 14 ? 'warning' : 'ok';
+    const needsOutcome = TERMINAL_STATUSES.includes(item.status) && !item.has_outcome;
+    const card = document.createElement('div');
+    card.className = 'pipeline-card';
+    card.innerHTML = `
+      <div class="title">${item.title}</div>
+      <div class="pipeline-meta">
+        <span class="status-badge ${item.status}">${item.status.replace(/_/g,' ').toUpperCase()}</span>
+        ${item.deadline ? `<span class="deadline ${deadlineClass}" style="margin-left:8px">${days !== null ? days+'d' : item.deadline}</span>` : ''}
+        ${item.funding_amount ? ` · $${fmt(item.funding_amount)}` : ''}
+      </div>
+      ${item.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">${item.notes.slice(0,80)}</div>` : ''}
+      <div class="pipeline-actions">
+        <select class="status-select" onchange="updatePipelineStatus('${item.id}', '${item.opportunity_id}', this.value, ${JSON.stringify(item)})">
+          ${['watching','drafting','in_review','submitted','awarded','rejected','withdrawn','no_response'].map(s => `<option value="${s}" ${s===item.status?'selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}
+        </select>
+        ${needsOutcome ? `<button class="btn btn-primary" onclick="openOutcomeModal('${item.id}','${item.opportunity_id}','${esc(item.title)}')">Record Outcome</button>` : ''}
+      </div>`;
+    container.appendChild(card);
+  }
+}
+
+async function updatePipelineStatus(pipelineId, oppId, newStatus, item) {
+  if (TERMINAL_STATUSES.includes(newStatus)) {
+    openOutcomeModal(pipelineId, oppId, item.title, newStatus, item);
+  }
+  await fetch(`/api/pipeline/${pipelineId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status: newStatus, deadline: item.deadline, funding_amount: item.funding_amount, notes: item.notes }) });
+  await loadPipeline();
+  await loadStats();
+}
+
+// ── DIFFS ─────────────────────────────────────────────────────────────────────
+async function loadDiffs() {
+  const days = document.getElementById('diff-window').value;
+  const diffs = await fetch(`/api/diffs?days=${days}`).then(r => r.json()).catch(() => []);
+  const container = document.getElementById('diff-list');
+  if (!diffs.length) { container.innerHTML = '<div class="empty-state">No changes in this window.<br>Run a scrape to populate.</div>'; return; }
+  container.innerHTML = '';
+  const seen = new Set();
+  for (const d of diffs) {
+    const key = `${d.diff_type}-${d.opportunity_id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const div = document.createElement('div');
+    div.className = `diff-entry ${d.diff_type}`;
+    const label = { new:'🆕 NEW', closed:'🔒 CLOSED', changed:'✏️ CHANGED', closing_soon:'⚠️ CLOSING SOON', warning:'🔴 < 7 DAYS' }[d.diff_type] || d.diff_type;
+    div.innerHTML = `
+      <div class="diff-type ${d.diff_type}">${label}</div>
+      <div class="diff-title">${d.title || d.opportunity_id}</div>
+      ${d.agency ? `<div class="diff-detail">${d.agency}${d.score_tier ? ' · ' + d.score_tier + ' ' + d.fit_score : ''}</div>` : ''}
+      ${d.field_changed ? `<div class="diff-detail">${d.field_changed}: <s>${d.old_value}</s> → ${d.new_value}</div>` : ''}
+      <div class="diff-detail" style="margin-top:2px">${sourceBadge(d.source)} · ${new Date(d.created_at).toLocaleDateString()}</div>`;
+    container.appendChild(div);
+  }
+}
+
+// ── DIGEST ────────────────────────────────────────────────────────────────────
+async function loadDigest() {
+  const d = await fetch('/api/digest').then(r => r.json()).catch(() => null);
+  if (!d) return;
+  document.getElementById('digest-date').textContent = d.date || '';
+  document.getElementById('digest-snipers').textContent = d.sniper_count || 0;
+  document.getElementById('digest-evaluates').textContent = d.evaluate_count || 0;
+  const warns = (d.critical_deadlines || []).length;
+  if (warns > 0) document.getElementById('digest-warnings').textContent = `🔴 ${warns} critical deadline${warns > 1 ? 's' : ''}`;
+  if ((d.sniper_count || 0) > 0 || warns > 0) document.getElementById('digest-card').classList.remove('hidden');
+}
+
+// ── MODALS ────────────────────────────────────────────────────────────────────
+function openPipelineModal(oppId, title, source) {
+  document.getElementById('pm-opp-id').value = oppId;
+  document.getElementById('pm-title').value = title;
+  document.getElementById('pm-source').value = source;
+  document.getElementById('pm-deadline').value = '';
+  document.getElementById('pm-funding').value = '';
+  document.getElementById('pm-notes').value = '';
+  document.getElementById('pipeline-modal').classList.remove('hidden');
+}
+function closePipelineModal() { document.getElementById('pipeline-modal').classList.add('hidden'); }
+
+async function submitPipeline() {
+  const body = {
+    opportunity_id: document.getElementById('pm-opp-id').value,
+    title: document.getElementById('pm-title').value,
+    source: document.getElementById('pm-source').value,
+    deadline: document.getElementById('pm-deadline').value || null,
+    funding_amount: parseFloat(document.getElementById('pm-funding').value) || null,
+    notes: document.getElementById('pm-notes').value,
+  };
+  await fetch('/api/pipeline', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  closePipelineModal();
+  await loadPipeline(); await loadOpps(); await loadStats();
+}
+
+function openOutcomeModal(pipelineId, oppId, title, status, pipelineItem) {
+  document.getElementById('om-pipeline-id').value = pipelineId;
+  document.getElementById('om-opp-id').value = oppId;
+  document.getElementById('om-title').value = title;
+  document.querySelectorAll('input[name="outcome"]').forEach(r => r.checked = r.value === status);
+  document.getElementById('om-reason').value = '';
+  document.getElementById('om-worked').value = '';
+  document.getElementById('om-failed').value = '';
+  document.getElementById('om-hours').value = '';
+  document.getElementById('om-funding').value = pipelineItem?.funding_amount || '';
+  document.getElementById('outcome-modal').classList.remove('hidden');
+}
+function closeOutcomeModal() { document.getElementById('outcome-modal').classList.add('hidden'); }
+
+async function submitOutcome() {
+  const outcome = document.querySelector('input[name="outcome"]:checked')?.value;
+  if (!outcome) { alert('Please select a result.'); return; }
+  const resubmit = document.querySelector('input[name="resubmit"]:checked')?.value;
+  const pipelineId = document.getElementById('om-pipeline-id').value;
+  const oppId = document.getElementById('om-opp-id').value;
+
+  // Get original scoring data — fall back to API by id when the opp isn't in
+  // the currently-filtered view so outcome capture never silently saves an
+  // empty record.
+  let opp = allOpps.find(o => o.id === oppId);
+  if (!opp) {
+    opp = await fetch(`/api/opportunities/${encodeURIComponent(oppId)}`).then(r => r.ok ? r.json() : null).catch(() => null) || {};
+  }
+  const pipelineItem = pipelineData.find(p => p.id === pipelineId) || {};
+
+  const body = {
+    opportunity_id: oppId,
+    pipeline_id: pipelineId,
+    original_score: opp.fit_score,
+    original_tier: opp.score_tier,
+    original_tech_alignment: opp.score_tech,
+    original_domain_alignment: opp.score_domain,
+    original_submission_type: opp.score_type,
+    original_timeline: opp.score_timeline,
+    original_funding_efficiency: opp.score_funding,
+    source: opp.source,
+    agency: opp.agency,
+    sub_agency: opp.sub_agency,
+    program: opp.program,
+    phase: opp.phase,
+    title: opp.title,
+    keywords_matched: opp.keywords_matched || [],
+    funding_amount: parseFloat(document.getElementById('om-funding').value) || pipelineItem.funding_amount || null,
+    terminal_status: outcome,
+    rejection_reason: document.getElementById('om-reason').value,
+    what_worked: document.getElementById('om-worked').value,
+    what_failed: document.getElementById('om-failed').value,
+    would_submit_again: resubmit === '1',
+    actual_effort_hours: parseFloat(document.getElementById('om-hours').value) || null,
+  };
+
+  await fetch('/api/outcomes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  await fetch(`/api/pipeline/${pipelineId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status: outcome, deadline: pipelineItem.deadline, funding_amount: body.funding_amount, notes: pipelineItem.notes }) });
+  closeOutcomeModal();
+  await loadPipeline(); await loadStats();
+}
+
+async function showDetail(id) {
+  // Try in-memory cache first; fall back to API by id so the modal works even
+  // when the opp is filtered out of the current view.
+  let opp = allOpps.find(o => o.id === id);
+  if (!opp) {
+    opp = await fetch(`/api/opportunities/${encodeURIComponent(id)}`).then(r => r.ok ? r.json() : null).catch(() => null);
+  }
+  if (!opp) return;
+  document.getElementById('dm-title').textContent = opp.title;
+  document.getElementById('dm-link').href = opp.source_url || '#';
+  document.getElementById('dm-scores').innerHTML = [
+    { lbl: 'TOTAL', val: opp.fit_score, tier: opp.score_tier?.toLowerCase() },
+    { lbl: 'TECH 40%', val: opp.score_tech },
+    { lbl: 'DOMAIN 25%', val: opp.score_domain },
+    { lbl: 'TYPE 15%', val: opp.score_type },
+    { lbl: 'TIMELINE 10%', val: opp.score_timeline },
+    { lbl: 'FUNDING 10%', val: opp.score_funding },
+  ].map(d => `<div class="score-dim"><div class="score-dim-val" style="color:${d.tier==='sniper'?'var(--sniper)':d.tier==='evaluate'?'var(--evaluate)':'var(--text)'}">${d.val}</div><div class="score-dim-lbl">${d.lbl}</div></div>`).join('');
+  document.getElementById('dm-body').innerHTML = `
+    <p><strong>Agency:</strong> ${opp.agency} / ${opp.sub_agency || '—'}</p>
+    <p><strong>Program:</strong> ${opp.program || '—'} ${opp.phase || ''}</p>
+    <p><strong>Deadline:</strong> ${opp.is_rolling ? 'Rolling / Always Open' : (opp.close_date || 'Unknown')} ${opp.days_remaining !== null ? `(${opp.days_remaining}d)` : ''}</p>
+    <p><strong>Funding:</strong> $${fmt(opp.funding_min || 0)} – $${fmt(opp.funding_max || 0)} ${opp.currency || 'USD'}</p>
+    <p style="margin-top:12px"><strong>Keywords matched:</strong> ${(opp.keywords_matched || []).join(', ') || 'None'}</p>
+    <hr style="border-color:var(--border);margin:12px 0">
+    <div style="white-space:pre-wrap">${(opp.description || '').slice(0, 1500)}</div>`;
+  document.getElementById('detail-modal').classList.remove('hidden');
+}
+
+async function showROI() {
+  const data = await fetch('/api/roi').then(r => r.json()).catch(() => null);
+  const body = document.getElementById('roi-body');
+  if (!data || data.submitted === 0) { body.innerHTML = '<p style="color:var(--muted)">No outcome data yet. Record outcomes in the pipeline to see ROI analytics.</p>'; }
+  else {
+    body.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div><div style="font-size:28px;font-weight:800;color:var(--sniper)">${data.win_rate}%</div><div style="color:var(--muted);font-size:11px">WIN RATE (${data.won}/${data.submitted})</div></div>
+        <div><div style="font-size:28px;font-weight:800;color:var(--evaluate)">$${fmt(data.dollars_per_hour || 0)}/hr</div><div style="color:var(--muted);font-size:11px">REVENUE PER HOUR</div></div>
+      </div>
+      <p>Avg hours per <strong>win</strong>: ${data.avg_hours_per_win || '—'}h | Avg per <strong>loss</strong>: ${data.avg_hours_per_loss || '—'}h</p>
+      <p style="margin-top:8px">Total funding won: <strong>$${fmt(data.total_funding_won || 0)}</strong> across ${data.total_hours}h total</p>
+      ${data.best_source ? `<p style="margin-top:12px;color:var(--sniper)">✅ Best ROI: <strong>${data.best_source.source}</strong> — ${data.best_source.wins} wins, $${fmt(data.best_source.roi)}/hr</p>` : ''}
+      ${data.worst_source ? `<p style="color:var(--danger)">❌ Worst ROI: <strong>${data.worst_source.source}</strong> — ${data.worst_source.wins} wins, $${fmt(data.worst_source.roi)}/hr</p>` : ''}`;
+  }
+  document.getElementById('roi-modal').classList.remove('hidden');
+}
+
+async function showLessons() {
+  const lessons = await fetch('/api/lessons?limit=30').then(r => r.json()).catch(() => []);
+  const body = document.getElementById('lessons-body');
+  if (!lessons.length) { body.innerHTML = '<p style="color:var(--muted)">No lessons yet. Record outcomes in the pipeline to populate.</p>'; }
+  else {
+    body.innerHTML = lessons.map(l => `
+      <div style="padding:10px;border-left:3px solid ${l.outcome==='awarded'?'var(--sniper)':l.outcome==='rejected'?'var(--danger)':'var(--muted)'};margin-bottom:10px;background:var(--surface);border-radius:0 4px 4px 0">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${new Date(l.created_at).toLocaleDateString()} · ${(JSON.parse(l.tags||'[]')).join(', ')}</div>
+        <div>${l.lesson}</div>
+      </div>`).join('');
+  }
+  document.getElementById('lessons-modal').classList.remove('hidden');
+}
+
+async function dismiss(id, btn) {
+  await fetch(`/api/opportunities/${id}/dismiss`, { method:'POST' });
+  btn.closest('.opp-card').remove();
+  await loadStats();
+}
+
+// ── SCRAPE NOW ────────────────────────────────────────────────────────────────
+// Triggers a server-side scrape and polls for completion. While running, the
+// header button shows a spinner and a banner appears under the header.
+let scrapePollInterval = null;
+
+async function runScrape() {
+  const btn = document.getElementById('scrape-btn');
+  if (btn.classList.contains('scraping')) return;
+  // Default to the daily set (sbir, sam, grants); 'all' from a button click
+  // would also fire the weekly+monthly watch sources which is overkill.
+  let body = {};
+  if (confirm('Run a full scrape of all 9 sources? (Cancel = daily sources only — SBIR.gov, SAM.gov, Grants.gov)')) {
+    body = { sources: ['sbir_gov','sam_gov','grants_gov','nsf_seedfund','diu','spacewerx','afwerx','dasa_uk','diana_nato'] };
+  }
+  try {
+    const res = await fetch('/api/scrape', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (res.status === 409) {
+      alert('A scrape is already running. Watch the banner for completion.');
+    } else if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert('Failed to start scrape: ' + (err.error || res.status));
+      return;
+    }
+  } catch (e) {
+    alert('Failed to start scrape: ' + e.message);
+    return;
+  }
+  beginScrapePolling();
+}
+
+function beginScrapePolling() {
+  if (scrapePollInterval) return;
+  // Poll every 2s while running. Cleared by pollScrapeStatus when state=idle.
+  scrapePollInterval = setInterval(pollScrapeStatus, 2000);
+  pollScrapeStatus();
+}
+
+async function pollScrapeStatus() {
+  const status = await fetch('/api/scrape/status').then(r => r.json()).catch(() => null);
+  if (!status) return;
+  const banner = document.getElementById('scrape-banner');
+  const btn = document.getElementById('scrape-btn');
+
+  if (status.state === 'running') {
+    banner.style.display = 'block';
+    document.getElementById('scrape-banner-text').textContent = 'Scrape running…';
+    document.getElementById('scrape-banner-detail').textContent = `started ${new Date(status.started_at).toLocaleTimeString()} · sources: ${(status.sources||[]).join(', ')}`;
+    btn.classList.add('scraping');
+    btn.innerHTML = '<span class="scrape-spin"></span>Scraping…';
+  } else {
+    btn.classList.remove('scraping');
+    btn.innerHTML = '🔄 Scrape Now';
+    if (scrapePollInterval) { clearInterval(scrapePollInterval); scrapePollInterval = null; }
+    if (status.finished_at) {
+      const ok = status.exit_code === 0;
+      banner.style.background = ok ? 'var(--sniper-bg)' : 'var(--surface2)';
+      banner.style.borderBottomColor = ok ? 'var(--sniper-border)' : 'var(--danger)';
+      banner.style.color = ok ? 'var(--sniper)' : 'var(--danger)';
+      const lastLine = (status.log_tail || '').split('\n').filter(Boolean).slice(-1)[0] || '';
+      document.getElementById('scrape-banner-text').textContent = ok
+        ? '✅ Scrape complete'
+        : `❌ Scrape failed (exit ${status.exit_code})`;
+      document.getElementById('scrape-banner-detail').textContent = ok ? lastLine : (status.stderr_tail || '').split('\n').slice(-1)[0] || '';
+      // Refresh data once after completion, then auto-hide banner.
+      Promise.all([loadStats(), loadOpps(), loadDiffs(), loadDigest()]).catch(() => {});
+      setTimeout(() => { banner.style.display = 'none'; banner.style.background=''; banner.style.borderBottomColor=''; banner.style.color=''; }, ok ? 6000 : 12000);
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function sourceBadge(s) {
+  const map = { sbir_gov:'SBIR.gov', sam_gov:'SAM.gov', grants_gov:'Grants.gov', nsf_seedfund:'NSF', dasa_uk:'DASA UK', diana_nato:'DIANA', diu:'DIU', spacewerx:'SpaceWERX', afwerx:'AFWERX' };
+  return map[s] || s;
+}
+function fmt(n) { return n ? n.toLocaleString() : '0'; }
+function esc(str) { return (str||'').replace(/'/g, "\\'").replace(/"/g, '\\"'); }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); }));
+
+init();
+setInterval(() => { loadStats(); loadOpps(); loadDiffs(); }, 5 * 60 * 1000); // auto-refresh every 5min
+</script>
+</body>
+</html>

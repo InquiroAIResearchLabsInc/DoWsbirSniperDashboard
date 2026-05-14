@@ -1,0 +1,26 @@
+{
+  "name": "inquiro-sniper",
+  "version": "1.0.0",
+  "description": "Inquiro SNIPER Funding Dashboard — automated federal funding discovery, scoring, and tracking",
+  "main": "src/scheduler.js",
+  "scripts": {
+    "scrape": "node src/scrape.js",
+    "scrape:sbir": "node src/scrape.js --source sbir_gov",
+    "scrape:sam": "node src/scrape.js --source sam_gov",
+    "scrape:all": "node src/scrape.js --all",
+    "dashboard": "node src/server.js",
+    "start": "node src/scheduler.js",
+    "calibrate": "node src/feedback.js --calibrate"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "better-sqlite3": "^9.4.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^4.18.0",
+    "node-cron": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
