@@ -1,0 +1,11 @@
+{
+  "engine": "topic",
+  "weights": {
+    "tech_alignment": 0.40,
+    "domain_alignment": 0.25,
+    "submission_type": 0.15,
+    "timeline": 0.10,
+    "funding_efficiency": 0.10
+  },
+  "source": "spec v0.2 §3a (inherited from personal Sniper scorer.js:12)"
+}

@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "version": "0.2.0",
+    "source": "Synthetic fixture shaped after SBIR.gov Phase III award records. All values illustrative — used to make transition_history.js return deterministic results for the demo and for ART calibration cases."
+  },
+  "sponsors": {
+    "peo_gcs": {
+      "phase_iii": [
+        { "award_date": "2025-11-20", "vendor": "Vendor A", "vendor_uei": "UEI-A-001", "amount_usd": 8200000, "topic_code": "A23-100", "title": "Off-road autonomy stack" },
+        { "award_date": "2025-08-15", "vendor": "Vendor B", "vendor_uei": "UEI-B-001", "amount_usd": 6500000, "topic_code": "A23-101", "title": "RCV perception" },
+        { "award_date": "2024-12-04", "vendor": "Vendor C", "vendor_uei": "UEI-C-001", "amount_usd": 4100000, "topic_code": "A22-014", "title": "UGV teleop and supervised autonomy" },
+        { "award_date": "2024-06-28", "vendor": "Vendor D", "vendor_uei": "UEI-D-001", "amount_usd": 3000000, "topic_code": "A22-090", "title": "Modular payload bus for RCV" },
+        { "award_date": "2023-09-10", "vendor": "Vendor E", "vendor_uei": "UEI-E-001", "amount_usd": 2400000, "topic_code": "A21-014", "title": "Robotic combat vehicle navigation" },
+        { "award_date": "2023-04-22", "vendor": "Vendor A", "vendor_uei": "UEI-A-001", "amount_usd": 1900000, "topic_code": "A21-022", "title": "Edge perception fusion" }
+      ]
+    },
+    "ussf_ssc": {
+      "phase_iii": [
+        { "award_date": "2026-01-30", "vendor": "Vendor F", "vendor_uei": "UEI-F-001", "amount_usd": 12000000, "topic_code": "SF23-D1", "title": "SDA constellation integration" },
+        { "award_date": "2025-09-12", "vendor": "Vendor G", "vendor_uei": "UEI-G-001", "amount_usd": 9000000, "topic_code": "SF22-X1", "title": "RPO autonomy" },
+        { "award_date": "2024-11-04", "vendor": "Vendor H", "vendor_uei": "UEI-H-001", "amount_usd": 5500000, "topic_code": "SF22-X2", "title": "Ground C2 modernization" },
+        { "award_date": "2024-03-15", "vendor": "Vendor I", "vendor_uei": "UEI-I-001", "amount_usd": 4200000, "topic_code": "SF21-X1", "title": "Tactically responsive space" },
+        { "award_date": "2023-08-09", "vendor": "Vendor F", "vendor_uei": "UEI-F-001", "amount_usd": 3000000, "topic_code": "SF21-X2", "title": "Resilient PWSA architecture" }
+      ]
+    },
+    "aflcmc_battle_network": {
+      "phase_iii": [
+        { "award_date": "2026-02-14", "vendor": "Vendor J", "vendor_uei": "UEI-J-001", "amount_usd": 18000000, "topic_code": "AF23-D9", "title": "CJADC2 edge fusion" },
+        { "award_date": "2025-07-30", "vendor": "Vendor K", "vendor_uei": "UEI-K-001", "amount_usd": 11000000, "topic_code": "AF22-D2", "title": "Kill web composability" },
+        { "award_date": "2024-12-19", "vendor": "Vendor L", "vendor_uei": "UEI-L-001", "amount_usd": 7500000, "topic_code": "AF22-D3", "title": "ABMS data fabric" }
+      ]
+    },
+    "darpa_i2o": {
+      "phase_iii": [
+        { "award_date": "2025-12-01", "vendor": "Vendor M", "vendor_uei": "UEI-M-001", "amount_usd": 6800000, "topic_code": "DARPA-AIE-22", "title": "Trustworthy AI assurance" },
+        { "award_date": "2024-10-22", "vendor": "Vendor N", "vendor_uei": "UEI-N-001", "amount_usd": 5000000, "topic_code": "DARPA-AIE-21", "title": "Verifiable AI inference" }
+      ]
+    },
+    "afrl_rs": {
+      "phase_iii": [
+        { "award_date": "2026-03-18", "vendor": "Vendor O", "vendor_uei": "UEI-O-001", "amount_usd": 4400000, "topic_code": "AF23-RI-1", "title": "Data fusion trust" },
+        { "award_date": "2024-09-05", "vendor": "Vendor P", "vendor_uei": "UEI-P-001", "amount_usd": 3200000, "topic_code": "AF22-RI-2", "title": "AI evaluation tooling" }
+      ]
+    },
+    "peo_iew_s": {
+      "phase_iii": [
+        { "award_date": "2025-10-11", "vendor": "Vendor Q", "vendor_uei": "UEI-Q-001", "amount_usd": 5500000, "topic_code": "A23-IEWS-1", "title": "Sensor fusion analytics" },
+        { "award_date": "2024-08-20", "vendor": "Vendor R", "vendor_uei": "UEI-R-001", "amount_usd": 3000000, "topic_code": "A22-IEWS-2", "title": "EW data fusion" }
+      ]
+    }
+  }
+}

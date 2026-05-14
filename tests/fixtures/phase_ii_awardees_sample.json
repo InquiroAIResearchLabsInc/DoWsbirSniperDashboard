@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "version": "0.2.0",
+    "note": "10 anonymized Phase II awardee profiles for demo. Real awardee selection pending Bubba (spec §18.3). These are scaffolds — the tenant_id is the persistent handle, the company_name is filled by Bubba's selection."
+  },
+  "awardees": [
+    { "tenant_id": "pilot_army_autonomy", "originating_component": "army", "topic_code": "A234-001", "title": "Off-road perception and traversability for unmanned ground vehicles", "tech_keywords": ["autonomous ground", "off-road autonomy", "ugv", "rcv", "perception"], "trl": 6 },
+    { "tenant_id": "pilot_space_sda", "originating_component": "space_force", "topic_code": "SF234-D2", "title": "Onboard rendezvous and proximity operations decision provenance", "tech_keywords": ["space domain awareness", "rpo", "decision provenance", "onboard autonomy", "sda"], "trl": 7 },
+    { "tenant_id": "pilot_darpa_ai", "originating_component": "darpa", "topic_code": "DARPA-AIE-2025", "title": "Attestable inference for autonomous decisions in DDIL environments", "tech_keywords": ["trustworthy ai", "attestation", "verifiable ai", "ddil", "data fusion", "ai assurance"], "trl": 5 },
+    { "tenant_id": "pilot_afwerx_battle", "originating_component": "air_force", "topic_code": "AF234-D2-AFWERX", "title": "Edge fusion for kill web composability", "tech_keywords": ["battle network", "kill web", "edge computing", "data fusion", "cjadc2"], "trl": 6 },
+    { "tenant_id": "scaffold_socom_atak", "originating_component": "socom", "topic_code": "S234-007", "title": "ATAK plugin for operator-borne sensor fusion", "tech_keywords": ["atak", "operator-borne sensors", "sensor fusion", "isr"], "trl": 6 },
+    { "tenant_id": "scaffold_dmea_chip", "originating_component": "dmea", "topic_code": "DMEA234-001", "title": "Trusted FPGA reconfigurable compute for secure inference", "tech_keywords": ["fpga", "trusted microelectronics", "secure inference"], "trl": 5 },
+    { "tenant_id": "scaffold_dtra_cwmd", "originating_component": "dtra", "topic_code": "DTRA234-001", "title": "Counter-WMD signal triage at the edge", "tech_keywords": ["cwmd", "wmd", "signal triage", "edge computing"], "trl": 5 },
+    { "tenant_id": "scaffold_cbd_detect", "originating_component": "cbd", "topic_code": "CBD234-001", "title": "Field-deployable biological detection assay", "tech_keywords": ["biological detection", "field-deployable", "assay"], "trl": 6 },
+    { "tenant_id": "scaffold_ngad", "originating_component": "air_force", "topic_code": "AF234-NGAD-1", "title": "Manned-unmanned teaming control surface for CCA", "tech_keywords": ["ngad", "f-47", "cca", "manned-unmanned teaming", "loyal wingman"], "trl": 6 },
+    { "tenant_id": "scaffold_pleo", "originating_component": "space_force", "topic_code": "SF234-PLEO-1", "title": "Resilient pLEO mission planning for SDA", "tech_keywords": ["pleo", "pwsa", "resilient architecture", "sda"], "trl": 7 }
+  ]
+}

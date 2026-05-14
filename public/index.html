@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSIP SNIPER · ART EDITION</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <h1>DSIP SNIPER</h1>
+  <div class="tagline" id="product-tagline">loading…</div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val amber" id="stat-snipers">—</div><div class="stat-lbl">Snipers</div></div>
+    <div class="stat"><div class="stat-val" id="stat-evaluates">—</div><div class="stat-lbl">Evaluate</div></div>
+    <div class="stat"><div class="stat-val red" id="stat-closing">—</div><div class="stat-lbl">Closing</div></div>
+    <div class="stat"><div class="stat-val amber" id="stat-art">—</div><div class="stat-lbl">ART Strong</div></div>
+    <div class="stat"><div class="stat-val" id="stat-pipeline">—</div><div class="stat-lbl">Pipeline</div></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="topics">Topics</div>
+  <div class="tab" data-tab="art">ART Match</div>
+  <div class="tab" data-tab="patterns">Component Patterns</div>
+  <div class="tab" data-tab="admin">Admin</div>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <div class="panel-header" id="left-panel-header">Pipeline <span class="count" id="pipeline-count">0</span></div>
+    <div class="panel-body scrollbar-thin" id="left-panel-body"></div>
+  </div>
+  <div class="panel">
+    <div class="filter-bar" id="filter-bar">
+      <select id="filter-component">
+        <option value="">All components</option>
+        <option value="army">Army</option>
+        <option value="air_force">Air Force</option>
+        <option value="space_force">Space Force</option>
+        <option value="cbd">CBD</option>
+        <option value="darpa">DARPA</option>
+        <option value="dmea">DMEA</option>
+        <option value="dtra">DTRA</option>
+        <option value="socom">SOCOM</option>
+      </select>
+      <select id="filter-tier">
+        <option value="">All tiers</option>
+        <option value="SNIPER">SNIPER only</option>
+        <option value="EVALUATE">EVALUATE</option>
+      </select>
+      <label>Min score <input type="range" id="filter-score" min="0" max="100" value="0"> <span id="filter-score-val">0</span></label>
+    </div>
+    <div class="panel-header" id="center-panel-header">Opportunities <span class="count" id="opp-count">—</span></div>
+    <div class="panel-body scrollbar-thin" id="center-panel-body"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header" id="right-panel-header">Diff feed <span class="count" id="diff-count">—</span></div>
+    <div class="panel-body scrollbar-thin" id="right-panel-body"></div>
+  </div>
+</div>
+
+<footer>
+  <span><span class="label">tenant:</span> <span class="val" id="footer-tenant">…</span></span>
+  <span><span class="label">role:</span> <span class="val" id="footer-role">…</span></span>
+  <span><span class="label">merkle:</span> <span class="val" id="footer-merkle">…</span></span>
+  <span><span class="label">chain:</span> <span class="val" id="footer-chain">…</span></span>
+  <span style="margin-left:auto"><span class="label">DEMO_STEALTH_BOMBER v1.0</span></span>
+</footer>
+
+<div class="modal-overlay" id="why-modal" onclick="if(event.target===this) this.classList.remove('open')">
+  <div class="modal scrollbar-thin" id="why-modal-content"></div>
+</div>
+
+<script src="/components/score_reveal.js"></script>
+<script src="/components/why_panel.js"></script>
+<script src="/components/opportunity_card.js"></script>
+<script src="/components/art_match_card.js"></script>
+<script src="/components/pipeline_panel.js"></script>
+<script src="/components/sponsor_pipeline_panel.js"></script>
+<script src="/components/diff_feed.js"></script>
+<script src="/components/component_patterns_static.js"></script>
+<script src="/components/your_lens.js"></script>
+<script src="/components/sba_flag.js"></script>
+<script src="/components/filter_bar.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

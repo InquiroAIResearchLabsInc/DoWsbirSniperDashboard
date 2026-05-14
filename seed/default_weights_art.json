@@ -1,0 +1,17 @@
+{
+  "engine": "art",
+  "weights": {
+    "priority_alignment": 0.35,
+    "transition_history": 0.25,
+    "active_scouting": 0.20,
+    "tech_maturity_fit": 0.10,
+    "recency_boost": 0.10
+  },
+  "bands": {
+    "strong_min": 75,
+    "promising_min": 50,
+    "weak_max": 49
+  },
+  "evidence_rule": "Strong band (>=75) requires at least one citable public signal in the last 90 days. Without such evidence, cap at Promising (74).",
+  "source": "spec v0.2 §3a"
+}

@@ -1,0 +1,131 @@
+{
+  "_meta": {
+    "version": "0.2.0-seed",
+    "note": "Pre-issued tenant identities for the pilot. Tokens are minted by scripts/issue_demo_token.js, not stored here. Identities and profiles are seeded so the dashboard renders populated views immediately when a token is used.",
+    "rule": "Phase II tech profiles are based on publicly disclosed SBIR Phase II awards. The display names below are placeholders until Bubba selects real awardees (spec §18.3)."
+  },
+  "accounts": [
+    {
+      "tenant_id": "admin",
+      "display_name": "Bubba (Admin)",
+      "role": "admin",
+      "profile": {
+        "company_name": "Inquiro AI Research Labs",
+        "uei": "PLACEHOLDER_BUBBA_UEI",
+        "tech_keywords": ["ai governance", "decision provenance", "data fusion verification", "trustworthy ai"],
+        "trl_self_declared": 6
+      }
+    },
+    {
+      "tenant_id": "director_review",
+      "display_name": "Director (review account)",
+      "role": "director",
+      "profile": {
+        "company_name": "DoW Office for Small Business Innovation",
+        "uei": "",
+        "tech_keywords": [],
+        "trl_self_declared": null
+      }
+    },
+    {
+      "tenant_id": "pilot_army_autonomy",
+      "display_name": "PILOT — Army autonomous ground systems",
+      "role": "pilot",
+      "profile": {
+        "company_name": "PLACEHOLDER_PILOT_1",
+        "uei": "PLACEHOLDER_PILOT_1_UEI",
+        "tech_keywords": ["autonomous ground", "off-road autonomy", "robotic combat vehicle"],
+        "trl_self_declared": 6,
+        "private_match_secured": true,
+        "commercial_viability": true,
+        "pom_commitment_secured": false,
+        "dow_match_secured": false
+      },
+      "phase_ii_techs": [
+        {
+          "topic_code": "A234-001",
+          "title": "Off-road perception and traversability for unmanned ground vehicles",
+          "award_date": "2025-08-15",
+          "originating_component": "army",
+          "tech_keywords": ["autonomous ground", "off-road autonomy", "perception", "ugv", "rcv"],
+          "trl": 6
+        }
+      ]
+    },
+    {
+      "tenant_id": "pilot_space_sda",
+      "display_name": "PILOT — Space Force space domain awareness",
+      "role": "pilot",
+      "profile": {
+        "company_name": "PLACEHOLDER_PILOT_2",
+        "uei": "PLACEHOLDER_PILOT_2_UEI",
+        "tech_keywords": ["space domain awareness", "rpo", "rendezvous proximity operations", "orbit determination"],
+        "trl_self_declared": 7,
+        "private_match_secured": true,
+        "commercial_viability": true,
+        "pom_commitment_secured": true,
+        "dow_match_secured": false
+      },
+      "phase_ii_techs": [
+        {
+          "topic_code": "SF234-D2",
+          "title": "Onboard rendezvous and proximity operations decision provenance",
+          "award_date": "2025-10-01",
+          "originating_component": "space_force",
+          "tech_keywords": ["space domain awareness", "rpo", "decision provenance", "onboard autonomy"],
+          "trl": 7
+        }
+      ]
+    },
+    {
+      "tenant_id": "pilot_darpa_ai",
+      "display_name": "PILOT — DARPA AI assurance",
+      "role": "pilot",
+      "profile": {
+        "company_name": "PLACEHOLDER_PILOT_3",
+        "uei": "PLACEHOLDER_PILOT_3_UEI",
+        "tech_keywords": ["trustworthy ai", "ai assurance", "ai governance", "verifiable ai", "attestation"],
+        "trl_self_declared": 5,
+        "private_match_secured": true,
+        "commercial_viability": true,
+        "pom_commitment_secured": false,
+        "dow_match_secured": true
+      },
+      "phase_ii_techs": [
+        {
+          "topic_code": "DARPA-AIE-2025",
+          "title": "Attestable inference for autonomous decisions in DDIL environments",
+          "award_date": "2025-06-20",
+          "originating_component": "darpa",
+          "tech_keywords": ["trustworthy ai", "attestation", "verifiable ai", "ddil", "data fusion"],
+          "trl": 5
+        }
+      ]
+    },
+    {
+      "tenant_id": "pilot_afwerx_battle",
+      "display_name": "PILOT — Air Force AFWERX battle network",
+      "role": "pilot",
+      "profile": {
+        "company_name": "PLACEHOLDER_PILOT_4",
+        "uei": "PLACEHOLDER_PILOT_4_UEI",
+        "tech_keywords": ["battle network", "kill web", "data fusion", "cjadc2", "edge computing"],
+        "trl_self_declared": 6,
+        "private_match_secured": true,
+        "commercial_viability": true,
+        "pom_commitment_secured": false,
+        "dow_match_secured": false
+      },
+      "phase_ii_techs": [
+        {
+          "topic_code": "AF234-D2-AFWERX",
+          "title": "Edge fusion for kill web composability",
+          "award_date": "2025-09-05",
+          "originating_component": "air_force",
+          "tech_keywords": ["battle network", "kill web", "edge computing", "data fusion", "cjadc2"],
+          "trl": 6
+        }
+      ]
+    }
+  ]
+}

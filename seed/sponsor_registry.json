@@ -1,0 +1,249 @@
+{
+  "_meta": {
+    "version": "0.2.0-seed",
+    "source": "Hand-curated starter set of ~30 DoW program offices. Public-information only. Per spec §18, target list expansion pending Bubba's input.",
+    "rule": "If a sponsor cannot cite a public URL, it does NOT belong here."
+  },
+  "sponsors": [
+    {
+      "id": "peo_iew_s",
+      "name": "PEO Intelligence, Electronic Warfare & Sensors",
+      "component": "army",
+      "parent_command": "Army Materiel Command",
+      "public_url": "https://peoiews.army.mil/",
+      "priority_tags": ["isr", "sensor fusion", "electronic warfare", "data fusion", "kill web"]
+    },
+    {
+      "id": "peo_gcs",
+      "name": "PEO Ground Combat Systems",
+      "component": "army",
+      "parent_command": "Army Materiel Command",
+      "public_url": "https://peogcs.army.mil/",
+      "priority_tags": ["autonomous ground", "robotic combat vehicle", "armored vehicle", "rcv"]
+    },
+    {
+      "id": "peo_aviation",
+      "name": "PEO Aviation",
+      "component": "army",
+      "parent_command": "Army Materiel Command",
+      "public_url": "https://www.peoaviation.army.mil/",
+      "priority_tags": ["future vertical lift", "unmanned aerial systems", "tactical drone"]
+    },
+    {
+      "id": "peo_c3n",
+      "name": "PEO Command, Control, Communications-Network",
+      "component": "army",
+      "parent_command": "Army Materiel Command",
+      "public_url": "https://peoc3n.army.mil/",
+      "priority_tags": ["tactical network", "unified network", "command post computing"]
+    },
+    {
+      "id": "peo_soldier",
+      "name": "PEO Soldier",
+      "component": "army",
+      "parent_command": "Army Materiel Command",
+      "public_url": "https://www.peosoldier.army.mil/",
+      "priority_tags": ["soldier lethality", "ivas", "soldier-borne sensors"]
+    },
+    {
+      "id": "aflcmc_battle_network",
+      "name": "AFLCMC Battle Network Directorate",
+      "component": "air_force",
+      "parent_command": "Air Force Materiel Command",
+      "public_url": "https://www.aflcmc.af.mil/",
+      "priority_tags": ["battle network", "cjadc2", "kill web", "data fusion", "abms"]
+    },
+    {
+      "id": "aflcmc_fighters",
+      "name": "AFLCMC Fighters & Advanced Aircraft Directorate",
+      "component": "air_force",
+      "parent_command": "Air Force Materiel Command",
+      "public_url": "https://www.aflcmc.af.mil/",
+      "priority_tags": ["ngad", "f-47", "next generation air dominance", "cca"]
+    },
+    {
+      "id": "aflcmc_mobility",
+      "name": "AFLCMC Mobility & Training Aircraft Directorate",
+      "component": "air_force",
+      "parent_command": "Air Force Materiel Command",
+      "public_url": "https://www.aflcmc.af.mil/",
+      "priority_tags": ["airlift", "tanker", "training aircraft"]
+    },
+    {
+      "id": "afrl_rs",
+      "name": "AFRL Information Directorate (RI)",
+      "component": "air_force",
+      "parent_command": "Air Force Research Laboratory",
+      "public_url": "https://www.afrl.af.mil/RI/",
+      "priority_tags": ["trustworthy ai", "data fusion", "autonomy", "cyber"]
+    },
+    {
+      "id": "afrl_rv",
+      "name": "AFRL Space Vehicles Directorate (RV)",
+      "component": "space_force",
+      "parent_command": "Air Force Research Laboratory",
+      "public_url": "https://www.afrl.af.mil/RV/",
+      "priority_tags": ["space domain awareness", "satellite", "rpo", "pwsa"]
+    },
+    {
+      "id": "afrl_dt",
+      "name": "AFRL Digital Transformation Office",
+      "component": "air_force",
+      "parent_command": "Air Force Research Laboratory",
+      "public_url": "https://www.afrl.af.mil/",
+      "priority_tags": ["digital engineering", "model-based systems engineering"]
+    },
+    {
+      "id": "ussf_ssc",
+      "name": "Space Systems Command",
+      "component": "space_force",
+      "parent_command": "U.S. Space Force",
+      "public_url": "https://www.ssc.spaceforce.mil/",
+      "priority_tags": ["pleo", "pwsa", "space domain awareness", "resilient architecture", "nssl"]
+    },
+    {
+      "id": "ussf_stargate",
+      "name": "USSF STAR Gate",
+      "component": "space_force",
+      "parent_command": "U.S. Space Force",
+      "public_url": "https://www.spaceforce.mil/",
+      "priority_tags": ["space technology", "space domain awareness"]
+    },
+    {
+      "id": "ussf_spaceworks",
+      "name": "SpaceWERX",
+      "component": "space_force",
+      "parent_command": "U.S. Space Force",
+      "public_url": "https://www.spacewerx.us/",
+      "priority_tags": ["small business", "open topics", "space innovation"]
+    },
+    {
+      "id": "afwerx",
+      "name": "AFWERX",
+      "component": "air_force",
+      "parent_command": "Department of the Air Force",
+      "public_url": "https://www.afwerx.com/",
+      "priority_tags": ["open topics", "small business", "rapid prototyping"]
+    },
+    {
+      "id": "darpa_i2o",
+      "name": "DARPA Information Innovation Office (I2O)",
+      "component": "darpa",
+      "parent_command": "DARPA",
+      "public_url": "https://www.darpa.mil/about-us/offices/i2o",
+      "priority_tags": ["ai assurance", "trustworthy ai", "cyber", "data fusion"]
+    },
+    {
+      "id": "darpa_sto",
+      "name": "DARPA Strategic Technology Office (STO)",
+      "component": "darpa",
+      "parent_command": "DARPA",
+      "public_url": "https://www.darpa.mil/about-us/offices/sto",
+      "priority_tags": ["strategic systems", "command and control", "kill web"]
+    },
+    {
+      "id": "darpa_tto",
+      "name": "DARPA Tactical Technology Office (TTO)",
+      "component": "darpa",
+      "parent_command": "DARPA",
+      "public_url": "https://www.darpa.mil/about-us/offices/tto",
+      "priority_tags": ["tactical autonomy", "uas", "maritime autonomous"]
+    },
+    {
+      "id": "darpa_mto",
+      "name": "DARPA Microsystems Technology Office (MTO)",
+      "component": "darpa",
+      "parent_command": "DARPA",
+      "public_url": "https://www.darpa.mil/about-us/offices/mto",
+      "priority_tags": ["microelectronics", "secure chip"]
+    },
+    {
+      "id": "darpa_dso",
+      "name": "DARPA Defense Sciences Office (DSO)",
+      "component": "darpa",
+      "parent_command": "DARPA",
+      "public_url": "https://www.darpa.mil/about-us/offices/dso",
+      "priority_tags": ["quantum", "fundamental research"]
+    },
+    {
+      "id": "darpa_bto",
+      "name": "DARPA Biological Technologies Office (BTO)",
+      "component": "darpa",
+      "parent_command": "DARPA",
+      "public_url": "https://www.darpa.mil/about-us/offices/bto",
+      "priority_tags": ["biotechnology", "synthetic biology"]
+    },
+    {
+      "id": "jpeo_cbrnd",
+      "name": "JPEO Chemical, Biological, Radiological & Nuclear Defense",
+      "component": "cbd",
+      "parent_command": "DoW",
+      "public_url": "https://www.jpeocbrnd.osd.mil/",
+      "priority_tags": ["chemical detection", "biological detection", "medical countermeasure"]
+    },
+    {
+      "id": "dmea_office",
+      "name": "Defense Microelectronics Activity",
+      "component": "dmea",
+      "parent_command": "DoW",
+      "public_url": "https://www.dmea.osd.mil/",
+      "priority_tags": ["trusted microelectronics", "secure asic", "fpga"]
+    },
+    {
+      "id": "dtra_rd",
+      "name": "DTRA Research & Development Directorate",
+      "component": "dtra",
+      "parent_command": "DoW",
+      "public_url": "https://www.dtra.mil/Mission/Research-Development/",
+      "priority_tags": ["wmd", "cwmd", "nuclear survivability"]
+    },
+    {
+      "id": "socom_pee",
+      "name": "USSOCOM PEO Special Reconnaissance, Surveillance & Exploitation",
+      "component": "socom",
+      "parent_command": "USSOCOM",
+      "public_url": "https://www.socom.mil/",
+      "priority_tags": ["isr", "hyper-enabled operator", "atak"]
+    },
+    {
+      "id": "socom_pees",
+      "name": "USSOCOM PEO Services",
+      "component": "socom",
+      "parent_command": "USSOCOM",
+      "public_url": "https://www.socom.mil/",
+      "priority_tags": ["operator-borne sensors", "tactical communications"]
+    },
+    {
+      "id": "socom_peet",
+      "name": "USSOCOM PEO Tactical Information Systems",
+      "component": "socom",
+      "parent_command": "USSOCOM",
+      "public_url": "https://www.socom.mil/",
+      "priority_tags": ["tactical information", "atak", "data fusion"]
+    },
+    {
+      "id": "peo_iws",
+      "name": "PEO Integrated Warfare Systems (Army C-UAS proxy)",
+      "component": "army",
+      "parent_command": "Army Materiel Command",
+      "public_url": "https://peoaviation.army.mil/",
+      "priority_tags": ["counter-uas", "c-uas"]
+    },
+    {
+      "id": "peo_missiles_space",
+      "name": "PEO Missiles & Space (Army)",
+      "component": "army",
+      "parent_command": "Army Materiel Command",
+      "public_url": "https://www.peoms.army.mil/",
+      "priority_tags": ["missile defense", "integrated air and missile defense", "iamd"]
+    },
+    {
+      "id": "afrl_aerospace_systems",
+      "name": "AFRL Aerospace Systems Directorate (RQ)",
+      "component": "air_force",
+      "parent_command": "Air Force Research Laboratory",
+      "public_url": "https://www.afrl.af.mil/RQ/",
+      "priority_tags": ["hypersonics", "autonomous flight", "propulsion research"]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "version": "0.2.0",
+    "shape": "Mirrors SBIR.gov /public/api/solicitations response. Used in tests/test_t24h_gate.js so calibration runs without a live API call."
+  },
+  "solicitations": [
+    {
+      "solicitation_number": "DOD-26.4",
+      "solicitation_title": "Department of War SBIR Pre-Release",
+      "agency": "DOD",
+      "branch": "Army",
+      "program": "SBIR",
+      "phase": "Phase I",
+      "release_date": "2026-04-01",
+      "open_date": "2026-05-01",
+      "application_due_date": ["2026-06-15"],
+      "solicitation_topics": [
+        {
+          "topic_number": "A234-001",
+          "topic_title": "Off-road perception and traversability for unmanned ground vehicles",
+          "topic_description": "Develop autonomous ground perception and traversability estimation for robotic combat vehicles, including off-road autonomy in DDIL environments.",
+          "sbir_topic_link": "https://www.sbir.gov/topics/A234-001"
+        },
+        {
+          "topic_number": "SF234-D2",
+          "topic_title": "Onboard rendezvous and proximity operations decision provenance",
+          "topic_description": "Trustworthy AI decision provenance for onboard space domain awareness and rendezvous proximity operations.",
+          "sbir_topic_link": "https://www.sbir.gov/topics/SF234-D2"
+        },
+        {
+          "topic_number": "AF234-D2-AFWERX",
+          "topic_title": "Edge fusion for kill web composability",
+          "topic_description": "Open topic broad agency announcement seeking edge computing data fusion enabling kill web composability across CJADC2.",
+          "sbir_topic_link": "https://www.sbir.gov/topics/AF234-D2-AFWERX"
+        },
+        {
+          "topic_number": "DARPA-AIE-2025",
+          "topic_title": "Attestable inference for autonomous decisions in DDIL environments",
+          "topic_description": "Verifiable AI attestation infrastructure for autonomous decisions in DDIL environments. Data fusion verification and ai governance required.",
+          "sbir_topic_link": "https://www.sbir.gov/topics/DARPA-AIE-2025"
+        },
+        {
+          "topic_number": "CBD254-005",
+          "topic_title": "Respirators with rapid-deployment chemical agent detection",
+          "topic_description": "Respirator hardware with chemical detection for biological agents and pharmaceutical countermeasures.",
+          "sbir_topic_link": "https://www.sbir.gov/topics/CBD254-005"
+        }
+      ]
+    }
+  ]
+}

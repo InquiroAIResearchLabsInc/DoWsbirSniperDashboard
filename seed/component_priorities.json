@@ -1,0 +1,214 @@
+{
+  "_meta": {
+    "source": "Hand-curated for v0.2 from public posture statements and modernization priority pages. Refresh cadence: per spec §18, to be confirmed with director's office.",
+    "version": "0.2.0-seed",
+    "refresh_method": "Mechanically refreshable from public PDFs; v0.1 is manual."
+  },
+  "components": {
+    "army": [
+      {
+        "priority_name": "Contested Logistics",
+        "tier": "A",
+        "keywords": ["contested logistics", "in-transit visibility", "predictive logistics", "asset tracking", "supply chain resilience", "autonomous resupply"],
+        "source_doc": "Army Modernization Priorities (public)",
+        "source_url": "https://www.army.mil/modernization"
+      },
+      {
+        "priority_name": "Autonomous Ground Systems",
+        "tier": "A",
+        "keywords": ["autonomous ground", "unmanned ground vehicle", "ugv", "robotic combat vehicle", "rcv", "ground autonomy", "off-road autonomy"],
+        "source_doc": "Army Modernization Priorities (public)",
+        "source_url": "https://www.army.mil/modernization"
+      },
+      {
+        "priority_name": "Soldier Lethality",
+        "tier": "B",
+        "keywords": ["soldier lethality", "next generation squad weapon", "soldier-borne sensors", "augmented reality eyepiece", "ivas"],
+        "source_doc": "Army Modernization Priorities (public)",
+        "source_url": "https://www.army.mil/modernization"
+      },
+      {
+        "priority_name": "Network Modernization",
+        "tier": "B",
+        "keywords": ["unified network", "tactical network", "integrated tactical network", "command post computing", "data fabric"],
+        "source_doc": "Army Modernization Priorities (public)",
+        "source_url": "https://www.army.mil/modernization"
+      }
+    ],
+    "air_force": [
+      {
+        "priority_name": "NGAD / F-47 Family of Systems",
+        "tier": "A",
+        "keywords": ["ngad", "f-47", "next generation air dominance", "sixth generation fighter", "manned-unmanned teaming"],
+        "source_doc": "DAF FY26 Posture Statement",
+        "source_url": "https://www.af.mil/About-Us/Posture-Statements/"
+      },
+      {
+        "priority_name": "Collaborative Combat Aircraft",
+        "tier": "A",
+        "keywords": ["collaborative combat aircraft", "cca", "loyal wingman", "autonomous combat air", "increment 1", "increment 2"],
+        "source_doc": "DAF FY26 Posture Statement",
+        "source_url": "https://www.af.mil/About-Us/Posture-Statements/"
+      },
+      {
+        "priority_name": "Battle Network / Data Fusion / Kill Web",
+        "tier": "A",
+        "keywords": ["battle network", "kill web", "data fusion", "cjadc2", "advanced battle management system", "abms", "tactical data fusion"],
+        "source_doc": "DAF FY26 Posture Statement",
+        "source_url": "https://www.af.mil/About-Us/Posture-Statements/"
+      },
+      {
+        "priority_name": "Nuclear C3 Modernization",
+        "tier": "B",
+        "keywords": ["nuclear c3", "nuclear command and control", "nc3", "sentinel ground based strategic deterrent"],
+        "source_doc": "DAF FY26 Posture Statement",
+        "source_url": "https://www.af.mil/About-Us/Posture-Statements/"
+      },
+      {
+        "priority_name": "Golden Dome Contribution",
+        "tier": "B",
+        "keywords": ["golden dome", "homeland missile defense", "cruise missile defense", "integrated air and missile defense"],
+        "source_doc": "DAF FY26 Posture Statement",
+        "source_url": "https://www.af.mil/About-Us/Posture-Statements/"
+      }
+    ],
+    "space_force": [
+      {
+        "priority_name": "Resilient Satellite Architectures",
+        "tier": "A",
+        "keywords": ["proliferated leo", "pleo", "pwsa", "resilient architecture", "disaggregation", "constellation resilience"],
+        "source_doc": "USSF Mission Areas (public)",
+        "source_url": "https://www.spaceforce.mil/About-Us/About-Space-Force/"
+      },
+      {
+        "priority_name": "Space Domain Awareness",
+        "tier": "A",
+        "keywords": ["space domain awareness", "sda", "space situational awareness", "ssa", "orbit determination", "rendezvous proximity operations", "rpo"],
+        "source_doc": "USSF Mission Areas (public)",
+        "source_url": "https://www.spaceforce.mil/About-Us/About-Space-Force/"
+      },
+      {
+        "priority_name": "Ground Command and Control",
+        "tier": "B",
+        "keywords": ["ground c2", "satellite ground", "epoch ground", "fortis ground", "satellite operations"],
+        "source_doc": "USSF Mission Areas (public)",
+        "source_url": "https://www.spaceforce.mil/About-Us/About-Space-Force/"
+      },
+      {
+        "priority_name": "Launch",
+        "tier": "B",
+        "keywords": ["national security space launch", "nssl", "rapid launch", "tactically responsive space"],
+        "source_doc": "USSF Mission Areas (public)",
+        "source_url": "https://www.spaceforce.mil/About-Us/About-Space-Force/"
+      }
+    ],
+    "darpa": [
+      {
+        "priority_name": "AI / ML",
+        "tier": "A",
+        "keywords": ["artificial intelligence", "machine learning", "ai", "ml", "trustworthy ai", "ai assurance"],
+        "source_doc": "DARPA Office Focus Areas (public)",
+        "source_url": "https://www.darpa.mil/about-us/offices"
+      },
+      {
+        "priority_name": "Biotechnology",
+        "tier": "B",
+        "keywords": ["synthetic biology", "biotechnology", "biological technologies"],
+        "source_doc": "DARPA Office Focus Areas (public)",
+        "source_url": "https://www.darpa.mil/about-us/offices"
+      },
+      {
+        "priority_name": "Microelectronics",
+        "tier": "B",
+        "keywords": ["microelectronics", "domestic semiconductor", "secure chip", "chiplet"],
+        "source_doc": "DARPA Office Focus Areas (public)",
+        "source_url": "https://www.darpa.mil/about-us/offices"
+      },
+      {
+        "priority_name": "Quantum",
+        "tier": "B",
+        "keywords": ["quantum sensing", "quantum networking", "quantum information science"],
+        "source_doc": "DARPA Office Focus Areas (public)",
+        "source_url": "https://www.darpa.mil/about-us/offices"
+      },
+      {
+        "priority_name": "Hypersonics",
+        "tier": "B",
+        "keywords": ["hypersonic", "hypersonics", "scramjet"],
+        "source_doc": "DARPA Office Focus Areas (public)",
+        "source_url": "https://www.darpa.mil/about-us/offices"
+      }
+    ],
+    "cbd": [
+      {
+        "priority_name": "Threat Detection & Identification",
+        "tier": "B",
+        "keywords": ["chemical detection", "biological detection", "threat agent identification", "rapid id"],
+        "source_doc": "JPEO-CBRND posture (public)",
+        "source_url": "https://www.jpeocbrnd.osd.mil/"
+      },
+      {
+        "priority_name": "Medical Countermeasures",
+        "tier": "B",
+        "keywords": ["medical countermeasure", "mcm", "prophylaxis", "post-exposure therapy"],
+        "source_doc": "JPEO-CBRND posture (public)",
+        "source_url": "https://www.jpeocbrnd.osd.mil/"
+      }
+    ],
+    "dmea": [
+      {
+        "priority_name": "Trusted Microelectronics",
+        "tier": "A",
+        "keywords": ["trusted microelectronics", "secure asic", "domestic fab", "supply chain assurance"],
+        "source_doc": "DMEA public mission",
+        "source_url": "https://www.dmea.osd.mil/"
+      },
+      {
+        "priority_name": "FPGA / Reconfigurable Compute",
+        "tier": "B",
+        "keywords": ["fpga", "reconfigurable compute", "structured asic"],
+        "source_doc": "DMEA public mission",
+        "source_url": "https://www.dmea.osd.mil/"
+      }
+    ],
+    "dtra": [
+      {
+        "priority_name": "WMD Threat Reduction",
+        "tier": "A",
+        "keywords": ["wmd", "weapons of mass destruction", "cwmd", "counter-wmd", "nonproliferation"],
+        "source_doc": "DTRA public mission",
+        "source_url": "https://www.dtra.mil/"
+      },
+      {
+        "priority_name": "Nuclear Survivability",
+        "tier": "B",
+        "keywords": ["nuclear survivability", "hardened systems", "rad-hard"],
+        "source_doc": "DTRA public mission",
+        "source_url": "https://www.dtra.mil/"
+      }
+    ],
+    "socom": [
+      {
+        "priority_name": "Hyper-Enabled Operator",
+        "tier": "A",
+        "keywords": ["hyper-enabled operator", "operator-borne sensors", "tactical assault kit", "atak"],
+        "source_doc": "SOCOM public posture",
+        "source_url": "https://www.socom.mil/"
+      },
+      {
+        "priority_name": "Counter-UAS",
+        "tier": "B",
+        "keywords": ["counter-uas", "c-uas", "drone defeat", "swarm defeat"],
+        "source_doc": "SOCOM public posture",
+        "source_url": "https://www.socom.mil/"
+      },
+      {
+        "priority_name": "Maritime / Undersea Mobility",
+        "tier": "B",
+        "keywords": ["combatant craft", "maritime mobility", "submersible delivery", "uuv"],
+        "source_doc": "SOCOM public posture",
+        "source_url": "https://www.socom.mil/"
+      }
+    ]
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "_meta": {
+    "version": "0.2.0",
+    "source": "Synthetic fixture. Shape mirrors SAM.gov sources-sought / RFI / market research notice records. Used because Bubba's SAM key lacks Contract Opportunities API access (AUDIT_REPORT §8). All values illustrative; no live data."
+  },
+  "notices": [
+    {
+      "notice_id": "FX-PEO-GCS-2026-001",
+      "sponsor_id": "peo_gcs",
+      "component": "army",
+      "notice_type": "Sources Sought",
+      "title": "Off-road autonomous ground perception for robotic combat vehicles",
+      "synopsis": "PEO Ground Combat Systems seeks industry input on perception stacks for off-road autonomy and unmanned ground vehicles supporting RCV integration.",
+      "posted_date": "2026-04-22",
+      "response_date": "2026-05-30",
+      "url": "https://sam.gov/opp/FX-PEO-GCS-2026-001/view"
+    },
+    {
+      "notice_id": "FX-PEO-GCS-2026-002",
+      "sponsor_id": "peo_gcs",
+      "component": "army",
+      "notice_type": "RFI",
+      "title": "UGV autonomy stack integration: open architecture and modular payloads",
+      "synopsis": "Sources sought for open architecture autonomous ground vehicle payloads and robotic combat vehicle modules.",
+      "posted_date": "2026-03-18",
+      "response_date": "2026-04-20",
+      "url": "https://sam.gov/opp/FX-PEO-GCS-2026-002/view"
+    },
+    {
+      "notice_id": "FX-PEO-GCS-2026-003",
+      "sponsor_id": "peo_gcs",
+      "component": "army",
+      "notice_type": "Market Research",
+      "title": "Robotic combat vehicle off-road perception benchmarking",
+      "synopsis": "Market survey for off-road autonomy perception benchmarking and UGV integration readiness.",
+      "posted_date": "2026-02-12",
+      "response_date": "2026-03-15",
+      "url": "https://sam.gov/opp/FX-PEO-GCS-2026-003/view"
+    },
+    {
+      "notice_id": "FX-USSF-SSC-2026-001",
+      "sponsor_id": "ussf_ssc",
+      "component": "space_force",
+      "notice_type": "Sources Sought",
+      "title": "Onboard rendezvous and proximity operations for space domain awareness",
+      "synopsis": "Space Systems Command seeks RPO autonomy with onboard decision provenance for SDA missions.",
+      "posted_date": "2026-04-10",
+      "response_date": "2026-05-25",
+      "url": "https://sam.gov/opp/FX-USSF-SSC-2026-001/view"
+    },
+    {
+      "notice_id": "FX-USSF-SSC-2026-002",
+      "sponsor_id": "ussf_ssc",
+      "component": "space_force",
+      "notice_type": "RFI",
+      "title": "Rendezvous proximity operations decision provenance and onboard autonomy",
+      "synopsis": "USSF SSC requests information on space domain awareness analytics, rpo autonomy, and onboard autonomy for resilient PWSA architectures.",
+      "posted_date": "2026-03-12",
+      "response_date": "2026-04-25",
+      "url": "https://sam.gov/opp/FX-USSF-SSC-2026-002/view"
+    },
+    {
+      "notice_id": "FX-USSF-SSC-2026-003",
+      "sponsor_id": "ussf_ssc",
+      "component": "space_force",
+      "notice_type": "Market Research",
+      "title": "Space domain awareness analytics for SDA constellations",
+      "synopsis": "Market survey for SDA analytics, orbit determination, and RPO mission decision provenance across PWSA-class constellations.",
+      "posted_date": "2026-02-25",
+      "response_date": "2026-03-30",
+      "url": "https://sam.gov/opp/FX-USSF-SSC-2026-003/view"
+    },
+    {
+      "notice_id": "FX-AFLCMC-BN-2026-001",
+      "sponsor_id": "aflcmc_battle_network",
+      "component": "air_force",
+      "notice_type": "Sources Sought",
+      "title": "Edge data fusion for kill web composability",
+      "synopsis": "AFLCMC Battle Network Directorate seeks edge computing data fusion solutions to support CJADC2 and kill web composability.",
+      "posted_date": "2026-03-30",
+      "response_date": "2026-05-15",
+      "url": "https://sam.gov/opp/FX-AFLCMC-BN-2026-001/view"
+    },
+    {
+      "notice_id": "FX-DARPA-I2O-2026-001",
+      "sponsor_id": "darpa_i2o",
+      "component": "darpa",
+      "notice_type": "RFI",
+      "title": "Trustworthy AI assurance for autonomous decisions in DDIL environments",
+      "synopsis": "Information Innovation Office requests information on attestable inference and verifiable AI infrastructure for tactical autonomy in DDIL.",
+      "posted_date": "2026-04-05",
+      "response_date": "2026-05-20",
+      "url": "https://sam.gov/opp/FX-DARPA-I2O-2026-001/view"
+    },
+    {
+      "notice_id": "FX-AFRL-RI-2026-001",
+      "sponsor_id": "afrl_rs",
+      "component": "air_force",
+      "notice_type": "Sources Sought",
+      "title": "Trustworthy AI evaluation and attestation",
+      "synopsis": "AFRL Information Directorate seeks data fusion and trustworthy AI evaluation tooling.",
+      "posted_date": "2026-03-22",
+      "response_date": "2026-04-30",
+      "url": "https://sam.gov/opp/FX-AFRL-RI-2026-001/view"
+    }
+  ]
+}
