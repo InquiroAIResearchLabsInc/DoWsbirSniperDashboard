@@ -19,11 +19,11 @@
     "verify": "node scripts/verify_chain.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20 <25"
   },
   "dependencies": {
     "axios": "^1.7.0",
-    "better-sqlite3": "^9.4.0",
+    "better-sqlite3": "^11.7.0",
     "cheerio": "^1.0.0",
     "express": "^4.18.0",
     "node-cron": "^3.0.0",
