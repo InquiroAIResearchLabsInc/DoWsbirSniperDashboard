@@ -7,7 +7,7 @@
   "accounts": [
     {
       "tenant_id": "admin",
-      "display_name": "Bubba (Admin)",
+      "display_name": "Matthew (Admin)",
       "role": "admin",
       "profile": {
         "company_name": "Inquiro AI Research Labs",

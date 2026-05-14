@@ -2,6 +2,6 @@
 
 <!-- TODO (Bubba writes): button label + post-click confirmation. -->
 
-<PLACEHOLDER_DISAGREEMENT_BUTTON_LABEL>
+LABEL: This match looks wrong
 
-<PLACEHOLDER_DISAGREEMENT_THANKS>
+CONFIRMATION: Got it; that signal is in the system.

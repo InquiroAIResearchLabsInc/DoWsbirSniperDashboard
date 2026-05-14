@@ -2,4 +2,5 @@
 
 <!-- TODO (Bubba writes): one sentence framing the Why-this-score panel. -->
 
-<PLACEHOLDER_WHY_PANEL_HEADER>
+Here is exactly why this matched; every dimension scored, every keyword matched, 
+every weight applied.

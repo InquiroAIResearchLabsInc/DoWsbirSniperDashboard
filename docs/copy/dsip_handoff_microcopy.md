@@ -2,4 +2,6 @@
 
 <!-- TODO (Bubba writes): label adjacent to the "Open in DSIP →" button. -->
 
-<PLACEHOLDER_DSIP_HANDOFF_LABEL>
+BUTTON LABEL: Open in DSIP →
+
+ADJACENT TEXT: Solicitations are submitted through DSIP. 
