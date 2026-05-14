@@ -48,5 +48,36 @@
     "topic_prefix": "SOCOM",
     "topic_prefix_alt": ["S"],
     "parent": "DoW"
+  },
+  {
+    "id": "navy",
+    "display_name": "Navy",
+    "topic_prefix": "N",
+    "topic_prefix_alt": ["NAVY"],
+    "parent": "DoW"
+  },
+  {
+    "id": "dla",
+    "display_name": "Defense Logistics Agency",
+    "topic_prefix": "DLA",
+    "parent": "DoW"
+  },
+  {
+    "id": "mda",
+    "display_name": "Missile Defense Agency",
+    "topic_prefix": "MDA",
+    "parent": "DoW"
+  },
+  {
+    "id": "nga",
+    "display_name": "National Geospatial-Intelligence Agency",
+    "topic_prefix": "NGA",
+    "parent": "DoW"
+  },
+  {
+    "id": "osd",
+    "display_name": "Office of the Secretary of Defense",
+    "topic_prefix": "OSD",
+    "parent": "DoW"
   }
 ]

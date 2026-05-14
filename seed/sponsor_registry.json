@@ -244,6 +244,78 @@
       "parent_command": "Air Force Research Laboratory",
       "public_url": "https://www.afrl.af.mil/RQ/",
       "priority_tags": ["hypersonics", "autonomous flight", "propulsion research"]
+    },
+    {
+      "id": "navy_navsea_pms_406",
+      "name": "NAVSEA PMS 406 (Unmanned Maritime Systems)",
+      "component": "navy",
+      "parent_command": "Naval Sea Systems Command",
+      "public_url": "https://www.navsea.navy.mil/",
+      "priority_tags": ["uuv", "usv", "unmanned underwater vehicle", "unmanned surface vehicle", "lduuv", "xluuv"]
+    },
+    {
+      "id": "navy_pmw_150",
+      "name": "PMW 150 (Project Overmatch)",
+      "component": "navy",
+      "parent_command": "PEO Command, Control, Communications, Computers and Intelligence",
+      "public_url": "https://www.peoc4i.navy.mil/",
+      "priority_tags": ["project overmatch", "naval battle network", "tactical grid", "data fusion"]
+    },
+    {
+      "id": "navy_onr",
+      "name": "Office of Naval Research",
+      "component": "navy",
+      "parent_command": "Department of the Navy",
+      "public_url": "https://www.nre.navy.mil/",
+      "priority_tags": ["distributed maritime operations", "naval autonomy", "undersea warfare", "manned-unmanned teaming"]
+    },
+    {
+      "id": "dla_jpads",
+      "name": "DLA Research & Development",
+      "component": "dla",
+      "parent_command": "Defense Logistics Agency",
+      "public_url": "https://www.dla.mil/HQ/InformationOperations/Offers/Products/RD/",
+      "priority_tags": ["predictive logistics", "supply chain resilience", "additive manufacturing", "dmsms"]
+    },
+    {
+      "id": "mda_advanced_tech",
+      "name": "MDA Advanced Technology Directorate",
+      "component": "mda",
+      "parent_command": "Missile Defense Agency",
+      "public_url": "https://www.mda.mil/about/businessops_overview.html",
+      "priority_tags": ["hypersonic defense", "glide phase interceptor", "sensor fusion", "discrimination"]
+    },
+    {
+      "id": "nga_research",
+      "name": "NGA Research",
+      "component": "nga",
+      "parent_command": "National Geospatial-Intelligence Agency",
+      "public_url": "https://www.nga.mil/about/Research.html",
+      "priority_tags": ["geoint", "computer vision", "automated target recognition", "commercial imagery", "hyperspectral"]
+    },
+    {
+      "id": "osd_diu",
+      "name": "Defense Innovation Unit (DIU)",
+      "component": "osd",
+      "parent_command": "Office of the Secretary of Defense",
+      "public_url": "https://www.diu.mil/",
+      "priority_tags": ["replicator", "attritable", "commercial dual-use", "rapid prototyping", "autonomous swarm"]
+    },
+    {
+      "id": "osd_cdao",
+      "name": "Chief Digital and AI Office (CDAO)",
+      "component": "osd",
+      "parent_command": "Office of the Secretary of Defense",
+      "public_url": "https://www.ai.mil/",
+      "priority_tags": ["cjadc2", "joint fires network", "responsible ai", "ai assurance", "ai t&e"]
+    },
+    {
+      "id": "osd_strategic_capabilities",
+      "name": "Strategic Capabilities Office (SCO)",
+      "component": "osd",
+      "parent_command": "Office of the Secretary of Defense",
+      "public_url": "https://www.cto.mil/sco/",
+      "priority_tags": ["rapid fielding", "kill web", "joint experimentation", "all domain"]
     }
   ]
 }

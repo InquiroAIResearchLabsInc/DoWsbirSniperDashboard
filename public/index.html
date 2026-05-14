@@ -36,12 +36,17 @@
       <select id="filter-component">
         <option value="">All components</option>
         <option value="army">Army</option>
+        <option value="navy">Navy</option>
         <option value="air_force">Air Force</option>
         <option value="space_force">Space Force</option>
         <option value="cbd">CBD</option>
         <option value="darpa">DARPA</option>
+        <option value="dla">DLA</option>
         <option value="dmea">DMEA</option>
         <option value="dtra">DTRA</option>
+        <option value="mda">MDA</option>
+        <option value="nga">NGA</option>
+        <option value="osd">OSD</option>
         <option value="socom">SOCOM</option>
       </select>
       <select id="filter-tier">
@@ -60,13 +65,6 @@
   </div>
 </div>
 
-<footer>
-  <span><span class="label">tenant:</span> <span class="val" id="footer-tenant">…</span></span>
-  <span><span class="label">role:</span> <span class="val" id="footer-role">…</span></span>
-  <span><span class="label">merkle:</span> <span class="val" id="footer-merkle">…</span></span>
-  <span><span class="label">chain:</span> <span class="val" id="footer-chain">…</span></span>
-  <span style="margin-left:auto"><span class="label">DEMO_STEALTH_BOMBER v1.0</span></span>
-</footer>
 
 <div class="modal-overlay" id="why-modal" onclick="if(event.target===this) this.classList.remove('open')">
   <div class="modal scrollbar-thin" id="why-modal-content"></div>

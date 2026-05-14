@@ -12,6 +12,8 @@ app.use(attachTenant);
 
 app.use(express.static(path.join(config.ROOT, 'public')));
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 app.get('/health', (req, res) => {
   const db = getDb();
   const opps = db.prepare('SELECT COUNT(*) c FROM opportunities').get().c;
@@ -47,6 +49,7 @@ const routes = [
   ['/api/profile', require('./routes/profile')],
   ['/api/admin', require('./routes/admin')],
   ['/api/receipts', require('./routes/receipts')],
+  ['/api/copy', require('./routes/copy')],
 ];
 for (const [mount, router] of routes) app.use(mount, router);
 

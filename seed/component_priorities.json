@@ -209,6 +209,114 @@
         "source_doc": "SOCOM public posture",
         "source_url": "https://www.socom.mil/"
       }
+    ],
+    "navy": [
+      {
+        "priority_name": "Distributed Maritime Operations",
+        "tier": "A",
+        "keywords": ["distributed maritime operations", "dmo", "manned-unmanned teaming", "fleet experimentation"],
+        "source_doc": "DON Posture Statement (public)",
+        "source_url": "https://www.navy.mil/"
+      },
+      {
+        "priority_name": "Unmanned Surface & Undersea Vehicles",
+        "tier": "A",
+        "keywords": ["unmanned surface vehicle", "usv", "unmanned underwater vehicle", "uuv", "extra large uuv", "xluuv", "lduuv"],
+        "source_doc": "DON Posture Statement (public)",
+        "source_url": "https://www.navy.mil/"
+      },
+      {
+        "priority_name": "Project Overmatch / Naval Battle Network",
+        "tier": "A",
+        "keywords": ["project overmatch", "naval battle network", "afloat data fusion", "tactical grid"],
+        "source_doc": "DON Posture Statement (public)",
+        "source_url": "https://www.navy.mil/"
+      },
+      {
+        "priority_name": "Columbia / Virginia / Submarine Industrial Base",
+        "tier": "B",
+        "keywords": ["columbia class", "virginia class", "submarine industrial base", "ssn", "ssbn"],
+        "source_doc": "DON Posture Statement (public)",
+        "source_url": "https://www.navy.mil/"
+      }
+    ],
+    "dla": [
+      {
+        "priority_name": "Predictive & Resilient Logistics",
+        "tier": "A",
+        "keywords": ["predictive logistics", "supply chain resilience", "in-transit visibility", "warehouse automation", "dla supply"],
+        "source_doc": "DLA public mission",
+        "source_url": "https://www.dla.mil/"
+      },
+      {
+        "priority_name": "Additive Manufacturing for Sustainment",
+        "tier": "B",
+        "keywords": ["additive manufacturing", "advanced manufacturing", "obsolete parts", "diminishing manufacturing sources", "dmsms"],
+        "source_doc": "DLA public mission",
+        "source_url": "https://www.dla.mil/"
+      }
+    ],
+    "mda": [
+      {
+        "priority_name": "Hypersonic Defense",
+        "tier": "A",
+        "keywords": ["hypersonic defense", "glide phase interceptor", "gpi", "hgv defeat"],
+        "source_doc": "MDA public mission",
+        "source_url": "https://www.mda.mil/"
+      },
+      {
+        "priority_name": "Sensor Fusion for Missile Defense",
+        "tier": "A",
+        "keywords": ["sensor fusion", "command and control battle management communications", "c2bmc", "track custody", "discrimination"],
+        "source_doc": "MDA public mission",
+        "source_url": "https://www.mda.mil/"
+      },
+      {
+        "priority_name": "Next-Generation Interceptor",
+        "tier": "B",
+        "keywords": ["next generation interceptor", "ngi", "kill vehicle", "exo-atmospheric"],
+        "source_doc": "MDA public mission",
+        "source_url": "https://www.mda.mil/"
+      }
+    ],
+    "nga": [
+      {
+        "priority_name": "AI for GEOINT / Computer Vision",
+        "tier": "A",
+        "keywords": ["geospatial intelligence", "geoint", "computer vision", "object detection", "imagery analytics", "automated target recognition"],
+        "source_doc": "NGA public mission",
+        "source_url": "https://www.nga.mil/"
+      },
+      {
+        "priority_name": "Commercial GEOINT & Sensor Diversity",
+        "tier": "B",
+        "keywords": ["commercial imagery", "sar", "synthetic aperture radar", "hyperspectral", "rf geolocation", "data conditioning"],
+        "source_doc": "NGA public mission",
+        "source_url": "https://www.nga.mil/"
+      }
+    ],
+    "osd": [
+      {
+        "priority_name": "Replicator (Attritable Autonomy)",
+        "tier": "A",
+        "keywords": ["replicator", "attritable", "autonomous swarm", "all-domain attritable", "low-cost autonomy"],
+        "source_doc": "DIU / OSD public posture",
+        "source_url": "https://www.diu.mil/"
+      },
+      {
+        "priority_name": "CJADC2 / Joint Fires Network",
+        "tier": "A",
+        "keywords": ["cjadc2", "joint all domain command and control", "joint fires network", "kill web", "all domain c2"],
+        "source_doc": "OSD CDAO public posture",
+        "source_url": "https://www.ai.mil/"
+      },
+      {
+        "priority_name": "Trusted AI / Test & Evaluation",
+        "tier": "B",
+        "keywords": ["responsible ai", "ai assurance", "ai test and evaluation", "ai t&e", "model risk"],
+        "source_doc": "OSD CDAO public posture",
+        "source_url": "https://www.ai.mil/"
+      }
     ]
   }
 }
