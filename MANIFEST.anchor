@@ -1,0 +1,21 @@
+{
+  "name": "dsip-sniper",
+  "version": "0.2.0",
+  "supersedes": "0.1",
+  "branch": "claude/dsip-sniper-mvp-build-qatZz",
+  "claudeme_version": "5.0",
+  "doctrine": ["No receipt -> not real", "No test -> not shipped", "No gate -> not alive"],
+  "components": ["army", "air_force", "space_force", "cbd", "darpa", "dmea", "dtra", "socom"],
+  "engines": ["topic", "art"],
+  "art_subscores": {
+    "priority_alignment": 0.35,
+    "transition_history": 0.25,
+    "active_scouting": 0.20,
+    "tech_maturity_fit": 0.10,
+    "recency_boost": 0.10
+  },
+  "kanon_min_tenants": 5,
+  "palette": "DEMO_STEALTH_BOMBER v1.0 — matte black / bone white / amber. No green.",
+  "calibration_cases": { "topic": 8, "art": 4 },
+  "ship_command": "bash gates/gate_t48h.sh"
+}

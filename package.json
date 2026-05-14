@@ -1,0 +1,32 @@
+{
+  "name": "dsip-sniper",
+  "version": "0.2.0",
+  "description": "DSIP Sniper · ART Edition — receipts-native lens for DoW SBIR/STTR with ART sponsor matching",
+  "private": true,
+  "main": "src/api/server.js",
+  "scripts": {
+    "start": "node src/api/server.js",
+    "dev": "node src/api/server.js",
+    "db:migrate": "node src/db/migrate.js",
+    "seed": "node scripts/seed_load.js",
+    "calibrate": "node scripts/calibrate.js",
+    "test": "node --test tests/test_t2h_gate.js tests/test_t24h_gate.js tests/test_t48h_gate.js tests/test_why_panel.js tests/test_art_match.js tests/test_anonymizer_kanon.js",
+    "test:anonymizer": "node --test tests/test_anonymizer_kanon.js",
+    "test:art": "node --test tests/test_art_match.js",
+    "test:why": "node --test tests/test_why_panel.js",
+    "demo:local": "node scripts/local_mirror.js",
+    "smoke": "node scripts/smoke.js",
+    "verify": "node scripts/verify_chain.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "better-sqlite3": "^9.4.0",
+    "cheerio": "^1.0.0",
+    "express": "^4.18.0",
+    "node-cron": "^3.0.0",
+    "dotenv": "^16.4.0"
+  }
+}

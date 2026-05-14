@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "version": "0.2.0",
+    "total": 12,
+    "split": "8 topic-scoring cases inherited from personal Sniper (scorer.js:87-96) + 4 ART-matching cases new in v0.2",
+    "acceptance": "Topic cases: tier match required, score delta <= 15. ART cases: top sponsor identity match required AND band match (Strong/Promising/Weak)."
+  },
+  "topic_cases": [
+    {
+      "id": "TC1",
+      "title": "SF254-D1204: Secure Multi-Source Data Fusion for pLEO",
+      "expected_tier": "SNIPER",
+      "expected_score": 95,
+      "description": "multi-source data fusion verification zero trust enforcement AI/ML evaluation sandboxed pLEO SDA constellation"
+    },
+    {
+      "id": "TC2",
+      "title": "AFWERX Open Topic (CHORD equiv)",
+      "expected_tier": "SNIPER",
+      "expected_score": 85,
+      "description": "open topic autonomous systems governance ai governance attestation decision provenance"
+    },
+    {
+      "id": "TC3",
+      "title": "SF25D-T1201: Adaptive and Intelligent Space",
+      "expected_tier": "EVALUATE",
+      "expected_score": 65,
+      "description": "STTR intelligent adaptive systems data fusion anomaly detection edge computing space"
+    },
+    {
+      "id": "TC4",
+      "title": "AFRL Extreme Computing BAA",
+      "expected_tier": "EVALUATE",
+      "expected_score": 70,
+      "description": "broad agency announcement edge computing artificial intelligence machine learning cybersecurity BAA"
+    },
+    {
+      "id": "TC5",
+      "title": "NSF AI7: Trustworthy AI",
+      "expected_tier": "EVALUATE",
+      "expected_score": 72,
+      "description": "NSF SBIR phase I trustworthy artificial intelligence verifiable AI attestation responsible machine learning transparency accountability"
+    },
+    {
+      "id": "TC6",
+      "title": "DIU Autonomy CSO (if active)",
+      "expected_tier": "SNIPER",
+      "expected_score": 82,
+      "description": "commercial solutions opening CSO OTA autonomous systems ai governance zero trust enforcement"
+    },
+    {
+      "id": "TC7",
+      "title": "A254-049: Ka-Band Radar",
+      "expected_tier": "SKIP",
+      "expected_score": 5,
+      "description": "Ka-band radar hardware antenna design RF hardware waveform generation"
+    },
+    {
+      "id": "TC8",
+      "title": "CBD254-005: Respirators",
+      "expected_tier": "SKIP",
+      "expected_score": 0,
+      "description": "chemical biological detection respirator NBC protection pharmaceutical chemical detection"
+    }
+  ],
+  "art_cases": [
+    {
+      "id": "ART1",
+      "name": "Phase II autonomous ground systems → Army PEO Ground Combat Systems",
+      "phase_ii_tech": {
+        "topic_code": "A234-001",
+        "title": "Off-road perception and traversability for unmanned ground vehicles",
+        "originating_component": "army",
+        "tech_keywords": ["autonomous ground", "off-road autonomy", "ugv", "rcv", "perception"],
+        "trl": 6
+      },
+      "expected_top_sponsor_id": "peo_gcs",
+      "expected_band": "Strong",
+      "expected_score_min": 75
+    },
+    {
+      "id": "ART2",
+      "name": "Phase II space domain awareness → USSF SSC",
+      "phase_ii_tech": {
+        "topic_code": "SF234-D2",
+        "title": "Onboard rendezvous and proximity operations decision provenance",
+        "originating_component": "space_force",
+        "tech_keywords": ["space domain awareness", "rpo", "decision provenance", "onboard autonomy", "sda"],
+        "trl": 7
+      },
+      "expected_top_sponsor_id": "ussf_ssc",
+      "expected_band": "Strong",
+      "expected_score_min": 75
+    },
+    {
+      "id": "ART3",
+      "name": "Phase II benign commercial software → all sponsors should SKIP/Weak",
+      "phase_ii_tech": {
+        "topic_code": "COMM-001",
+        "title": "Consumer-grade calendar synchronization SaaS",
+        "originating_component": "army",
+        "tech_keywords": ["calendar", "consumer", "saas", "scheduling"],
+        "trl": 9
+      },
+      "expected_top_sponsor_id": null,
+      "expected_band": "Weak",
+      "expected_score_max": 49
+    },
+    {
+      "id": "ART4",
+      "name": "Phase II cross-component AI/ML data fusion → multiple Promising matches, no single Strong",
+      "phase_ii_tech": {
+        "topic_code": "DARPA-AIE-2025",
+        "title": "Attestable inference for autonomous decisions in DDIL environments",
+        "originating_component": "darpa",
+        "tech_keywords": ["trustworthy ai", "attestation", "verifiable ai", "ddil", "data fusion", "ai assurance"],
+        "trl": 5
+      },
+      "expected_band": "Promising",
+      "expected_promising_min_count": 2,
+      "expected_no_strong_band": true
+    }
+  ]
+}

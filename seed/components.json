@@ -1,0 +1,52 @@
+[
+  {
+    "id": "army",
+    "display_name": "Army",
+    "topic_prefix": "A",
+    "parent": "DoW"
+  },
+  {
+    "id": "air_force",
+    "display_name": "Air Force",
+    "topic_prefix": "AF",
+    "parent": "DoW"
+  },
+  {
+    "id": "space_force",
+    "display_name": "Space Force",
+    "topic_prefix": "SF",
+    "topic_prefix_alt": ["USSF"],
+    "parent": "DoW"
+  },
+  {
+    "id": "cbd",
+    "display_name": "Chemical & Biological Defense",
+    "topic_prefix": "CBD",
+    "parent": "DoW"
+  },
+  {
+    "id": "darpa",
+    "display_name": "DARPA",
+    "topic_prefix": "DARPA",
+    "parent": "DoW"
+  },
+  {
+    "id": "dmea",
+    "display_name": "DMEA",
+    "topic_prefix": "DMEA",
+    "parent": "DoW"
+  },
+  {
+    "id": "dtra",
+    "display_name": "DTRA",
+    "topic_prefix": "DTRA",
+    "parent": "DoW"
+  },
+  {
+    "id": "socom",
+    "display_name": "SOCOM",
+    "topic_prefix": "SOCOM",
+    "topic_prefix_alt": ["S"],
+    "parent": "DoW"
+  }
+]
