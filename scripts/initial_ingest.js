@@ -29,12 +29,21 @@ function fixtureOpps() {
 
 async function liveOpps() {
   const sbir = require('../src/ingest/sbir_api');
+  // Wall-clock cap so a slow or rate-limited SBIR API can never hang the
+  // deploy build. On timeout we return [] and the caller uses the fixture.
+  const capMs = parseInt(process.env.INGEST_LIVE_CAP_MS || '120000', 10);
+  let timer;
   try {
-    const opps = await sbir.scrape();
+    const opps = await Promise.race([
+      sbir.scrape(),
+      new Promise((_, rej) => { timer = setTimeout(() => rej(new Error(`live ingest exceeded ${capMs}ms cap`)), capMs); }),
+    ]);
     return Array.isArray(opps) ? opps : [];
   } catch (e) {
     emitReceipt('ingest_error', { tenant_id: 'admin', source: 'sbir_gov', stage: 'initial_ingest', error: e.message });
     return [];
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -68,17 +77,34 @@ function scoreForAllTenants(db) {
   }
   const counts = computeDiffs('sbir_gov', opps);
   const db = getDb();
+
+  // Once real SBIR data is in hand, drop the fabricated fixture topics so the
+  // dashboard shows only live opportunities with working source links. Only
+  // the bundled fixture ids are removed, and only when they are not also live.
+  let fixture_purged = 0;
+  if (source_used === 'sbir_gov_live' && opps.length) {
+    const liveIds = new Set(opps.map(o => o.id));
+    for (const f of fixtureOpps()) {
+      if (liveIds.has(f.id)) continue;
+      db.prepare('DELETE FROM scores WHERE opportunity_id = ?').run(f.id);
+      db.prepare('DELETE FROM diffs WHERE opportunity_id = ?').run(f.id);
+      fixture_purged += db.prepare('DELETE FROM opportunities WHERE id = ?').run(f.id).changes;
+    }
+    if (fixture_purged) emitReceipt('fixture_opps_purged', { tenant_id: 'admin', count: fixture_purged });
+  }
+
   const scoring = scoreForAllTenants(db);
   const opp_total = db.prepare('SELECT COUNT(*) c FROM opportunities').get().c;
   emitReceipt('initial_ingest', {
     tenant_id: 'admin',
     source_used,
     fresh: opps.length,
+    fixture_purged,
     opportunities_total: opp_total,
     diff_counts: counts,
     scoring,
   });
-  console.log(JSON.stringify({ source_used, fresh: opps.length, opportunities_total: opp_total, diff_counts: counts, scoring }, null, 2));
+  console.log(JSON.stringify({ source_used, fresh: opps.length, fixture_purged, opportunities_total: opp_total, diff_counts: counts, scoring }, null, 2));
 })().catch(e => {
   console.error('initial_ingest failed:', e.message);
   // Do not exit non-zero — build should not break if ingest is best-effort.

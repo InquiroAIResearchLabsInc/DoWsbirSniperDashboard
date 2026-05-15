@@ -83,4 +83,15 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-module.exports = { attachTenant, requireAuth, requireAdmin, extractToken };
+// The public sandbox is the team's no-friction demo: it gets the same
+// read-only Admin view (stats + receipt ledger) an admin would see, so the
+// audit trail — the core "no receipt -> not real" story — is part of the
+// demo. Privileged writes (token issue/revoke, anchor) stay admin-only.
+function requireAdminOrSandbox(req, res, next) {
+  if (req.tenant_id === ADMIN_TENANT || req.tenant_id === SANDBOX_TENANT || req.auth_kind === 'sandbox') {
+    return next();
+  }
+  return res.status(403).json({ error: 'forbidden', reason: 'admin_or_sandbox_only' });
+}
+
+module.exports = { attachTenant, requireAuth, requireAdmin, requireAdminOrSandbox, extractToken };
