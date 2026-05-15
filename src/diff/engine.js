@@ -98,9 +98,36 @@ function computeDiffs(source, fresh) {
   return counts;
 }
 
+function daysToClose(close_date) {
+  if (!close_date) return null;
+  const t = Date.parse(close_date);
+  if (Number.isNaN(t)) return null;
+  return Math.ceil((t - Date.now()) / 86400000);
+}
+
+// Diff rows joined to their opportunity so the feed can render a human
+// title + component/program/phase + deadline instead of the raw row id.
 function listDiffs(window_days = 7) {
   const since = new Date(); since.setDate(since.getDate() - window_days);
-  return getDb().prepare('SELECT * FROM diffs WHERE diff_date >= ? ORDER BY created_at DESC LIMIT 200').all(since.toISOString().slice(0, 10));
+  const rows = getDb().prepare(`
+    SELECT d.*,
+           o.title      AS title,
+           o.component  AS component,
+           o.program    AS program,
+           o.phase      AS phase,
+           o.close_date AS close_date,
+           o.is_rolling AS is_rolling
+      FROM diffs d
+      LEFT JOIN opportunities o ON o.id = d.opportunity_id
+     WHERE d.diff_date >= ?
+     ORDER BY d.created_at DESC
+     LIMIT 200
+  `).all(since.toISOString().slice(0, 10));
+  return rows.map(r => ({
+    ...r,
+    is_rolling: r.is_rolling === 1,
+    days_remaining: daysToClose(r.close_date),
+  }));
 }
 
 module.exports = { computeDiffs, listDiffs, upsertOpportunity, TRACKED_FIELDS };
