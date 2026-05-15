@@ -21,7 +21,18 @@
     try {
       const stats = await api('/api/admin/stats');
       const pl = document.getElementById('stat-pipeline'); if (pl) pl.textContent = stats.pipeline || 0;
-      const ar = document.getElementById('stat-art'); if (ar) ar.textContent = stats.art_matches || 0;
+    } catch {}
+    try {
+      // "ART Strong" = this tenant's Strong-band matches, not a global row count.
+      const ar = document.getElementById('stat-art');
+      if (ar) {
+        if (isAuthed()) {
+          const am = await api('/api/art-matches?band=STRONG&limit=200');
+          ar.textContent = am.total_returned || 0;
+        } else {
+          ar.textContent = 0;
+        }
+      }
     } catch {}
     try {
       const opps = await api('/api/opportunities');
