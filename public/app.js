@@ -12,14 +12,16 @@
   }
 
   // The scan button's label comes from docs/copy/scan_button.md via getCopy().
-  // Until Bubba writes the copy the loader returns its placeholder token, and
-  // that token renders verbatim on the button — the intended "copy pending"
-  // signal per the loader contract.
+  // A copy file that is missing, empty, or still holding a placeholder token
+  // resolves to an angle-bracket token (e.g. <PLACEHOLDER_SCAN_BUTTON>) — never
+  // put that on the button; fall back to "Scan".
   async function loadScanLabel() {
     const btn = document.getElementById('refresh-btn');
     try {
       const { value } = await api('/api/copy/scan_button');
-      state.scanLabel = (value || '').replace(/\s+/g, ' ').trim() || 'Scan';
+      let label = (value || '').replace(/\s+/g, ' ').trim();
+      if (/^<.*>$/.test(label)) label = '';
+      state.scanLabel = label || 'Scan';
     } catch { state.scanLabel = 'Scan'; }
     if (btn) btn.textContent = state.scanLabel;
   }
