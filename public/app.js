@@ -1,5 +1,5 @@
 (function () {
-  const state = { tab: 'topics', tenant: null, role: null };
+  const state = { tab: 'topics', tenant: null, role: null, auth_kind: null };
 
   async function api(p, opts) { const r = await fetch(p, opts); if (!r.ok) throw new Error(`${p} ${r.status}`); return r.json(); }
 
@@ -13,6 +13,9 @@
 
   function isAuthed() { return !!state.role && state.role !== 'anonymous'; }
   function isAdmin() { return state.role === 'admin'; }
+  function isSandbox() { return state.auth_kind === 'sandbox' || state.tenant === 'sandbox'; }
+  // The public demo gets the read-only Admin view so reviewers see the audit trail.
+  function canSeeAdmin() { return isAdmin() || isSandbox(); }
 
   async function refreshHeaderStats() {
     try {
@@ -35,7 +38,7 @@
   async function whoami() {
     try {
       const me = await api('/api/whoami');
-      state.tenant = me.tenant_id; state.role = me.role;
+      state.tenant = me.tenant_id; state.role = me.role; state.auth_kind = me.auth_kind;
     } catch {}
   }
 
@@ -196,15 +199,26 @@
     if (window.setFilterMode) window.setFilterMode('admin');
     const center = document.getElementById('center-panel-body');
     center.innerHTML = '';
-    if (!isAdmin()) {
+    if (!canSeeAdmin()) {
       center.appendChild(renderSignedOutBanner('Admin tab requires an admin token.'));
       return;
     }
-    const r = await api('/api/admin/recent-receipts?limit=20').catch(() => ({ receipts: [] }));
+    const r = await api('/api/admin/recent-receipts?limit=20').catch(() => ({ receipts: [], merkle_root: null }));
     const m = await api('/api/admin/stats').catch(() => ({}));
+    const STAT_LABELS = {
+      opportunities: 'Opportunities', tenants: 'Tenants', pipeline: 'Pipeline items',
+      outcomes: 'Outcomes', art_matches: 'ART matches', sponsor_candidates: 'Sponsors',
+      component_patterns: 'Component patterns',
+    };
+    const statRows = Object.entries(STAT_LABELS)
+      .map(([k, label]) => `<div class="learn-stat"><span class="v">${escape(String(m[k] ?? '—'))}</span><span class="k">${escape(label)}</span></div>`)
+      .join('');
     const wrap = document.createElement('div');
-    wrap.innerHTML = `<div class="card"><h4 style="text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;font-size:11px">Admin</h4>
-      <div style="font-size:13px;color:var(--text-dim)">${escape(JSON.stringify(m))}</div></div>`;
+    wrap.className = 'card';
+    wrap.innerHTML = `<h4 style="text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:4px;font-size:11px">Audit view</h4>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Every action writes a receipt to an append-only ledger. This is the live chain.</div>
+      <div class="learn-stats">${statRows}</div>
+      ${r.merkle_root ? `<div style="font-size:11px;color:var(--muted);margin-top:8px;word-break:break-all">Merkle root: ${escape(String(r.merkle_root))}</div>` : ''}`;
     center.appendChild(wrap);
     for (const rec of r.receipts || []) {
       const div = document.createElement('div');

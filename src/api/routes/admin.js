@@ -1,6 +1,6 @@
 const express = require('express');
 const { getDb, safeJson } = require('../../db');
-const { requireAdmin } = require('../../auth/middleware');
+const { requireAdmin, requireAdminOrSandbox } = require('../../auth/middleware');
 const aggregator = require('../../learning/component_aggregator');
 const { listDiffs } = require('../../diff/engine');
 const { emitReceipt, readReceipts, anchorBatch, getCurrentMerkleRoot } = require('../../core/receipt');
@@ -25,7 +25,7 @@ router.get('/source-status', (req, res) => {
   res.json({ sources: getDb().prepare('SELECT * FROM source_status').all() });
 });
 
-router.get('/recent-receipts', requireAdmin, (req, res) => {
+router.get('/recent-receipts', requireAdminOrSandbox, (req, res) => {
   const limit = Math.min(parseInt(req.query.limit || '50', 10), 500);
   res.json({ receipts: readReceipts({ limit }), merkle_root: getCurrentMerkleRoot() });
 });
