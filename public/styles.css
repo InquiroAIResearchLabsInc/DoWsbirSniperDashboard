@@ -415,16 +415,25 @@ footer .val { color: var(--text-dim); }
   .stat-lbl { font-size: 8px; letter-spacing: 0.03em; text-align: center; line-height: 1.25; }
 
   .tabs {
-    padding: 0 6px;
-    overflow-x: auto;
+    padding: 0;
+    overflow-x: hidden;
     flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
     position: sticky;
     top: 0;
     z-index: 20;
+    gap: 0;
   }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab { white-space: nowrap; flex: 0 0 auto; padding: 13px 15px; }
+  .tab {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    text-align: center;
+    padding: 13px 4px;
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .layout { display: flex; flex-direction: column; }
   .panel { border-right: none; border-bottom: 1px solid var(--border); min-height: 0; }
