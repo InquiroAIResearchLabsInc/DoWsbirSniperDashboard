@@ -19,7 +19,7 @@ function ttlDaysFrom(spec, def) {
 
 const tenant_id = arg('tenant');
 if (!tenant_id) {
-  console.error('Usage: node scripts/issue_demo_token.js --tenant <tenant_id> [--ttl 30d] [--role pilot|director|admin] [--base https://dsip-sniper.example]');
+  console.error('Usage: node scripts/issue_demo_token.js --tenant <tenant_id> [--ttl 30d] [--role pilot|director|admin] [--base https://dsip-sentinel.example]');
   process.exit(1);
 }
 const ttl_days = ttlDaysFrom(arg('ttl'), config.DEMO_TOKEN_DEFAULT_TTL_DAYS);

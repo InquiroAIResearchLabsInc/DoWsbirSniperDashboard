@@ -62,7 +62,7 @@ function scoreTopic(opp, tenant_id = 'default', opts = {}) {
     else if (amount < 50000) fundingScore = 20;
   }
 
-  const finalScore = Math.round(
+  let finalScore = Math.round(
     techScore * w.tech_alignment +
     domainScore * w.domain_alignment +
     typeScoreNorm * w.submission_type +
@@ -70,6 +70,11 @@ function scoreTopic(opp, tenant_id = 'default', opts = {}) {
     fundingScore * w.funding_efficiency
   );
 
+  const watchOnly = !!(opts && opts.is_watch_only) || !!opp.is_watch_only;
+  if (watchOnly) {
+    finalScore = Math.min(finalScore, 50);
+    return buildResult(opp, tenant_id, w, finalScore, techScore, domainScore, typeScoreNorm, timelineScore, fundingScore, matched, 'STRETCH', { disqualified_by: null, is_watch_only: true });
+  }
   return buildResult(opp, tenant_id, w, finalScore, techScore, domainScore, typeScoreNorm, timelineScore, fundingScore, matched, tier(finalScore), { disqualified_by: null });
 }
 
@@ -88,6 +93,7 @@ function buildResult(opp, tenant_id, weights, finalScore, tech, domain, type, ti
     weights_snapshot: weights,
     computed_at: now(),
     disqualified_by: extras.disqualified_by || null,
+    is_watch_only: !!extras.is_watch_only,
   };
   result.payload_hash = dualHash(stableStringify(result));
   return result;

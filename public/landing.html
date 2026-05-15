@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSIP SENTINEL · ART EDITION</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface-2: #181818;
+    --border: #2a2a2a;
+    --text: #f5f4ee;
+    --text-dim: #c7c4b8;
+    --muted: #7a766c;
+    --amber: #d6a23a;
+    --amber-dim: #8a6a25;
+    --bone: #e8e3d4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  header {
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header .brand {
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    color: var(--bone);
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  header .lockup {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 64px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .tagline {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 32px;
+    line-height: 1.2;
+    color: var(--bone);
+    font-weight: 400;
+    margin-bottom: 24px;
+    max-width: 880px;
+  }
+  .positioning {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 740px;
+    margin-bottom: 36px;
+    white-space: pre-line;
+  }
+  .ctas {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 80ms ease, color 80ms ease, border-color 80ms ease;
+  }
+  .cta-primary {
+    background: transparent;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+  .cta-primary:hover {
+    background: var(--amber);
+    color: #1a1306;
+  }
+  .cta-ghost {
+    background: transparent;
+    color: var(--bone);
+    border: 1px solid transparent;
+  }
+  .cta-ghost:hover {
+    border-color: var(--border);
+    background: var(--surface);
+  }
+  .stat-row {
+    display: flex;
+    gap: 48px;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+  .stat-val {
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--bone);
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+  footer {
+    padding: 12px 32px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: flex;
+    justify-content: space-between;
+  }
+  .placeholder-warn {
+    color: var(--amber);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">DSIP SENTINEL</div>
+  <div class="lockup">DEMO_STEALTH_BOMBER · ART EDITION</div>
+</header>
+
+<main>
+  <div class="tagline" id="tagline">{{product_tagline}}</div>
+  <div class="positioning" id="positioning">{{readme_positioning}}</div>
+
+  <div class="ctas">
+    <a class="cta cta-primary" href="/demo">Open Sandbox <span aria-hidden="true">→</span></a>
+    <a class="cta cta-ghost" id="cta-access" href="mailto:matthew@inquiroai.com?subject=DSIP%20Sentinel%20access%20request">Request Access</a>
+  </div>
+
+  <div class="stat-row" id="stats">
+    <div class="stat"><div class="stat-val" id="stat-topics">—</div><div class="stat-lbl">Topics scored</div></div>
+    <div class="stat"><div class="stat-val" id="stat-components">—</div><div class="stat-lbl">Components</div></div>
+    <div class="stat"><div class="stat-val" id="stat-art">—</div><div class="stat-lbl">ART matches</div></div>
+  </div>
+</main>
+
+<footer>
+  <span>RECEIPTS-NATIVE · NO GREEN · DESKTOP / PROJECTOR ONLY</span>
+  <span id="footer-info">{{dsip_handoff_microcopy}}</span>
+</footer>
+
+<script>
+(async function () {
+  function flagPlaceholder(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (/<PLACEHOLDER_[A-Z_]+>/.test(el.textContent) || /^<(MISSING|EMPTY)_COPY:/.test(el.textContent)) {
+      el.classList.add('placeholder-warn');
+    }
+  }
+  flagPlaceholder('tagline');
+  flagPlaceholder('positioning');
+  flagPlaceholder('footer-info');
+
+  try {
+    const r = await fetch('/api/stats', { credentials: 'omit' });
+    if (r.ok) {
+      const s = await r.json();
+      document.getElementById('stat-topics').textContent = s.topics_scored ?? '—';
+      document.getElementById('stat-components').textContent = s.components ?? '—';
+      document.getElementById('stat-art').textContent = s.art_matches ?? '—';
+    }
+  } catch (_) { /* keep dashes */ }
+})();
+</script>
+</body>
+</html>

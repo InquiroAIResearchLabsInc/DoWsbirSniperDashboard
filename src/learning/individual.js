@@ -90,4 +90,31 @@ function runCalibration({ tenant_id }) {
   return report;
 }
 
-module.exports = { recordOutcome, runCalibration, generateLesson };
+const SANDBOX_TENANT = 'sandbox';
+const SANDBOX_TABLES = ['pipeline', 'outcomes', 'lessons', 'sponsor_pipeline', 'weight_history', 'art_matches', 'sba_eligibility', 'phase_ii_techs', 'scores'];
+
+function resetSandboxTenant() {
+  const db = getDb();
+  const before = {};
+  for (const t of SANDBOX_TABLES) {
+    try {
+      const c = db.prepare(`SELECT COUNT(*) c FROM ${t} WHERE tenant_id = ?`).get(SANDBOX_TENANT);
+      before[t] = c ? c.c : 0;
+      db.prepare(`DELETE FROM ${t} WHERE tenant_id = ?`).run(SANDBOX_TENANT);
+    } catch (e) {
+      before[t] = `error:${e.message}`;
+    }
+  }
+  let reseed = 0;
+  try {
+    const seed = require('../../scripts/seed_load');
+    if (typeof seed.loadSandbox === 'function') reseed = seed.loadSandbox();
+    else if (typeof seed.load === 'function') { seed.load(); reseed = 1; }
+  } catch (e) {
+    emitReceipt('sandbox_reset_error', { tenant_id: 'admin', error: e.message });
+  }
+  emitReceipt('sandbox_reset', { tenant_id: SANDBOX_TENANT, cleared: before, reseeded: reseed, ts: now() });
+  return { tenant_id: SANDBOX_TENANT, cleared: before, reseeded: reseed };
+}
+
+module.exports = { recordOutcome, runCalibration, generateLesson, resetSandboxTenant, SANDBOX_TENANT };

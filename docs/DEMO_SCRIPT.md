@@ -16,7 +16,7 @@
 ## 0:30 — 1:15 — Topics
 
 - Filter to component = Army.
-- Open the top SNIPER card → "Why this?" → seven-item topic Why panel renders.
+- Open the top PRIME card → "Why this?" → seven-item topic Why panel renders.
 - Director reads the matched keywords, weights, source link, and disagreement button.
 
 ## 1:15 — 2:00 — Switch to ART Match

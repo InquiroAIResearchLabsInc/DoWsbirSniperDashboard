@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: dsip-sniper
+    name: dsip-sentinel
     env: node
     region: oregon
     plan: starter
@@ -16,7 +16,7 @@ services:
       - key: PORT
         value: 3000
       - key: DB_PATH
-        value: /opt/render/project/src/data/dsip-sniper.db
+        value: /opt/render/project/src/data/dsip-sentinel.db
       - key: RECEIPTS_PATH
         value: /opt/render/project/src/receipts.jsonl
       - key: MERKLE_ROOT_PATH
@@ -30,6 +30,6 @@ services:
       - key: KANON_MIN_TENANTS
         value: "5"
     disk:
-      name: dsip-sniper-data
+      name: dsip-sentinel-data
       mountPath: /opt/render/project/src/data
       sizeGB: 1

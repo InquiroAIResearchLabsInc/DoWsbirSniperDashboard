@@ -9,14 +9,14 @@
     {
       "id": "TC1",
       "title": "SF254-D1204: Secure Multi-Source Data Fusion for pLEO",
-      "expected_tier": "SNIPER",
+      "expected_tier": "PRIME",
       "expected_score": 95,
       "description": "multi-source data fusion verification zero trust enforcement AI/ML evaluation sandboxed pLEO SDA constellation"
     },
     {
       "id": "TC2",
       "title": "AFWERX Open Topic (CHORD equiv)",
-      "expected_tier": "SNIPER",
+      "expected_tier": "PRIME",
       "expected_score": 85,
       "description": "open topic autonomous systems governance ai governance attestation decision provenance"
     },
@@ -44,7 +44,7 @@
     {
       "id": "TC6",
       "title": "DIU Autonomy CSO (if active)",
-      "expected_tier": "SNIPER",
+      "expected_tier": "PRIME",
       "expected_score": 82,
       "description": "commercial solutions opening CSO OTA autonomous systems ai governance zero trust enforcement"
     },
