@@ -24,7 +24,7 @@ window.renderOpportunityCard = function (opp) {
     <div class="card-actions">
       <button class="btn" data-action="why">Why this?</button>
       <button class="btn primary" data-action="pipeline">Add to Pipeline</button>
-      <a class="btn" data-action="dsip" href="${escape(dsipUrl(opp))}" target="_blank" rel="noopener noreferrer">Open in DSIP →</a>
+      <button class="btn" data-action="dsip">Open in DSIP →</button>
       <button class="btn dismiss" data-action="dismiss" title="Hide this for 30 days">Dismiss</button>
     </div>`;
   div.querySelector('[data-action="why"]').addEventListener('click', async () => {
@@ -47,16 +47,13 @@ window.renderOpportunityCard = function (opp) {
       btn.disabled = false;
     }
   });
+  // "Open in DSIP" — the preview runs on sample topics, so a card cannot
+  // deep-link to a real solicitation. Explain the feature in a popup instead.
+  div.querySelector('[data-action="dsip"]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (window.openDsipNotice) window.openDsipNotice(opp);
+  });
   return div;
 };
-
-// "Open in DSIP" must never 404. Use the opportunity's source URL only when it
-// is a real absolute link; otherwise fall back to the DoD SBIR/STTR Innovation
-// Portal topics app, which always resolves.
-function dsipUrl(opp) {
-  const DSIP = 'https://www.dodsbirsttr.mil/topics-app/';
-  const u = opp && opp.source_url;
-  return (typeof u === 'string' && /^https?:\/\//i.test(u.trim())) ? u.trim() : DSIP;
-}
 
 function escape(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
