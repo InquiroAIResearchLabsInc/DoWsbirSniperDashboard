@@ -16,6 +16,19 @@
     const sides = panels.filter(p => p !== center);
     const mq = window.matchMedia(MQ);
 
+    // Tab labels: abbreviate the long one so all four fit without scrolling.
+    const SHORT = { patterns: 'Patterns' };
+    const tabs = Array.from(document.querySelectorAll('.tabs .tab'));
+    for (const t of tabs) {
+      if (!t.dataset.fullLabel) t.dataset.fullLabel = t.textContent.trim();
+    }
+    function applyTabLabels() {
+      for (const t of tabs) {
+        const short = SHORT[t.dataset.tab];
+        t.textContent = (mq.matches && short) ? short : t.dataset.fullLabel;
+      }
+    }
+
     for (const p of sides) {
       p.classList.add('m-collapsible');
       const header = p.querySelector('.panel-header');
@@ -35,6 +48,7 @@
     }
 
     function apply() {
+      applyTabLabels();
       for (const p of sides) {
         if (mq.matches) {
           if (!p.dataset.mTouched) p.classList.add('m-collapsed');
