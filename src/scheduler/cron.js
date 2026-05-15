@@ -94,4 +94,4 @@ function schedule() {
   return { tasks, stop() { for (const t of tasks) { try { t.stop(); } catch (_) {} } } };
 }
 
-module.exports = { schedule };
+module.exports = { schedule, scoreUnscoredForAllTenants };

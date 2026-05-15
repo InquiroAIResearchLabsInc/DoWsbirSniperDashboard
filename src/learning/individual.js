@@ -267,7 +267,53 @@ function resetSandboxTenant() {
   return { tenant_id: SANDBOX_TENANT, cleared: before, reseeded: reseed };
 }
 
+// Derive topic-scoring weights from a calibration report: weight each
+// dimension by how strongly it separated wins from losses (its win-loss diff).
+// Every dimension keeps a floor weight so none collapses to zero.
+function suggestWeightsFromCalibration(report) {
+  const dims = ['tech_alignment', 'domain_alignment', 'submission_type', 'timeline', 'funding_efficiency'];
+  const raw = {};
+  let sum = 0;
+  for (const d of dims) {
+    const diff = ((report.dimension_analysis || {})[d] || {}).diff || 0;
+    const w = Math.max(diff, 1);
+    raw[d] = w;
+    sum += w;
+  }
+  const weights = {};
+  for (const d of dims) weights[d] = Math.round((raw[d] / sum) * 1000) / 1000;
+  // Absorb rounding drift into the first dimension so the set sums to exactly 1.
+  const drift = 1 - dims.reduce((a, d) => a + weights[d], 0);
+  weights[dims[0]] = Math.round((weights[dims[0]] + drift) * 1000) / 1000;
+  return weights;
+}
+
+// Apply calibration: recompute the report, derive weights, persist them via
+// the audited applyWeights path, then rescore every opportunity for the tenant.
+function applyCalibration({ tenant_id }) {
+  const report = runCalibration({ tenant_id });
+  if (!report) return { applied: false, reason: 'insufficient_outcomes' };
+  const { applyWeights } = require('../scoring/weights');
+  const weights = suggestWeightsFromCalibration(report);
+  const merged = applyWeights({
+    engine: 'topic', weights, tenant_id, trigger: 'calibration',
+    reason: `Auto-calibrated from ${report.outcomes_count} terminal outcomes`,
+    outcomes_count: report.outcomes_count,
+  });
+  const db = getDb();
+  const { scoreTopic, persist } = require('../scoring/engine_topic');
+  const opps = db.prepare('SELECT * FROM opportunities').all().map(o => ({ ...o, is_rolling: o.is_rolling === 1 }));
+  let rescored = 0;
+  let failed = 0;
+  for (const opp of opps) {
+    try { persist(scoreTopic(opp, tenant_id)); rescored++; } catch (e) { failed++; }
+  }
+  emitReceipt('calibration_applied', { tenant_id, weights: merged, rescored, failed, outcomes_count: report.outcomes_count });
+  return { applied: true, weights: merged, rescored, report };
+}
+
 module.exports = {
   recordOutcome, runCalibration, generateLesson, computeROI, getLessons,
+  suggestWeightsFromCalibration, applyCalibration,
   loadSandboxActivity, resetSandboxTenant, SANDBOX_TENANT,
 };

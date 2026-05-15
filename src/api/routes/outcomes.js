@@ -1,6 +1,6 @@
 const express = require('express');
 const { getDb } = require('../../db');
-const { recordOutcome, runCalibration, computeROI, getLessons } = require('../../learning/individual');
+const { recordOutcome, runCalibration, computeROI, getLessons, applyCalibration } = require('../../learning/individual');
 const { requireAuth } = require('../../auth/middleware');
 
 const router = express.Router();
@@ -22,6 +22,14 @@ router.post('/', requireAuth, (req, res) => {
 
 router.get('/calibration', requireAuth, (req, res) => {
   res.json({ calibration: runCalibration({ tenant_id: req.tenant_id }) });
+});
+
+// Apply the calibration: derive new topic weights from the win/loss analysis,
+// persist them (audited via weight_history), and rescore the board.
+router.post('/calibration/apply', requireAuth, (req, res) => {
+  const result = applyCalibration({ tenant_id: req.tenant_id });
+  if (!result.applied) return res.status(400).json({ error: result.reason });
+  res.json(result);
 });
 
 router.get('/roi', requireAuth, (req, res) => {

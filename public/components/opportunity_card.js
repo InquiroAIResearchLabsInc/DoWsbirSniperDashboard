@@ -25,6 +25,7 @@ window.renderOpportunityCard = function (opp) {
       <button class="btn" data-action="why">Why this?</button>
       <button class="btn primary" data-action="pipeline">Add to Pipeline</button>
       <a class="btn" data-action="dsip" href="${escape(dsipUrl(opp))}" target="_blank" rel="noopener noreferrer">Open in DSIP →</a>
+      <button class="btn dismiss" data-action="dismiss" title="Hide this for 30 days">Dismiss</button>
     </div>`;
   div.querySelector('[data-action="why"]').addEventListener('click', async () => {
     const r = await fetch(`/api/why/topic/${encodeURIComponent(opp.id)}`);
@@ -33,6 +34,18 @@ window.renderOpportunityCard = function (opp) {
   });
   div.querySelector('[data-action="pipeline"]').addEventListener('click', () => {
     if (window.openPipelineModal) window.openPipelineModal(opp);
+  });
+  div.querySelector('[data-action="dismiss"]').addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    const r = await fetch(`/api/opportunities/${encodeURIComponent(opp.id)}/dismiss`, { method: 'POST' });
+    if (r.ok) {
+      div.remove();
+      if (window.app && window.app.refreshAll) window.app.refreshAll();
+    } else {
+      btn.disabled = false;
+    }
   });
   return div;
 };

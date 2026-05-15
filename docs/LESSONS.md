@@ -50,3 +50,11 @@ Format mirrors `docs/inquiro-sniper/docs/lessons_final.md`.
 **RULE:** MUST give the public sandbox the full read-only demo — no token walls on any tab.
 
 ---
+
+## 2026-05-15 | repo: DoWSBIRSentinel | receipt: fd6077fd554419b25139c04cb081bc8c
+
+**Broke:** Told the user Sentinel "mirrored the Sniper build" and "ported the interaction loop" — an overclaim; only part of one loop was ported and Sentinel is a separate, narrower codebase (2 of 9 data sources, different auth).
+**Why:** Stated whole-system equivalence to sound complete instead of enumerating the actual delta.
+**RULE:** NEVER claim a build mirrors another; state exactly which files and features were ported.
+
+---

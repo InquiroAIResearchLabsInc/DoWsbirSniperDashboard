@@ -252,6 +252,47 @@
     setTab(state.tab);
   }
 
+  // Live refresh — pulls the SBIR feed server-side, then re-renders. Mirrors
+  // Sniper's "Scrape Now": one button, the team taps it, fresh data appears.
+  function pollScrape() {
+    return new Promise((resolve) => {
+      let tries = 0;
+      const iv = setInterval(async () => {
+        tries++;
+        try {
+          const s = await api('/api/admin/scrape/status');
+          if (s.state === 'idle') { clearInterval(iv); resolve(s); }
+        } catch (e) { clearInterval(iv); resolve(null); }
+        if (tries > 75) { clearInterval(iv); resolve(null); }
+      }, 2000);
+    });
+  }
+
+  async function runRefresh(btn) {
+    if (btn.disabled) return;
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+    const label = btn.dataset.label;
+    btn.disabled = true;
+    btn.textContent = '↻ Refreshing…';
+    let result = null;
+    try {
+      // 202 = started, 409 = already running — either way, poll to completion.
+      await fetch('/api/admin/scrape', { method: 'POST' });
+      result = await pollScrape();
+    } catch (e) {
+      result = { error: e.message };
+    }
+    btn.disabled = false;
+    if (result && result.error) {
+      btn.textContent = '↻ Refresh failed';
+      window.alert('Live refresh failed: ' + result.error);
+      setTimeout(() => { btn.textContent = label; }, 5000);
+    } else {
+      btn.textContent = label;
+      refreshAll();
+    }
+  }
+
   function escape(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 
   window.app = { refreshAll, setTab };
@@ -261,6 +302,16 @@
     await loadCopy();
     window.wireFilterBar(() => setTab(state.tab));
     for (const t of document.querySelectorAll('.tab')) t.addEventListener('click', () => setTab(t.dataset.tab));
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => runRefresh(refreshBtn));
+      if (isAuthed()) refreshBtn.hidden = false;
+    }
+    const digestBtn = document.getElementById('digest-btn');
+    if (digestBtn) {
+      digestBtn.addEventListener('click', () => { if (window.openDigestModal) window.openDigestModal(); });
+      if (isAuthed()) digestBtn.hidden = false;
+    }
     setTab('topics');
     refreshHeaderStats();
     setInterval(refreshHeaderStats, 30000);

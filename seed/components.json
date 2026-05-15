@@ -50,13 +50,6 @@
     "parent": "DoW"
   },
   {
-    "id": "navy",
-    "display_name": "Navy",
-    "topic_prefix": "N",
-    "topic_prefix_alt": ["NAVY"],
-    "parent": "DoW"
-  },
-  {
     "id": "dla",
     "display_name": "Defense Logistics Agency",
     "topic_prefix": "DLA",

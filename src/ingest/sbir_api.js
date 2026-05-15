@@ -85,8 +85,14 @@ async function scrape() {
   }
   const seen = new Set();
   const deduped = all.filter(o => seen.has(o.id) ? false : seen.add(o.id));
-  emitReceipt('ingest', { tenant_id: 'admin', source: 'sbir_gov', count: deduped.length });
-  return deduped;
+  // Sentinel is the 12-component DoW lens — Navy runs a separate annual BAA
+  // (spec.md §16.2) and is excluded from the topic feed.
+  const dow12 = deduped.filter(o => o.component !== 'navy');
+  emitReceipt('ingest', {
+    tenant_id: 'admin', source: 'sbir_gov',
+    count: dow12.length, navy_excluded: deduped.length - dow12.length,
+  });
+  return dow12;
 }
 
 module.exports = { scrape, scrapeAgency, fetchPage };

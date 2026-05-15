@@ -131,6 +131,16 @@ function initSchema(db) {
     );
     CREATE INDEX IF NOT EXISTS idx_pipeline_tenant ON pipeline(tenant_id);
 
+    CREATE TABLE IF NOT EXISTS dismissals (
+      id              TEXT PRIMARY KEY,
+      tenant_id       TEXT NOT NULL,
+      opportunity_id  TEXT NOT NULL,
+      dismissed_at    TEXT NOT NULL,
+      expires_at      TEXT,
+      reason          TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_dismissals_tenant ON dismissals(tenant_id, opportunity_id);
+
     CREATE TABLE IF NOT EXISTS outcomes (
       id                         TEXT PRIMARY KEY,
       tenant_id                  TEXT NOT NULL,
