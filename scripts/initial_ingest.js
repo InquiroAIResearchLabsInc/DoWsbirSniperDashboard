@@ -29,12 +29,21 @@ function fixtureOpps() {
 
 async function liveOpps() {
   const sbir = require('../src/ingest/sbir_api');
+  // Wall-clock cap so a slow or rate-limited SBIR API can never hang the
+  // deploy build. On timeout we return [] and the caller uses the fixture.
+  const capMs = parseInt(process.env.INGEST_LIVE_CAP_MS || '120000', 10);
+  let timer;
   try {
-    const opps = await sbir.scrape();
+    const opps = await Promise.race([
+      sbir.scrape(),
+      new Promise((_, rej) => { timer = setTimeout(() => rej(new Error(`live ingest exceeded ${capMs}ms cap`)), capMs); }),
+    ]);
     return Array.isArray(opps) ? opps : [];
   } catch (e) {
     emitReceipt('ingest_error', { tenant_id: 'admin', source: 'sbir_gov', stage: 'initial_ingest', error: e.message });
     return [];
+  } finally {
+    clearTimeout(timer);
   }
 }
 
