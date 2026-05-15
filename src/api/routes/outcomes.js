@@ -1,6 +1,6 @@
 const express = require('express');
 const { getDb } = require('../../db');
-const { recordOutcome, runCalibration } = require('../../learning/individual');
+const { recordOutcome, runCalibration, computeROI, getLessons } = require('../../learning/individual');
 const { requireAuth } = require('../../auth/middleware');
 
 const router = express.Router();
@@ -22,6 +22,15 @@ router.post('/', requireAuth, (req, res) => {
 
 router.get('/calibration', requireAuth, (req, res) => {
   res.json({ calibration: runCalibration({ tenant_id: req.tenant_id }) });
+});
+
+router.get('/roi', requireAuth, (req, res) => {
+  res.json({ roi: computeROI({ tenant_id: req.tenant_id }) });
+});
+
+router.get('/lessons', requireAuth, (req, res) => {
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 30, 1), 100);
+  res.json({ lessons: getLessons({ tenant_id: req.tenant_id, limit }) });
 });
 
 module.exports = router;

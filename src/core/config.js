@@ -36,6 +36,7 @@ module.exports = {
   SAM_API_KEY: process.env.SAM_API_KEY || '',
   SAM_USE_FIXTURE: bool(process.env.SAM_USE_FIXTURE, true),
   KANON_MIN_TENANTS: int(process.env.KANON_MIN_TENANTS, 5),
+  CALIBRATION_THRESHOLD: int(process.env.CALIBRATION_THRESHOLD, 5),
   DEMO_SNAPSHOT_PATH: process.env.DEMO_SNAPSHOT_PATH || path.join(root, 'data', 'demo_snapshot.db'),
   ROOT: root,
 };

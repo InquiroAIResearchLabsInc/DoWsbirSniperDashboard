@@ -44,14 +44,24 @@ function load() {
   getWeights('topic', 'default');
   getWeights('art', 'default');
 
+  // Pre-seed sandbox pipeline + outcome history so /demo is populated on first
+  // visit after deploy (the hourly reset keeps it fresh thereafter).
+  let activity = { pipeline: 0, outcomes: 0 };
+  try {
+    activity = require('../src/learning/individual').loadSandboxActivity();
+  } catch (e) {
+    emitReceipt('sandbox_seed_error', { tenant_id: 'admin', error: e.message });
+  }
+
   emitReceipt('seed_loaded', {
     tenant_id: 'admin',
     components: components.length,
     sponsors: sponsors.length,
     tenants: accounts.length,
+    sandbox_activity: activity,
   });
 
-  console.log(`Seed loaded: ${components.length} components, ${sponsors.length} sponsors, ${accounts.length} demo accounts.`);
+  console.log(`Seed loaded: ${components.length} components, ${sponsors.length} sponsors, ${accounts.length} demo accounts, ${activity.pipeline} sandbox pipeline rows.`);
 }
 
 function loadSandbox() {
@@ -74,7 +84,16 @@ function loadSandbox() {
   }
   getWeights('topic', sandbox.tenant_id);
   getWeights('art', sandbox.tenant_id);
-  return (sandbox.phase_ii_techs || []).length;
+  // Pre-seed a populated Pipeline + outcome history so the public sandbox
+  // shows the full feedback loop with zero setup. Self-healing: the hourly
+  // sandbox reset calls loadSandbox(), so this stays populated.
+  let activity = { pipeline: 0, outcomes: 0 };
+  try {
+    activity = require('../src/learning/individual').loadSandboxActivity();
+  } catch (e) {
+    emitReceipt('sandbox_seed_error', { tenant_id: 'admin', error: e.message });
+  }
+  return (sandbox.phase_ii_techs || []).length + activity.pipeline;
 }
 
 // Bootstrap the opportunities table on first deploy. Mirrors the

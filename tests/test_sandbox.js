@@ -58,14 +58,25 @@ test('sandbox write: pipeline add lands under tenant=sandbox', async () => {
   assert.ok(inSandbox >= 1, `expected sandbox pipeline row, got ${inSandbox}`);
 });
 
-test('sandbox reset wipes sandbox rows and reseeds', async () => {
+test('sandbox reset wipes ad-hoc rows and reseeds demo activity', async () => {
   const db = getDb();
   const before = db.prepare(`SELECT COUNT(*) c FROM pipeline WHERE tenant_id = ?`).get(SANDBOX_TENANT).c;
-  assert.ok(before >= 1, 'precondition: should have sandbox row before reset');
+  assert.ok(before >= 1, 'precondition: should have sandbox rows before reset');
   const out = resetSandboxTenant();
   assert.equal(out.tenant_id, SANDBOX_TENANT);
-  const after = db.prepare(`SELECT COUNT(*) c FROM pipeline WHERE tenant_id = ?`).get(SANDBOX_TENANT).c;
-  assert.equal(after, 0, 'pipeline should be empty after reset');
+
+  // The ad-hoc row added by the earlier test must be gone.
+  const adhoc = db.prepare(`SELECT COUNT(*) c FROM pipeline WHERE tenant_id = ? AND opportunity_id = 'sandbox_test_opp'`).get(SANDBOX_TENANT).c;
+  assert.equal(adhoc, 0, 'ad-hoc sandbox row should be wiped by reset');
+
+  // Demo activity is reseeded so /demo is populated with zero setup.
+  const pipeline = db.prepare(`SELECT COUNT(*) c FROM pipeline WHERE tenant_id = ?`).get(SANDBOX_TENANT).c;
+  const outcomes = db.prepare(`SELECT COUNT(*) c FROM outcomes WHERE tenant_id = ?`).get(SANDBOX_TENANT).c;
+  const lessons = db.prepare(`SELECT COUNT(*) c FROM lessons WHERE tenant_id = ?`).get(SANDBOX_TENANT).c;
+  assert.ok(pipeline >= 1, 'pipeline should be reseeded with demo activity');
+  assert.ok(outcomes >= 5, 'outcomes should be reseeded (>=5 unlocks calibration)');
+  assert.equal(outcomes, lessons, 'every outcome generates a lesson');
+
   const techs = db.prepare(`SELECT COUNT(*) c FROM phase_ii_techs WHERE tenant_id = ?`).get(SANDBOX_TENANT).c;
   assert.ok(techs >= 1, 'phase_ii_techs should be reseeded');
 });
