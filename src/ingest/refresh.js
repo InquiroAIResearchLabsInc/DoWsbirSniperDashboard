@@ -7,8 +7,6 @@ const { getDb, now } = require('../db');
 const sbir = require('./sbir_api');
 const { computeDiffs } = require('../diff/engine');
 
-const REFRESH_CAP_MS = parseInt(process.env.REFRESH_CAP_MS || '90000', 10);
-
 const state = {
   state: 'idle',        // 'idle' | 'running'
   started_at: null,
@@ -21,31 +19,26 @@ const state = {
 
 function getScrapeState() { return { ...state }; }
 
-async function withCap(promise, ms, label) {
-  let timer;
-  try {
-    return await Promise.race([
-      promise,
-      new Promise((_, rej) => { timer = setTimeout(() => rej(new Error(`${label} exceeded ${ms}ms`)), ms); }),
-    ]);
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 // Kick off a refresh. Returns false if one is already running. The scrape runs
 // detached (not awaited) so the HTTP handler returns immediately; the UI polls
 // getScrapeState() for completion.
+//
+// No artificial time cap: a full DoW SBIR pull is courteously paced and can
+// take a few minutes, and each request already has a 20s axios timeout plus a
+// bounded retry budget — so the scrape always terminates on its own. Capping it
+// earlier (the old 90s race) only threw away a scrape that was still working.
 function startScrape() {
   if (state.state === 'running') return false;
   state.state = 'running';
   state.started_at = now();
   state.finished_at = null;
   state.error = null;
+  state.fetched = 0;
+  state.added = 0;
 
   (async () => {
     try {
-      const opps = await withCap(sbir.scrape(), REFRESH_CAP_MS, 'SBIR scrape');
+      const opps = await sbir.scrape();
       state.fetched = Array.isArray(opps) ? opps.length : 0;
       if (!state.fetched) {
         // An empty result must NOT reach computeDiffs — it would mark every

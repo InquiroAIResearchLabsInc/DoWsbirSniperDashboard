@@ -21,7 +21,18 @@
     try {
       const stats = await api('/api/admin/stats');
       const pl = document.getElementById('stat-pipeline'); if (pl) pl.textContent = stats.pipeline || 0;
-      const ar = document.getElementById('stat-art'); if (ar) ar.textContent = stats.art_matches || 0;
+    } catch {}
+    try {
+      // "ART Strong" = this tenant's Strong-band matches, not a global row count.
+      const ar = document.getElementById('stat-art');
+      if (ar) {
+        if (isAuthed()) {
+          const am = await api('/api/art-matches?band=STRONG&limit=200');
+          ar.textContent = am.total_returned || 0;
+        } else {
+          ar.textContent = 0;
+        }
+      }
     } catch {}
     try {
       const opps = await api('/api/opportunities');
@@ -254,6 +265,8 @@
 
   // Live refresh — pulls the SBIR feed server-side, then re-renders. Mirrors
   // Sniper's "Scrape Now": one button, the team taps it, fresh data appears.
+  // A full DoW pull is courteously paced and can take a few minutes; the poll
+  // waits up to ~8 min, and the scrape finishes server-side regardless.
   function pollScrape() {
     return new Promise((resolve) => {
       let tries = 0;
@@ -261,9 +274,9 @@
         tries++;
         try {
           const s = await api('/api/admin/scrape/status');
-          if (s.state === 'idle') { clearInterval(iv); resolve(s); }
-        } catch (e) { clearInterval(iv); resolve(null); }
-        if (tries > 75) { clearInterval(iv); resolve(null); }
+          if (s.state === 'idle') { clearInterval(iv); resolve(s); return; }
+        } catch (e) { clearInterval(iv); resolve(null); return; }
+        if (tries > 240) { clearInterval(iv); resolve({ stillRunning: true }); }
       }, 2000);
     });
   }
@@ -273,7 +286,7 @@
     if (!btn.dataset.label) btn.dataset.label = btn.textContent;
     const label = btn.dataset.label;
     btn.disabled = true;
-    btn.textContent = '↻ Refreshing…';
+    btn.textContent = '↻ Refreshing… (up to a few min)';
     let result = null;
     try {
       // 202 = started, 409 = already running — either way, poll to completion.
@@ -283,10 +296,14 @@
       result = { error: e.message };
     }
     btn.disabled = false;
-    if (result && result.error) {
+    if (result && result.stillRunning) {
+      btn.textContent = '↻ Still refreshing…';
+      window.alert('The SBIR pull is still running on the server. It will finish on its own — reload the page in a minute to see the new topics.');
+      setTimeout(() => { btn.textContent = label; }, 8000);
+    } else if (result && result.error) {
       btn.textContent = '↻ Refresh failed';
       window.alert('Live refresh failed: ' + result.error);
-      setTimeout(() => { btn.textContent = label; }, 5000);
+      setTimeout(() => { btn.textContent = label; }, 6000);
     } else {
       btn.textContent = label;
       refreshAll();

@@ -105,6 +105,10 @@ function computeMatch({ tenant_id, profile, phase_ii_tech, sponsor }) {
 }
 
 function computeAllMatches({ tenant_id, profile, phase_ii_tech, limit = 10 }) {
+  // Recompute REPLACES — clear this tech's prior matches first so repeated
+  // compute calls (the ART tab triggers one per visit) don't pile up.
+  getDb().prepare('DELETE FROM art_matches WHERE tenant_id = ? AND phase_ii_tech_id = ?')
+    .run(tenant_id, phase_ii_tech.id);
   const results = SPONSORS.map(s => computeMatch({ tenant_id, profile, phase_ii_tech, sponsor: s }));
   results.sort((a, b) => b.payload.match_score - a.payload.match_score);
   const top = results.slice(0, limit);
