@@ -81,7 +81,7 @@ Every receipt has: `receipt_type, ts, tenant_id, payload_hash (sha256:blake3), p
 
 ## Failure modes that are intentionally surfaced
 
-- **Empty state on Topics.** When zero PRIME tier topics are visible, the API returns `empty_state: true` with the top 3 EVALUATEs and a banner from `docs/copy/empty_state.md`. The center panel is never blank as long as the DB has any opportunity.
+- **Empty state on Topics.** When zero PRIME tier topics are visible, the API returns `empty_state: true` with the top 3 EVALUATEs and a banner from `docs/copy/empty_state_title.md` + `docs/copy/empty_state_body.md`. The center panel is never blank as long as the DB has any opportunity.
 - **Unwritten copy is visible as `<PLACEHOLDER_*>`.** Per spec §13a. This is the signal that Bubba has not yet written that string.
 - **Capped ART scores.** When the composite would land Strong (≥75) but there is no citable signal in the last 90 days, the score is hard-capped at 74 ("Promising") with `capped_reason: no_citable_public_signal_in_90d` in the evidence.
 

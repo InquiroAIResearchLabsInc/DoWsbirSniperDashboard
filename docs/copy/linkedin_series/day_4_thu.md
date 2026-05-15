@@ -9,4 +9,4 @@ BODY: <PLACEHOLDER_THU_BODY>
 
 CTA: <PLACEHOLDER_POST_CTA>
 
-SANDBOX_URL: https://dsip-sniper.onrender.com/demo
+SANDBOX_URL: https://dowsbirsniperdashboard.onrender.com/demo

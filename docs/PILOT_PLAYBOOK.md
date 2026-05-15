@@ -76,11 +76,11 @@ node scripts/issue_demo_token.js \
   --tenant gina_sims_review \
   --ttl 30d \
   --role director \
-  --base https://dsip-sniper.onrender.com
+  --base https://dowsbirsniperdashboard.onrender.com
 
 # Output includes:
 #   token, expires_at (epoch + ISO), tenant_id, role
-#   url:  https://dsip-sniper.onrender.com/?token=<...>
+#   url:  https://dowsbirsniperdashboard.onrender.com/?token=<...>
 # Receipt: demo_token_issued
 # Copy the URL into your message.
 ```
