@@ -1,24 +1,14 @@
 const express = require('express');
 const { getDb, safeJson } = require('../../db');
-const { requireAdmin, requireAdminOrSandbox, requireAuth } = require('../../auth/middleware');
+const { requireAdmin, requireAdminOrSandbox } = require('../../auth/middleware');
 const aggregator = require('../../learning/component_aggregator');
 const { listDiffs } = require('../../diff/engine');
 const { emitReceipt, readReceipts, anchorBatch, getCurrentMerkleRoot } = require('../../core/receipt');
-const { startScrape, getScrapeState } = require('../../ingest/refresh');
 
 const router = express.Router();
 
-// Live refresh — the dashboard "Refresh" button. Any signed-in session
-// (including the public sandbox demo) may trigger it; it pulls the live SBIR
-// feed, re-diffs and re-scores. The UI polls /scrape/status for completion.
-router.post('/scrape', requireAuth, (req, res) => {
-  const started = startScrape();
-  res.status(started ? 202 : 409).json({ started, state: getScrapeState() });
-});
-
-router.get('/scrape/status', requireAuth, (req, res) => {
-  res.json(getScrapeState());
-});
+// The on-demand scan moved to its own child-process route — see
+// src/api/routes/scrape.js (POST /api/scrape/trigger, GET /api/scrape/status).
 
 router.get('/component-patterns', (req, res) => {
   res.json({ patterns: aggregator.listPatterns(req.query) });

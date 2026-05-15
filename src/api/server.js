@@ -65,6 +65,7 @@ const routes = [
   ['/api/auth', require('./routes/auth')],
   ['/api/profile', require('./routes/profile')],
   ['/api/admin', require('./routes/admin')],
+  ['/api/scrape', require('./routes/scrape')],
   ['/api/receipts', require('./routes/receipts')],
   ['/api/copy', require('./routes/copy')],
 ];
