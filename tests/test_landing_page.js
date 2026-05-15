@@ -32,8 +32,8 @@ test('GET / with no token returns 200 + landing HTML', async () => {
   assert.equal(r.status, 200);
   const body = await r.text();
   assert.ok(body.includes('Open Sandbox'), 'expected primary CTA in landing HTML');
-  assert.ok(body.includes('Request Access'), 'expected ghost CTA in landing HTML');
-  assert.ok(body.includes('Topics scored'), 'expected stat chip labels');
+  assert.ok(!body.includes('Request Access'), 'Request Access CTA should be removed');
+  assert.ok(!body.includes('Topics scored'), 'stat chips should be removed');
 });
 
 test('GET /?token=<valid> redirects to /dashboard', async () => {
