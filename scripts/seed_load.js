@@ -103,7 +103,11 @@ function loadSandbox() {
 async function loadBootstrap({ force = false, skipLive } = {}) {
   const db = getDb();
   const oppCount = db.prepare('SELECT COUNT(*) c FROM opportunities').get().c;
-  if (oppCount > 0 && !force) {
+  // Idempotent: a demo-credible table is >= 20 rows, so re-running the
+  // bootstrap on an already-populated DB is a no-op.
+  if (oppCount >= 20 && !force) {
+    const msg = `bootstrap skipped — opportunities table already populated (${oppCount} rows)`;
+    console.log(msg);
     return { skipped: true, reason: 'opportunities table already populated', existing_count: oppCount };
   }
 
@@ -125,7 +129,12 @@ async function loadBootstrap({ force = false, skipLive } = {}) {
     }
   }
   if (!opps.length) {
-    const fixturePath = path.join(config.ROOT, 'tests', 'fixtures', 'sbir_sample.json');
+    // Prefer the broad bootstrap fixture (25 topics across 12 components) so a
+    // deploy that cannot reach the live SBIR API still seeds a credible demo;
+    // fall back to the smaller test sample only if it is absent.
+    const bootstrapPath = path.join(config.ROOT, 'seed', 'opportunities_bootstrap.json');
+    const samplePath = path.join(config.ROOT, 'tests', 'fixtures', 'sbir_sample.json');
+    const fixturePath = fs.existsSync(bootstrapPath) ? bootstrapPath : samplePath;
     if (fs.existsSync(fixturePath)) {
       const raw = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
       for (const sol of raw.solicitations || []) {
