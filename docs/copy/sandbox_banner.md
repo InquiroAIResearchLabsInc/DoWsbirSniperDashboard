@@ -4,4 +4,6 @@
      It is the "get your own access" affordance. Keep it under 80 chars.
      Example shape: "Want your own tenant? matthew@inquiroai.com" -->
 
-<PLACEHOLDER_SANDBOX_BANNER_CTA>
+BANNER: Sandbox interactions reset hourly.
+
+
