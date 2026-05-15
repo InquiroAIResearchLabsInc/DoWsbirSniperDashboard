@@ -7,6 +7,47 @@ const DEADLINE_WARNING_DAYS = 7;
 
 function todayDate() { return new Date().toISOString().slice(0, 10); }
 
+function upsertOpportunity(db, opp) {
+  db.prepare(`INSERT INTO opportunities (
+      id, source, source_url, title, description, agency, sub_agency, component,
+      program, phase, topic_code, naics_codes, keywords, posted_date, open_date,
+      close_date, is_rolling, days_remaining, funding_min, funding_max, currency,
+      first_seen, last_updated
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    ON CONFLICT(id) DO UPDATE SET
+      source_url=excluded.source_url,
+      title=excluded.title,
+      description=excluded.description,
+      agency=excluded.agency,
+      sub_agency=excluded.sub_agency,
+      component=excluded.component,
+      program=excluded.program,
+      phase=excluded.phase,
+      topic_code=excluded.topic_code,
+      naics_codes=excluded.naics_codes,
+      keywords=excluded.keywords,
+      posted_date=excluded.posted_date,
+      open_date=excluded.open_date,
+      close_date=excluded.close_date,
+      is_rolling=excluded.is_rolling,
+      days_remaining=excluded.days_remaining,
+      funding_min=excluded.funding_min,
+      funding_max=excluded.funding_max,
+      currency=excluded.currency,
+      last_updated=excluded.last_updated
+  `).run(
+    opp.id, opp.source, opp.source_url || null, opp.title || '', opp.description || null,
+    opp.agency || null, opp.sub_agency || null, opp.component || null,
+    opp.program || null, opp.phase || null, opp.topic_code || null,
+    JSON.stringify(opp.naics_codes || []), JSON.stringify(opp.keywords || []),
+    opp.posted_date || null, opp.open_date || null, opp.close_date || null,
+    opp.is_rolling ? 1 : 0, opp.days_remaining == null ? null : opp.days_remaining,
+    opp.funding_min == null ? null : opp.funding_min,
+    opp.funding_max == null ? null : opp.funding_max,
+    opp.currency || 'USD', now(), now()
+  );
+}
+
 function computeDiffs(source, fresh) {
   const db = getDb();
   const today = todayDate();
@@ -14,6 +55,7 @@ function computeDiffs(source, fresh) {
   const prevMap = Object.fromEntries(prev.map(o => [o.id, o]));
   const freshIds = new Set(fresh.map(o => o.id));
   const counts = { new: 0, closed: 0, changed: 0, closing_soon: 0, warning: 0 };
+  for (const opp of fresh) upsertOpportunity(db, opp);
   for (const opp of fresh) {
     if (!prevMap[opp.id]) {
       db.prepare('INSERT INTO diffs (id, diff_date, source, diff_type, opportunity_id, field_changed, old_value, new_value, created_at) VALUES (?,?,?,?,?,?,?,?,?)')
@@ -61,4 +103,4 @@ function listDiffs(window_days = 7) {
   return getDb().prepare('SELECT * FROM diffs WHERE diff_date >= ? ORDER BY created_at DESC LIMIT 200').all(since.toISOString().slice(0, 10));
 }
 
-module.exports = { computeDiffs, listDiffs, TRACKED_FIELDS };
+module.exports = { computeDiffs, listDiffs, upsertOpportunity, TRACKED_FIELDS };

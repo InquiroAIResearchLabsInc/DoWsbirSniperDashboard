@@ -17,17 +17,18 @@
   async function refreshHeaderStats() {
     try {
       const stats = await api('/api/admin/stats');
-      document.getElementById('stat-pipeline').textContent = stats.pipeline || 0;
-      document.getElementById('stat-art').textContent = stats.art_matches || 0;
+      const pl = document.getElementById('stat-pipeline'); if (pl) pl.textContent = stats.pipeline || 0;
+      const ar = document.getElementById('stat-art'); if (ar) ar.textContent = stats.art_matches || 0;
     } catch {}
     try {
-      const opps = await api('/api/opportunities?tier=PRIME');
-      const primes = (opps.opportunities || []).filter(o => o.score_tier === 'PRIME').length;
-      const evals = (opps.opportunities || []).filter(o => o.score_tier === 'EVALUATE').length;
-      const closing = (opps.opportunities || []).filter(o => o.days_remaining != null && o.days_remaining <= 14).length;
-      document.getElementById('stat-primes').textContent = primes;
-      document.getElementById('stat-evaluates').textContent = evals;
-      document.getElementById('stat-closing').textContent = closing;
+      const opps = await api('/api/opportunities');
+      const list = opps.opportunities || [];
+      const primes = list.filter(o => o.score_tier === 'PRIME').length;
+      const evals = list.filter(o => o.score_tier === 'EVALUATE').length;
+      const closing = list.filter(o => o.days_remaining != null && o.days_remaining <= 14).length;
+      const pr = document.getElementById('stat-primes'); if (pr) pr.textContent = primes;
+      const ev = document.getElementById('stat-evaluates'); if (ev) ev.textContent = evals;
+      const cl = document.getElementById('stat-closing'); if (cl) cl.textContent = closing;
     } catch {}
   }
 
