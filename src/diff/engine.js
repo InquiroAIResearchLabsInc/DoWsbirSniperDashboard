@@ -107,18 +107,22 @@ function daysToClose(close_date) {
 
 // Diff rows joined to their opportunity so the feed can render a human
 // title + component/program/phase + deadline instead of the raw row id.
+// INNER JOIN is deliberate: a diff whose opportunity_id matches no opportunity
+// row cannot render a human title, so it is dropped rather than left to leak
+// the raw `source:id` key into the feed.
 function listDiffs(window_days = 7) {
   const since = new Date(); since.setDate(since.getDate() - window_days);
   const rows = getDb().prepare(`
     SELECT d.*,
            o.title      AS title,
+           o.topic_code AS topic_code,
            o.component  AS component,
            o.program    AS program,
            o.phase      AS phase,
            o.close_date AS close_date,
            o.is_rolling AS is_rolling
       FROM diffs d
-      LEFT JOIN opportunities o ON o.id = d.opportunity_id
+      INNER JOIN opportunities o ON o.id = d.opportunity_id
      WHERE d.diff_date >= ?
      ORDER BY d.created_at DESC
      LIMIT 200
