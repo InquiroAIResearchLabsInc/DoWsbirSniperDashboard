@@ -56,6 +56,23 @@ header .tagline {
   font-style: italic;
 }
 .stats-bar { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+
+.refresh-btn {
+  background: var(--amber);
+  color: #0a0a0a;
+  border: 1px solid var(--amber);
+  border-radius: 5px;
+  padding: 9px 15px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+}
+.refresh-btn:hover { background: var(--amber-dim); }
+.refresh-btn:disabled { opacity: 0.6; cursor: default; }
 .stat { display: flex; flex-direction: column; align-items: center; }
 .stat-val { font-size: 22px; font-weight: 800; color: var(--bone); }
 .stat-val.amber { color: var(--amber); }
@@ -545,6 +562,12 @@ footer .val { color: var(--text-dim); }
     justify-content: space-between;
     border-top: 1px solid var(--border);
     padding-top: 11px;
+  }
+  .refresh-btn {
+    flex: 1 1 100%;
+    padding: 13px;
+    min-height: 46px;
+    font-size: 13px;
   }
   .stat { flex: 1 1 0; min-width: 0; }
   .stat-val { font-size: 17px; }
