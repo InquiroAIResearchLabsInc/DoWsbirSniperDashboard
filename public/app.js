@@ -1,5 +1,5 @@
 (function () {
-  const state = { tab: 'topics', tenant: null, role: null, auth_kind: null };
+  const state = { tab: 'topics', tenant: null, role: null, auth_kind: null, scanLabel: 'Scan' };
 
   async function api(p, opts) { const r = await fetch(p, opts); if (!r.ok) throw new Error(`${p} ${r.status}`); return r.json(); }
 
@@ -9,6 +9,19 @@
       const { value } = await api('/api/copy/product_tagline');
       el.textContent = (value || '').replace(/\s+/g, ' ').trim() || '<PLACEHOLDER_PRODUCT_TAGLINE>';
     } catch { el.textContent = '<PLACEHOLDER_PRODUCT_TAGLINE>'; }
+  }
+
+  // The scan button's label comes from docs/copy/scan_button.md via getCopy().
+  // Until Bubba writes the copy the loader returns its placeholder token, and
+  // that token renders verbatim on the button — the intended "copy pending"
+  // signal per the loader contract.
+  async function loadScanLabel() {
+    const btn = document.getElementById('refresh-btn');
+    try {
+      const { value } = await api('/api/copy/scan_button');
+      state.scanLabel = (value || '').replace(/\s+/g, ' ').trim() || 'Scan';
+    } catch { state.scanLabel = 'Scan'; }
+    if (btn && !btn.classList.contains('scanning')) btn.textContent = state.scanLabel;
   }
 
   function isAuthed() { return !!state.role && state.role !== 'anonymous'; }
@@ -42,7 +55,10 @@
       const closing = list.filter(o => o.days_remaining != null && o.days_remaining <= 14).length;
       const pr = document.getElementById('stat-primes'); if (pr) pr.textContent = primes;
       const ev = document.getElementById('stat-evaluates'); if (ev) ev.textContent = evals;
-      const cl = document.getElementById('stat-closing'); if (cl) cl.textContent = closing;
+      // CLOSING counter is red only while there is something closing; at zero
+      // it drops to a muted bone so it stops competing for attention.
+      const cl = document.getElementById('stat-closing');
+      if (cl) { cl.textContent = closing; cl.className = 'stat-val ' + (closing > 0 ? 'red' : 'closing-zero'); }
     } catch {}
   }
 
@@ -263,51 +279,74 @@
     setTab(state.tab);
   }
 
-  // Live refresh — pulls the SBIR feed server-side, then re-renders. Mirrors
-  // Sniper's "Scrape Now": one button, the team taps it, fresh data appears.
-  // A full DoW pull is courteously paced and can take a few minutes; the poll
-  // waits up to ~8 min, and the scrape finishes server-side regardless.
-  function pollScrape() {
+  // On-demand scan — the header scan button. Mirrors inquiro-sniper's "Scrape
+  // Now": POST /api/scrape/trigger spawns a child process and returns at once;
+  // the UI polls /api/scrape/status every 2s and refreshes when it finishes.
+  function showScanBanner(msg, kind) {
+    const b = document.getElementById('scan-banner');
+    if (!b) return;
+    b.textContent = msg;
+    b.className = 'scan-banner' + (kind ? ' ' + kind : '');
+    b.hidden = false;
+    clearTimeout(b._t);
+    b._t = setTimeout(() => { b.hidden = true; }, 5000);
+  }
+
+  function pollScanStatus() {
     return new Promise((resolve) => {
       let tries = 0;
       const iv = setInterval(async () => {
         tries++;
+        let s;
         try {
-          const s = await api('/api/admin/scrape/status');
-          if (s.state === 'idle') { clearInterval(iv); resolve(s); return; }
-        } catch (e) { clearInterval(iv); resolve(null); return; }
-        if (tries > 240) { clearInterval(iv); resolve({ stillRunning: true }); }
+          s = await api('/api/scrape/status');
+        } catch (e) { clearInterval(iv); resolve({ error: e.message }); return; }
+        if (!s.running) { clearInterval(iv); resolve(s); return; }
+        if (tries > 240) { clearInterval(iv); resolve({ stillRunning: true }); } // ~8 min cap
       }, 2000);
     });
   }
 
-  async function runRefresh(btn) {
-    if (btn.disabled) return;
-    if (!btn.dataset.label) btn.dataset.label = btn.textContent;
-    const label = btn.dataset.label;
+  async function runScan(btn) {
+    if (btn.dataset.busy === '1') return;
+    btn.dataset.busy = '1';
+    const label = state.scanLabel || 'Scan';
     btn.disabled = true;
-    btn.textContent = '↻ Refreshing… (up to a few min)';
-    let result = null;
+    btn.classList.add('scanning');
+    btn.textContent = 'SCANNING…';
+
+    let outcome;
     try {
       // 202 = started, 409 = already running — either way, poll to completion.
-      await fetch('/api/admin/scrape', { method: 'POST' });
-      result = await pollScrape();
+      await fetch('/api/scrape/trigger', { method: 'POST' });
+      outcome = await pollScanStatus();
     } catch (e) {
-      result = { error: e.message };
+      outcome = { error: e.message };
     }
+
+    btn.classList.remove('scanning');
     btn.disabled = false;
-    if (result && result.stillRunning) {
-      btn.textContent = '↻ Still refreshing…';
-      window.alert('The SBIR pull is still running on the server. It will finish on its own — reload the page in a minute to see the new topics.');
-      setTimeout(() => { btn.textContent = label; }, 8000);
-    } else if (result && result.error) {
-      btn.textContent = '↻ Refresh failed';
-      window.alert('Live refresh failed: ' + result.error);
-      setTimeout(() => { btn.textContent = label; }, 6000);
-    } else {
+    btn.dataset.busy = '';
+
+    if (outcome && outcome.stillRunning) {
       btn.textContent = label;
-      refreshAll();
+      showScanBanner('Scan still running on the server — it will finish on its own; reload in a minute.', 'warn');
+      return;
     }
+    const res = outcome && outcome.last_result;
+    if ((outcome && outcome.error) || (res && res.errors > 0)) {
+      btn.textContent = 'SCAN FAILED';
+      btn.classList.add('scan-failed');
+      const why = (res && res.message) || (outcome && outcome.error) || 'the SBIR feed was unreachable.';
+      showScanBanner('Scan failed — ' + why, 'error');
+      setTimeout(() => { btn.textContent = label; btn.classList.remove('scan-failed'); }, 5000);
+      return;
+    }
+    btn.textContent = label;
+    const ins = res ? (res.inserted || 0) : 0;
+    const upd = res ? (res.updated || 0) : 0;
+    showScanBanner('Scan complete · ' + ins + ' new · ' + upd + ' updated', 'ok');
+    refreshAll();
   }
 
   function escape(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
@@ -317,11 +356,12 @@
   document.addEventListener('DOMContentLoaded', async () => {
     await whoami();
     await loadCopy();
+    await loadScanLabel();
     window.wireFilterBar(() => setTab(state.tab));
     for (const t of document.querySelectorAll('.tab')) t.addEventListener('click', () => setTab(t.dataset.tab));
     const refreshBtn = document.getElementById('refresh-btn');
     if (refreshBtn) {
-      refreshBtn.addEventListener('click', () => runRefresh(refreshBtn));
+      refreshBtn.addEventListener('click', () => runScan(refreshBtn));
       if (isAuthed()) refreshBtn.hidden = false;
     }
     const digestBtn = document.getElementById('digest-btn');

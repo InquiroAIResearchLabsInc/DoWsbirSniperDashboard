@@ -241,10 +241,10 @@
     return `<h3>Lessons <span class="learn-count">${lessons.length}</span></h3>${items}`;
   }
 
-  // ── DIGEST ──────────────────────────────────────────────────────────────
+  // ── DAILY BRIEF ─────────────────────────────────────────────────────────
   window.openDigestModal = async function () {
     const overlay = showModal(`
-      <h2>Daily Digest</h2>
+      <h2>Daily Brief</h2>
       <div class="modal-intro">What changed across the 12-component DoW SBIR feed — new topics, deadlines closing, and your pipeline.</div>
       <div id="digest-body"><div class="learn-loading">Loading…</div></div>
       <div class="actions">
@@ -305,7 +305,28 @@
       ${digestList('Closing soon', soon)}
       ${digestList('Your PRIME picks', d.top_prime)}
       ${pipeline ? `<h3>Active pipeline <span class="learn-count">${d.pipeline.length}</span></h3>${pipeline}` : ''}
-      ${d.new_count === 0 && d.total === 0 ? '<div class="learn-empty">No topics yet — hit Refresh to pull the live SBIR feed.</div>' : ''}
+      ${d.new_count === 0 && d.total === 0 ? '<div class="learn-empty">No topics yet — run a scan to pull the live SBIR feed.</div>' : ''}
       <div class="learn-empty" style="margin-top:8px">Generated ${esc(String(d.generated_at || '').slice(0, 16).replace('T', ' '))} UTC</div>`;
   }
+
+  // ── OPEN IN DSIP — demo notice ──────────────────────────────────────────
+  // This preview runs on a fixed sample of topics, so a card cannot deep-link
+  // to a real solicitation. Rather than a dead link, explain in plain terms
+  // what the button does in the live product, and offer the real portal.
+  window.openDsipNotice = function (opp) {
+    const DSIP = 'https://www.dodsbirsttr.mil/topics-app/';
+    const title = (opp && opp.title) ? esc(opp.title) : 'this topic';
+    const overlay = showModal(`
+      <h2>Open in DSIP</h2>
+      <div class="modal-intro">In the live product, <strong>Open in DSIP</strong> takes you straight to
+        “${title}” on the DoD SBIR/STTR Innovation Portal (DSIP) — the official Department of War site
+        where you read the full solicitation, confirm your eligibility, and submit a proposal.</div>
+      <div class="modal-intro">This preview runs on a fixed set of sample topics, so the direct topic
+        link is switched off here. You can still open the live portal and search it yourself.</div>
+      <div class="actions">
+        <a class="btn" href="${DSIP}" target="_blank" rel="noopener noreferrer">Open the DSIP portal →</a>
+        <button class="btn primary" data-act="close">Got it</button>
+      </div>`);
+    overlay.querySelector('[data-act="close"]').addEventListener('click', () => overlay.remove());
+  };
 })();

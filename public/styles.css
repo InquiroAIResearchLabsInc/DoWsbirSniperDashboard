@@ -8,13 +8,13 @@
   --text: #f5f4ee;
   --text-dim: #c7c4b8;
   --muted: #7a766c;
-  --amber: #d6a23a;
-  --amber-dim: #8a6a25;
+  --amber: #F59E0B;
+  --amber-dim: #b3740a;
   --amber-bg: #1b1306;
-  --bone: #e8e3d4;
+  --bone: #E2E8F0;
   --gray: #6b6b6b;
   --gray-bg: #161616;
-  --red: #a8413a;
+  --red: #DC2626;
   --red-bg: #1b0c0b;
   --radius: 6px;
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -57,10 +57,11 @@ header .tagline {
 }
 .stats-bar { margin-left: auto; display: flex; gap: 22px; align-items: center; }
 
+/* Scan button — the one amber outline button: it is the header's primary action */
 .refresh-btn {
-  background: var(--amber);
-  color: #0a0a0a;
-  border: 1px solid var(--amber);
+  background: transparent;
+  color: #F59E0B;
+  border: 1px solid #F59E0B;
   border-radius: 5px;
   padding: 9px 15px;
   font-size: 12px;
@@ -71,14 +72,33 @@ header .tagline {
   font-family: var(--font);
   white-space: nowrap;
 }
-.refresh-btn:hover { background: var(--amber-dim); }
+.refresh-btn:hover { background: rgba(245, 158, 11, 0.12); }
 .refresh-btn:disabled { opacity: 0.6; cursor: default; }
+/* Daily Brief — a quiet ghost button, never amber */
 .refresh-btn.ghost { background: transparent; color: var(--bone); border-color: var(--border-strong); }
-.refresh-btn.ghost:hover { background: var(--surface-3); border-color: var(--amber-dim); }
+.refresh-btn.ghost:hover { background: var(--surface-3); border-color: rgba(226, 232, 240, 0.4); }
+/* Scan button — running + failed states */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+.refresh-btn.scanning { animation: pulse 1s ease-in-out infinite; }
+.refresh-btn.scan-failed { color: #DC2626; border-color: #DC2626; background: transparent; }
+
+/* Scan status banner — shown briefly under the header after a scan */
+.scan-banner {
+  padding: 9px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.scan-banner.ok { color: #E2E8F0; }
+.scan-banner.warn { color: #F59E0B; }
+.scan-banner.error { color: #DC2626; }
 .stat { display: flex; flex-direction: column; align-items: center; }
 .stat-val { font-size: 22px; font-weight: 800; color: var(--bone); }
 .stat-val.amber { color: var(--amber); }
 .stat-val.red { color: var(--red); }
+.stat-val.closing-zero { color: rgba(226, 232, 240, 0.3); }
 .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
 
 .layout { flex: 1; display: grid; grid-template-columns: 320px 1fr 360px; min-height: 0; }
@@ -154,9 +174,11 @@ header .tagline {
   padding: 14px;
 }
 .card.opp { border-left: 2px solid var(--border-strong); cursor: pointer; }
-.card.opp.prime { border-left-color: var(--amber); }
-.card.opp.evaluate { border-left-color: var(--bone); }
-.card.opp.stretch { border-left-color: var(--gray); opacity: 0.85; }
+/* Tier shown by border brightness, not colour — amber is reserved for the score */
+.card.opp.prime { border-left-color: #E2E8F0; }
+.card.opp.evaluate { border-left-color: rgba(226, 232, 240, 0.4); }
+.card.opp.stretch { border-left-color: rgba(226, 232, 240, 0.2); opacity: 0.9; }
+.card.opp.skip { border-left-color: rgba(226, 232, 240, 0.1); opacity: 0.8; }
 .card-top { display: flex; justify-content: space-between; gap: 10px; }
 .tier-badge {
   font-size: 11px;
@@ -166,17 +188,23 @@ header .tagline {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
+  background: transparent;
+  border: 1px solid transparent;
 }
-.tier-badge.prime { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-dim); }
-.tier-badge.evaluate { background: var(--gray-bg); color: var(--bone); border: 1px solid var(--border-strong); }
-.tier-badge.stretch { background: var(--gray-bg); color: var(--gray); }
-.score-num { font-size: 26px; font-weight: 900; color: var(--bone); }
-.score-num.prime { color: var(--amber); }
+/* PRIME badge is bone, not amber: the one amber element on a card is the
+   score, and only the score (build-strategy §3 "one amber per card" + §5). */
+.tier-badge.prime { color: #E2E8F0; border-color: #E2E8F0; }
+.tier-badge.evaluate { color: #E2E8F0; border-color: rgba(226, 232, 240, 0.4); }
+.tier-badge.stretch { color: rgba(226, 232, 240, 0.4); }
+.tier-badge.skip { color: rgba(226, 232, 240, 0.25); }
+.score-num { font-size: 26px; font-weight: 900; color: #E2E8F0; }
+.score-num.prime { color: #F59E0B; }
+.score-num.stretch, .score-num.skip { color: rgba(226, 232, 240, 0.4); }
 .opp-title { font-size: 15px; font-weight: 600; margin-top: 8px; line-height: 1.35; }
 .opp-meta { font-size: 12px; color: var(--muted); margin-top: 6px; display: flex; gap: 10px; flex-wrap: wrap; }
 .opp-meta .badge { background: var(--surface-3); border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px; }
 .kw-tags { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
-.kw-tag { background: var(--surface-3); border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px; font-size: 11px; color: var(--text-dim); }
+.kw-tag { background: transparent; border: 1px solid rgba(226, 232, 240, 0.2); padding: 1px 6px; border-radius: 3px; font-size: 11px; color: rgba(226, 232, 240, 0.8); }
 .card-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .btn {
   padding: 6px 12px;
@@ -197,27 +225,49 @@ header .tagline {
 .btn.dismiss:hover { color: var(--red); border-color: var(--red); }
 .btn:disabled { opacity: 0.5; cursor: default; }
 
+/* Opportunity-card actions — one bone-outline button (Add to Pipeline); the
+   rest are bone text links, Dismiss the quietest. No amber on the card. */
+.card.opp .card-actions .btn { background: transparent; }
+.card.opp .card-actions .btn.primary {
+  color: #E2E8F0;
+  border: 1px solid rgba(226, 232, 240, 0.4);
+}
+.card.opp .card-actions .btn.primary:hover {
+  background: rgba(226, 232, 240, 0.08);
+  border-color: rgba(226, 232, 240, 0.4);
+}
+.card.opp .card-actions [data-action="why"],
+.card.opp .card-actions [data-action="dsip"] {
+  border: none;
+  color: #E2E8F0;
+  padding: 6px 4px;
+}
+.card.opp .card-actions [data-action="why"]:hover { border: none; text-decoration: underline; }
+.card.opp .card-actions [data-action="dsip"]:hover { border: none; }
+.card.opp .card-actions .btn.dismiss {
+  border: none;
+  color: rgba(226, 232, 240, 0.35);
+  padding: 6px 4px;
+}
+.card.opp .card-actions .btn.dismiss:hover { color: rgba(226, 232, 240, 0.6); border: none; }
+
 .deadline { font-size: 12px; font-weight: 700; }
 .deadline.critical { color: var(--red); }
-.deadline.warning { color: var(--amber); }
-.deadline.ok { color: var(--bone); }
+/* 8–14 days is bone, not amber — the only amber on a card is the score */
+.deadline.warning { color: rgba(226, 232, 240, 0.7); }
+.deadline.ok { color: rgba(226, 232, 240, 0.5); }
 
 .diff-entry {
-  border-left: 2px solid var(--border-strong);
+  border-left: 2px solid var(--border);
   padding: 10px 12px;
   background: var(--surface-2);
   border-radius: 0 4px 4px 0;
   font-size: 13px;
 }
-.diff-entry.new { border-left-color: var(--bone); }
-.diff-entry.closed { border-left-color: var(--gray); opacity: 0.7; }
-.diff-entry.changed { border-left-color: var(--amber); }
-.diff-entry.closing_soon { border-left-color: var(--amber); }
-.diff-entry.warning { border-left-color: var(--red); }
+.diff-entry.closed { opacity: 0.65; }
+/* .diff-type — base style only; reused by the Admin receipts list */
 .diff-type { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 3px; font-weight: 700; }
-.diff-type.warning { color: var(--red); }
-.diff-type.closing_soon { color: var(--amber); }
-.diff-detail { color: var(--muted); font-size: 12px; margin-top: 3px; }
+.diff-detail { color: var(--muted); font-size: 12px; margin-top: 4px; }
 
 /* ART match card */
 .art-card {
@@ -327,14 +377,41 @@ header .tagline {
 .why-action .hint { font-size: 12px; color: var(--muted); }
 .why-confirm { font-size: 13px; font-weight: 600; color: var(--amber); }
 
-/* Diff feed — human-readable entries */
-.diff-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.diff-type.new { color: var(--bone); }
-.diff-type.changed { color: var(--amber); }
-.diff-type.closed { color: var(--gray); }
-.diff-title { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 4px; line-height: 1.35; }
-.diff-meta { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
-.diff-days { font-size: 11px; font-weight: 700; white-space: nowrap; }
+/* Diff feed — human-readable entries (DEMO_STEALTH_BOMBER colour rules:
+   one signal per row — the category badge and the days count carry it). */
+.diff-row { display: flex; align-items: baseline; gap: 8px; }
+.diff-cat {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.diff-cat.cat-new { color: #E2E8F0; }
+.diff-cat.cat-closed { color: rgba(226, 232, 240, 0.4); }
+.diff-cat.cat-changed { color: #F59E0B; }
+.diff-cat.cat-closing { color: #DC2626; }
+.diff-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #E2E8F0;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.diff-days { font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.diff-days.days-critical { color: #DC2626; }
+.diff-days.days-warn { color: #F59E0B; }
+.diff-days.days-ok { color: rgba(226, 232, 240, 0.6); }
+.diff-meta {
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.5);
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+}
 
 /* Modal forms — Add to Pipeline / Record Outcome */
 .modal-intro {
@@ -518,7 +595,7 @@ header .tagline {
   padding: 14px;
 }
 .lens h4 { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-.lens .kw-tag { background: var(--surface-3); margin-right: 4px; margin-bottom: 4px; display: inline-block; }
+.lens .kw-tag { background: transparent; margin-right: 4px; margin-bottom: 4px; display: inline-block; }
 
 /* Tabs */
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); padding: 0 16px; background: var(--surface); flex-shrink: 0; }
