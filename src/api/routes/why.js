@@ -25,6 +25,7 @@ router.get('/art/:match_id', (req, res) => {
   const tech = db.prepare('SELECT * FROM phase_ii_techs WHERE id = ?').get(m.phase_ii_tech_id) || {};
   const weights = getWeights('art', req.tenant_id);
   const match = {
+    id: m.id,
     payload: {
       match_score: m.match_score,
       match_band: m.match_band,
