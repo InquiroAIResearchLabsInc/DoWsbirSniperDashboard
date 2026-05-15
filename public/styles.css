@@ -327,6 +327,15 @@ header .tagline {
 .why-action .hint { font-size: 12px; color: var(--muted); }
 .why-confirm { font-size: 13px; font-weight: 600; color: var(--amber); }
 
+/* Diff feed — human-readable entries */
+.diff-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.diff-type.new { color: var(--bone); }
+.diff-type.changed { color: var(--amber); }
+.diff-type.closed { color: var(--gray); }
+.diff-title { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 4px; line-height: 1.35; }
+.diff-meta { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+.diff-days { font-size: 11px; font-weight: 700; white-space: nowrap; }
+
 /* Modal forms — Add to Pipeline / Record Outcome */
 .modal-intro {
   font-size: 13px;
