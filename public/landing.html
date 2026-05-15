@@ -159,7 +159,6 @@
 <body>
 <header>
   <div class="brand">DSIP SENTINEL</div>
-  <div class="lockup">DEMO_STEALTH_BOMBER · ART EDITION</div>
 </header>
 
 <main>
@@ -168,23 +167,11 @@
 
   <div class="ctas">
     <a class="cta cta-primary" href="/demo">Open Sandbox <span aria-hidden="true">→</span></a>
-    <a class="cta cta-ghost" id="cta-access" href="mailto:matthew@inquiroai.com?subject=DSIP%20Sentinel%20access%20request">Request Access</a>
-  </div>
-
-  <div class="stat-row" id="stats">
-    <div class="stat"><div class="stat-val" id="stat-topics">—</div><div class="stat-lbl">Topics scored</div></div>
-    <div class="stat"><div class="stat-val" id="stat-components">—</div><div class="stat-lbl">Components</div></div>
-    <div class="stat"><div class="stat-val" id="stat-art">—</div><div class="stat-lbl">ART matches</div></div>
   </div>
 </main>
 
-<footer>
-  <span>RECEIPTS-NATIVE · NO GREEN · DESKTOP / PROJECTOR ONLY</span>
-  <span id="footer-info">{{dsip_handoff_microcopy}}</span>
-</footer>
-
 <script>
-(async function () {
+(function () {
   function flagPlaceholder(id) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -194,17 +181,6 @@
   }
   flagPlaceholder('tagline');
   flagPlaceholder('positioning');
-  flagPlaceholder('footer-info');
-
-  try {
-    const r = await fetch('/api/stats', { credentials: 'omit' });
-    if (r.ok) {
-      const s = await r.json();
-      document.getElementById('stat-topics').textContent = s.topics_scored ?? '—';
-      document.getElementById('stat-components').textContent = s.components ?? '—';
-      document.getElementById('stat-art').textContent = s.art_matches ?? '—';
-    }
-  } catch (_) { /* keep dashes */ }
 })();
 </script>
 </body>

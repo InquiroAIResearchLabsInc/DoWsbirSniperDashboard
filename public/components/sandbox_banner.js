@@ -1,7 +1,6 @@
-// sandbox_banner: fixed top bar shown only on /demo.
-// Hourly reset disclosure + access affordance pulled from docs/copy/sandbox_banner.md.
+// sandbox_banner: disabled. Banner removed from /demo to keep the header quiet.
 (function () {
-  if (location.pathname !== '/demo') return;
+  return;
 
   const style = document.createElement('style');
   style.textContent = `
