@@ -532,6 +532,8 @@ footer .val { color: var(--text-dim); }
     flex-wrap: wrap;
     gap: 10px 14px;
     padding: 13px 16px 12px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
   }
   header h1 { font-size: 15px; letter-spacing: 0.14em; flex: 1 1 auto; }
   header .tagline { display: none; }
@@ -550,6 +552,8 @@ footer .val { color: var(--text-dim); }
 
   .tabs {
     padding: 0;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
     overflow-x: hidden;
     flex-wrap: nowrap;
     position: sticky;
