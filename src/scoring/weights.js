@@ -60,7 +60,7 @@ function band(score) {
 }
 
 function tier(score) {
-  if (score >= 80) return 'SNIPER';
+  if (score >= 80) return 'PRIME';
   if (score >= 60) return 'EVALUATE';
   if (score >= 40) return 'STRETCH';
   return 'SKIP';

@@ -1,7 +1,7 @@
 {
-  "name": "dsip-sniper",
+  "name": "dsip-sentinel",
   "version": "0.2.0",
-  "description": "DSIP Sniper · ART Edition — receipts-native lens for DoW SBIR/STTR with ART sponsor matching",
+  "description": "DSIP Sentinel · ART Edition — receipts-native lens for DoW SBIR/STTR with ART sponsor matching",
   "private": true,
   "main": "src/api/server.js",
   "scripts": {

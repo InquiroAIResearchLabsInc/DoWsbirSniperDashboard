@@ -2,7 +2,7 @@
 
 <!-- TODO (Bubba writes): 3–5 sentences. Build script inserts into root README.md replacing the equivalent block. -->
 
-DSIP Sniper is a personalized opportunity layer for DoW SBIR/STTR. 
+DSIP Sentinel is a personalized opportunity layer for DoW SBIR/STTR. 
 
 It scores open and pre-release topics against your company profile and surfaces the ones that fit.
 

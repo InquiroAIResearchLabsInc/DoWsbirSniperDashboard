@@ -1,6 +1,6 @@
-# DSIP Sniper · ART Edition — Build Spec (executor-facing)
+# DSIP Sentinel · ART Edition — Build Spec (executor-facing)
 
-**Source-of-truth strategy:** `docs/Dsip sniper mvp build strategy v2.md`.
+**Source-of-truth strategy:** `docs/Dsip sentinel mvp build strategy v2.md`.
 **Standard:** CLAUDEME v5.0. Three Laws active.
 **Branch:** `claude/dsip-sniper-mvp-build-qatZz`.
 
@@ -61,7 +61,7 @@ TEST_URL=http://localhost:3000 npm run smoke
 
 | # | Question | Default chosen | Where to override |
 |---|---|---|---|
-| 18.1 | Public-facing name | "DSIP Sniper · ART Edition" | `package.json`, `public/index.html` `<h1>`, copy `product_tagline.md` |
+| 18.1 | Public-facing name | "DSIP Sentinel · ART Edition" | `package.json`, `public/index.html` `<h1>`, copy `product_tagline.md` |
 | 18.2 | Director's actual name | Placeholder `<PLACEHOLDER_DIRECTOR_NAME>` | `docs/copy/day_0_message.md`, `docs/copy/day_7_recap.md` |
 | 18.3 | Four demo profile selection | Scaffolds for Army autonomy / Space Force SDA / DARPA AI / AFWERX battle network | `seed/demo_accounts.json`, `tests/fixtures/phase_ii_awardees_sample.json` |
 | 18.4 | Pilot send timing | Defer to Bubba; system does not auto-send | Manual send of `docs/copy/day_0_message.md` |

@@ -25,6 +25,6 @@ grep -RnE 'catch[^{]*\{\s*\}\s*$' src && fail "silent empty catch detected"
 UNSUB=$(grep -Rln "<PLACEHOLDER_" public 2>/dev/null || true)
 if [ -n "$UNSUB" ]; then echo "WARN: unsubstituted <PLACEHOLDER_*> tokens in public/: $UNSUB"; fi
 
-[ -f data/dsip-sniper.db ] || fail "db not migrated"
+[ -f data/dsip-sentinel.db ] || fail "db not migrated"
 
 echo "PASS: T+24h"

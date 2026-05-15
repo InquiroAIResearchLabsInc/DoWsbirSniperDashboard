@@ -1,7 +1,7 @@
-# DSIP SNIPER — MVP BUILD STRATEGY v0.2 (OPTIMIZED, ART-EXTENDED)
+# DSIP SENTINEL — MVP BUILD STRATEGY v0.2 (OPTIMIZED, ART-EXTENDED)
 
 **Target executor:** Claude Code
-**Working name:** DSIP Sniper · ART Edition
+**Working name:** DSIP Sentinel · ART Edition
 **Build window:** 48 hours from T0
 **Doctrine:** CLAUDEME v3.1. No receipt → not real. No test → not shipped. No gate → not alive.
 **Aesthetic standard:** DEMO_STEALTH_BOMBER v1.0
@@ -66,7 +66,7 @@ Cannot proceed to §1 until commit lands.
 | **What it is** | A receipts-native lens for the DoW SBIR/STTR pipeline. Topic surfacing at the front. **ART sponsor matching at the back.** One audit chain across both. |
 | **What it is not** | A DSIP replacement. A proposal writer. A Phase III negotiator. A POM-tracking tool. |
 | **Two audiences** | (a) Small businesses pursuing DoW SBIR/STTR — topic surfacing serves them. (b) The DoW Office for Small Business Innovation (Gina Sims's office) — ART sponsor matching serves them and the awardees they shepherd. |
-| **Differentiation from DSIP** | DSIP is where you apply. Sniper is where you decide whether to apply, and after Phase II, where you find your sponsor. |
+| **Differentiation from DSIP** | DSIP is where you apply. Sentinel is where you decide whether to apply, and after Phase II, where you find your sponsor. |
 | **Differentiation from personal Sniper** | Multi-tenant, web-deployed, ART-extended, with anonymized cross-tenant learning at the component level. |
 | **Public principle** | "Every recommendation comes with a receipt. Every score is explainable. Every weight change is auditable. Every sponsor match is sourced." |
 
@@ -250,7 +250,7 @@ k-anonymity gate (§4 L1): in `learning/component_aggregator.js`, before any pat
 ## §9 — DIRECTORY STRUCTURE (TIGHTER THAN v1)
 
 ```
-dsip-sniper/
+dsip-sentinel/
 ├── CLAUDEME.md
 ├── README.md
 ├── package.json
@@ -261,7 +261,7 @@ dsip-sniper/
 ├── receipts.jsonl
 ├── merkle_root.txt
 ├── data/
-│   └── dsip-sniper.db
+│   └── dsip-sentinel.db
 ├── seed/
 │   ├── components.json
 │   ├── default_keywords.json
@@ -394,10 +394,10 @@ Only new or materially changed files documented here. v1 files unchanged in purp
 - **`seed/sponsor_registry.json`** — Initial ~30 known DoW program offices (PEO IEW&S, AFLCMC Battle Network, USSF SSC, AFRL DT, etc.) with `name`, `component`, `parent_command`, `public_url`, `priority_tags[]`.
 - **`seed/demo_accounts.json`** — 6 pre-issued tokens: 1 admin (Bubba), 1 director (Gina Sims or proxy), 4 Phase II awardee profiles representing diverse components and tech stages.
 - **`seed/calibration_cases.json`** — 12 reference cases. Eight inherited from personal Sniper calibration suite. Four new ART cases:
-  1. Phase II awardee in autonomous ground systems → expected SNIPER match with Army PEO Ground Combat Systems.
-  2. Phase II awardee in space domain awareness → expected SNIPER match with USSF SSC.
+  1. Phase II awardee in autonomous ground systems → expected PRIME match with Army PEO Ground Combat Systems.
+  2. Phase II awardee in space domain awareness → expected PRIME match with USSF SSC.
   3. Phase II awardee in benign commercial software with no DoD pull → expected SKIP across all sponsors.
-  4. Phase II awardee in cross-component tech (e.g., AI/ML data fusion) → expected EVALUATE matches across multiple components, no single SNIPER.
+  4. Phase II awardee in cross-component tech (e.g., AI/ML data fusion) → expected EVALUATE matches across multiple components, no single PRIME.
 
 ---
 
@@ -532,7 +532,7 @@ npm run demo:local
 node scripts/verify_chain.js       # asserts parent_hash chain + Merkle root match
 
 # Deployed smoke
-TEST_URL=https://dsip-sniper.onrender.com npm run smoke
+TEST_URL=https://dsip-sentinel.onrender.com npm run smoke
 ```
 
 ---
@@ -582,7 +582,7 @@ In addition to v1's exclusions:
 
 ## §18 — OPEN QUESTIONS FOR BUBBA (RESOLVE BEFORE T+24h)
 
-1. **Public-facing name.** "DSIP Sniper · ART Edition" is the working name. Alternatives: "ART Lens," "Transition Compass," "Sponsor Sniper." Bubba decides.
+1. **Public-facing name.** "DSIP Sentinel · ART Edition" is the working name. Alternatives: "ART Lens," "Transition Compass," "Sponsor Sentinel." Bubba decides.
 2. **Director's actual name and office.** If not Gina Sims, who? The pilot playbook addresses Gina by name in the day-0 message — adjust before send.
 3. **Four demo profile selection.** Bubba chooses which 4 anonymized Phase II awardees to seed. Recommend 1 each from Army, Space Force, DARPA, AFWERX. Real public award data only.
 4. **Pilot send timing.** When does Bubba want to send the day-0 link? T+48h is the build target, not the send date. Confirm.

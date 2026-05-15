@@ -68,7 +68,7 @@ function start() {
       port: config.PORT,
       env: config.NODE_ENV,
     });
-    console.log(`DSIP Sniper · ART Edition listening on :${config.PORT}`);
+    console.log(`DSIP Sentinel · ART Edition listening on :${config.PORT}`);
   });
   return server;
 }

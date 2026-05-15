@@ -30,8 +30,8 @@ router.get('/', (req, res) => {
 
   emitReceipt('opportunities_listed', { tenant_id, returned: rows.length, filters });
 
-  const snipers = rows.filter(r => r.score_tier === 'SNIPER');
-  if (snipers.length === 0) {
+  const primes = rows.filter(r => r.score_tier === 'PRIME');
+  if (primes.length === 0) {
     const fallback = rows.filter(r => r.score_tier === 'EVALUATE').slice(0, 3);
     return res.json({ ...emptyStatePayload({ tenant_id, fallback_opps: fallback }), opportunities: rows });
   }

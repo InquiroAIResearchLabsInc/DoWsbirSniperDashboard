@@ -23,11 +23,11 @@
       document.getElementById('stat-art').textContent = stats.art_matches || 0;
     } catch {}
     try {
-      const opps = await api('/api/opportunities?tier=SNIPER');
-      const snipers = (opps.opportunities || []).filter(o => o.score_tier === 'SNIPER').length;
+      const opps = await api('/api/opportunities?tier=PRIME');
+      const primes = (opps.opportunities || []).filter(o => o.score_tier === 'PRIME').length;
       const evals = (opps.opportunities || []).filter(o => o.score_tier === 'EVALUATE').length;
       const closing = (opps.opportunities || []).filter(o => o.days_remaining != null && o.days_remaining <= 14).length;
-      document.getElementById('stat-snipers').textContent = snipers;
+      document.getElementById('stat-primes').textContent = primes;
       document.getElementById('stat-evaluates').textContent = evals;
       document.getElementById('stat-closing').textContent = closing;
     } catch {}

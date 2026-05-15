@@ -25,7 +25,7 @@ async function fetchPage(agency, offset = 0) {
       const res = await axios.get(config.SBIR_API_BASE, {
         params: { agency, open: 1, rows: config.SBIR_PAGE_SIZE, start: offset },
         timeout: 20000,
-        headers: { Accept: 'application/json', 'User-Agent': 'DSIPSniper/0.2 (DoW SBIR topic discovery)' },
+        headers: { Accept: 'application/json', 'User-Agent': 'DSIPSentinel/0.2 (DoW SBIR topic discovery)' },
         validateStatus: s => s < 500,
       });
       if (res.status === 429) {

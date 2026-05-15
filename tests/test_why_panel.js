@@ -13,7 +13,7 @@ const { buildTopicWhy, buildArtWhy } = require('../src/scoring/why_this');
 
 test('buildTopicWhy returns 7 items including handoff and disagree', () => {
   const w = { tech_alignment: 0.4, domain_alignment: 0.25, submission_type: 0.15, timeline: 0.1, funding_efficiency: 0.1 };
-  const out = buildTopicWhy({ fit_score: 80, score_tier: 'SNIPER', score_tech: 90, score_domain: 80, score_type: 80, score_timeline: 70, score_funding: 60, keywords_matched: ['ai governance'], disqualified_by: null }, w, { source_url: 'https://www.sbir.gov/topics/x' });
+  const out = buildTopicWhy({ fit_score: 80, score_tier: 'PRIME', score_tech: 90, score_domain: 80, score_type: 80, score_timeline: 70, score_funding: 60, keywords_matched: ['ai governance'], disqualified_by: null }, w, { source_url: 'https://www.sbir.gov/topics/x' });
   assert.equal(out.payload_type, 'topic');
   assert.equal(out.items.length, 7, JSON.stringify(out.items.map(i => i.label)));
   assert.ok(out.items.some(i => i.label.toLowerCase().includes('handoff')));
