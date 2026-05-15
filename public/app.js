@@ -4,10 +4,11 @@
   async function api(p, opts) { const r = await fetch(p, opts); if (!r.ok) throw new Error(`${p} ${r.status}`); return r.json(); }
 
   async function loadCopy() {
+    const el = document.getElementById('product-tagline');
     try {
-      const r = await api('/api/copy/product_tagline');
-      document.getElementById('product-tagline').textContent = r.value || '';
-    } catch { document.getElementById('product-tagline').textContent = ''; }
+      const { value } = await api('/api/copy/product_tagline');
+      el.textContent = (value || '').replace(/\s+/g, ' ').trim() || '<PLACEHOLDER_PRODUCT_TAGLINE>';
+    } catch { el.textContent = '<PLACEHOLDER_PRODUCT_TAGLINE>'; }
   }
 
   function isAuthed() { return !!state.role && state.role !== 'anonymous'; }
@@ -60,18 +61,23 @@
     }
     for (const o of opps) center.appendChild(window.renderOpportunityCard(o));
 
-    // left: pipeline
+    // left: pipeline (authed only)
     const left = document.getElementById('left-panel-body');
     left.innerHTML = '';
-    try {
-      const pl = await api('/api/pipeline');
-      document.getElementById('pipeline-count').textContent = (pl.pipeline || []).length;
-      left.appendChild(window.renderPipelinePanel(pl.pipeline || []));
-    } catch { document.getElementById('pipeline-count').textContent = 0; }
-    try {
-      const prof = await api('/api/profile');
-      if (prof.profile) left.appendChild(window.renderYourLens(prof.profile));
-    } catch {}
+    if (isAuthed()) {
+      try {
+        const pl = await api('/api/pipeline');
+        document.getElementById('pipeline-count').textContent = (pl.pipeline || []).length;
+        left.appendChild(window.renderPipelinePanel(pl.pipeline || []));
+      } catch { document.getElementById('pipeline-count').textContent = 0; }
+      try {
+        const prof = await api('/api/profile');
+        if (prof.profile) left.appendChild(window.renderYourLens(prof.profile));
+      } catch {}
+    } else {
+      document.getElementById('pipeline-count').textContent = 0;
+      left.appendChild(renderSignedOutBanner('pipeline and your-lens require a pilot token'));
+    }
 
     // right: diffs
     const right = document.getElementById('right-panel-body');
@@ -86,6 +92,16 @@
   async function renderArt() {
     if (window.setFilterMode) window.setFilterMode('art');
     const center = document.getElementById('center-panel-body');
+    const left = document.getElementById('left-panel-body');
+    left.innerHTML = '';
+
+    if (!isAuthed()) {
+      center.innerHTML = '';
+      center.appendChild(renderSignedOutBanner('ART matches require a pilot token. Mint one with scripts/issue_demo_token.js.'));
+      document.getElementById('opp-count').textContent = '—';
+      return;
+    }
+
     center.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px">Loading ART matches…</div>';
     const techs = await api('/api/art-matches/techs').catch(() => ({ techs: [] }));
     const phaseIITechs = techs.techs || [];
@@ -133,8 +149,6 @@
     }
 
     // SBA flag in left panel
-    const left = document.getElementById('left-panel-body');
-    left.innerHTML = '';
     try {
       const cri = await api('/api/sba-eligibility/criteria');
       try { await api('/api/sba-eligibility/compute', { method: 'POST' }); } catch {}
@@ -179,6 +193,10 @@
     if (window.setFilterMode) window.setFilterMode('admin');
     const center = document.getElementById('center-panel-body');
     center.innerHTML = '';
+    if (!isAdmin()) {
+      center.appendChild(renderSignedOutBanner('Admin tab requires an admin token.'));
+      return;
+    }
     const r = await api('/api/admin/recent-receipts?limit=20').catch(() => ({ receipts: [] }));
     const m = await api('/api/admin/stats').catch(() => ({}));
     const wrap = document.createElement('div');
@@ -193,6 +211,14 @@
         <pre style="font-size:11px;color:var(--text-dim);background:var(--surface-3);padding:6px;border-radius:3px;margin-top:6px;overflow-x:auto">${escape(JSON.stringify(rec.body || {}, null, 2))}</pre>`;
       center.appendChild(div);
     }
+  }
+
+  function renderSignedOutBanner(msg) {
+    const d = document.createElement('div');
+    d.className = 'card';
+    d.style.borderLeft = '2px solid var(--muted)';
+    d.innerHTML = `<div style="font-size:13px;color:var(--text-dim)">${escape(msg)}</div>`;
+    return d;
   }
 
   function setTab(name) {
