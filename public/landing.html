@@ -154,6 +154,22 @@
     color: var(--amber);
     font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
+  @media (max-width: 720px) {
+    body { overflow-y: auto; }
+    header { padding: 16px 20px; }
+    main {
+      padding: 44px 22px;
+      justify-content: flex-start;
+    }
+    .tagline { font-size: 24px; margin-bottom: 20px; }
+    .positioning { font-size: 15px; margin-bottom: 32px; }
+    .ctas { flex-direction: column; gap: 12px; }
+    .cta {
+      width: 100%;
+      justify-content: center;
+      padding: 16px 24px;
+    }
+  }
 </style>
 </head>
 <body>
