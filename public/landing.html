@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>DSIP SENTINEL · ART EDITION</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -29,6 +30,7 @@
     font-size: 15px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -156,9 +158,16 @@
   }
   @media (max-width: 720px) {
     body { overflow-y: auto; }
-    header { padding: 16px 20px; }
+    header {
+      padding: 16px 20px;
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+    }
     main {
       padding: 44px 22px;
+      padding-left: max(22px, env(safe-area-inset-left));
+      padding-right: max(22px, env(safe-area-inset-right));
+      padding-bottom: max(44px, env(safe-area-inset-bottom));
       justify-content: flex-start;
     }
     .tagline { font-size: 24px; margin-bottom: 20px; }
