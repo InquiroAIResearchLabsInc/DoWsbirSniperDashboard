@@ -21,7 +21,7 @@
       const { value } = await api('/api/copy/scan_button');
       state.scanLabel = (value || '').replace(/\s+/g, ' ').trim() || 'Scan';
     } catch { state.scanLabel = 'Scan'; }
-    if (btn && !btn.classList.contains('scanning')) btn.textContent = state.scanLabel;
+    if (btn) btn.textContent = state.scanLabel;
   }
 
   function isAuthed() { return !!state.role && state.role !== 'anonymous'; }
@@ -279,76 +279,6 @@
     setTab(state.tab);
   }
 
-  // On-demand scan — the header scan button. Mirrors inquiro-sniper's "Scrape
-  // Now": POST /api/scrape/trigger spawns a child process and returns at once;
-  // the UI polls /api/scrape/status every 2s and refreshes when it finishes.
-  function showScanBanner(msg, kind) {
-    const b = document.getElementById('scan-banner');
-    if (!b) return;
-    b.textContent = msg;
-    b.className = 'scan-banner' + (kind ? ' ' + kind : '');
-    b.hidden = false;
-    clearTimeout(b._t);
-    b._t = setTimeout(() => { b.hidden = true; }, 5000);
-  }
-
-  function pollScanStatus() {
-    return new Promise((resolve) => {
-      let tries = 0;
-      const iv = setInterval(async () => {
-        tries++;
-        let s;
-        try {
-          s = await api('/api/scrape/status');
-        } catch (e) { clearInterval(iv); resolve({ error: e.message }); return; }
-        if (!s.running) { clearInterval(iv); resolve(s); return; }
-        if (tries > 240) { clearInterval(iv); resolve({ stillRunning: true }); } // ~8 min cap
-      }, 2000);
-    });
-  }
-
-  async function runScan(btn) {
-    if (btn.dataset.busy === '1') return;
-    btn.dataset.busy = '1';
-    const label = state.scanLabel || 'Scan';
-    btn.disabled = true;
-    btn.classList.add('scanning');
-    btn.textContent = 'SCANNING…';
-
-    let outcome;
-    try {
-      // 202 = started, 409 = already running — either way, poll to completion.
-      await fetch('/api/scrape/trigger', { method: 'POST' });
-      outcome = await pollScanStatus();
-    } catch (e) {
-      outcome = { error: e.message };
-    }
-
-    btn.classList.remove('scanning');
-    btn.disabled = false;
-    btn.dataset.busy = '';
-
-    if (outcome && outcome.stillRunning) {
-      btn.textContent = label;
-      showScanBanner('Scan still running on the server — it will finish on its own; reload in a minute.', 'warn');
-      return;
-    }
-    const res = outcome && outcome.last_result;
-    if ((outcome && outcome.error) || (res && res.errors > 0)) {
-      btn.textContent = 'SCAN FAILED';
-      btn.classList.add('scan-failed');
-      const why = (res && res.message) || (outcome && outcome.error) || 'the SBIR feed was unreachable.';
-      showScanBanner('Scan failed — ' + why, 'error');
-      setTimeout(() => { btn.textContent = label; btn.classList.remove('scan-failed'); }, 5000);
-      return;
-    }
-    btn.textContent = label;
-    const ins = res ? (res.inserted || 0) : 0;
-    const upd = res ? (res.updated || 0) : 0;
-    showScanBanner('Scan complete · ' + ins + ' new · ' + upd + ' updated', 'ok');
-    refreshAll();
-  }
-
   function escape(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 
   window.app = { refreshAll, setTab };
@@ -361,7 +291,7 @@
     for (const t of document.querySelectorAll('.tab')) t.addEventListener('click', () => setTab(t.dataset.tab));
     const refreshBtn = document.getElementById('refresh-btn');
     if (refreshBtn) {
-      refreshBtn.addEventListener('click', () => runScan(refreshBtn));
+      refreshBtn.addEventListener('click', () => { if (window.openScanNotice) window.openScanNotice(); });
       if (isAuthed()) refreshBtn.hidden = false;
     }
     const digestBtn = document.getElementById('digest-btn');
