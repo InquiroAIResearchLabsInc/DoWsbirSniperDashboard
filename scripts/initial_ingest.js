@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // initial_ingest: populate opportunities + scores so the dashboard has data on
-// first boot. Tries the live SBIR API first, falls back to the bundled fixture
-// if the API is unreachable or returns zero rows. Then scores every
-// opportunity for every known tenant (including 'sandbox' and 'default').
+// first boot. Data source priority:
+//   1. live SBIR API (if the build host can reach it)
+//   2. seed/sbir_snapshot.json — a real snapshot captured by scripts/sbir_snapshot.js
+//      from a machine that CAN reach the API (commit it; survives IP-blocked hosts)
+//   3. tests/fixtures/sbir_sample.json — placeholder fallback of last resort
+// Then scores every opportunity for every known tenant.
 
 const fs = require('fs');
 const path = require('path');
@@ -14,6 +17,7 @@ const { scoreTopic, persist } = require('../src/scoring/engine_topic');
 const { emitReceipt } = require('../src/core/receipt');
 
 const FIXTURE_PATH = path.join(config.ROOT, 'tests', 'fixtures', 'sbir_sample.json');
+const SNAPSHOT_PATH = path.join(config.ROOT, 'seed', 'sbir_snapshot.json');
 
 function fixtureOpps() {
   const raw = JSON.parse(fs.readFileSync(FIXTURE_PATH, 'utf8'));
@@ -25,6 +29,18 @@ function fixtureOpps() {
     else out.push(normalizeSolicitation(sol, sol.agency || 'DOD'));
   }
   return out;
+}
+
+// A real, committed snapshot of live SBIR data — already normalized opportunities.
+function snapshotOpps() {
+  if (!fs.existsSync(SNAPSHOT_PATH)) return [];
+  try {
+    const raw = JSON.parse(fs.readFileSync(SNAPSHOT_PATH, 'utf8'));
+    return Array.isArray(raw.opportunities) ? raw.opportunities : [];
+  } catch (e) {
+    emitReceipt('ingest_error', { tenant_id: 'admin', source: 'sbir_snapshot', error: e.message });
+    return [];
+  }
 }
 
 async function liveOpps() {
@@ -72,17 +88,22 @@ function scoreForAllTenants(db) {
   if (!skipLive) opps = await liveOpps();
   let source_used = 'sbir_gov_live';
   if (!opps.length) {
+    const snap = snapshotOpps();
+    if (snap.length) { opps = snap; source_used = 'sbir_snapshot'; }
+  }
+  if (!opps.length) {
     opps = fixtureOpps();
     source_used = 'fixture';
   }
   const counts = computeDiffs('sbir_gov', opps);
   const db = getDb();
 
-  // Once real SBIR data is in hand, drop the fabricated fixture topics so the
-  // dashboard shows only live opportunities with working source links. Only
-  // the bundled fixture ids are removed, and only when they are not also live.
+  // Once real SBIR data is in hand (live API or a committed snapshot), drop the
+  // placeholder fixture topics so the dashboard shows only real opportunities
+  // with working source links. Only the bundled fixture ids are removed.
+  const REAL = source_used === 'sbir_gov_live' || source_used === 'sbir_snapshot';
   let fixture_purged = 0;
-  if (source_used === 'sbir_gov_live' && opps.length) {
+  if (REAL && opps.length) {
     const liveIds = new Set(opps.map(o => o.id));
     for (const f of fixtureOpps()) {
       if (liveIds.has(f.id)) continue;
