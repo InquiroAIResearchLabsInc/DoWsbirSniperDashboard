@@ -307,6 +307,11 @@
       refreshBtn.addEventListener('click', () => runRefresh(refreshBtn));
       if (isAuthed()) refreshBtn.hidden = false;
     }
+    const digestBtn = document.getElementById('digest-btn');
+    if (digestBtn) {
+      digestBtn.addEventListener('click', () => { if (window.openDigestModal) window.openDigestModal(); });
+      if (isAuthed()) digestBtn.hidden = false;
+    }
     setTab('topics');
     refreshHeaderStats();
     setInterval(refreshHeaderStats, 30000);

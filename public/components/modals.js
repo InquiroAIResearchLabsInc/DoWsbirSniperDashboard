@@ -150,15 +150,35 @@
       <div id="learn-body"><div class="learn-loading">Loading…</div></div>
       <div class="actions"><button class="btn" data-act="cancel">Close</button></div>`);
     overlay.querySelector('[data-act="cancel"]').addEventListener('click', () => overlay.remove());
+    await loadLearnings(overlay.querySelector('#learn-body'));
+  };
 
+  async function loadLearnings(body) {
+    body.innerHTML = '<div class="learn-loading">Loading…</div>';
     const [cal, roi, les] = await Promise.all([
       fetch('/api/outcomes/calibration').then(r => r.json()).catch(() => ({})),
       fetch('/api/outcomes/roi').then(r => r.json()).catch(() => ({})),
       fetch('/api/outcomes/lessons?limit=40').then(r => r.json()).catch(() => ({})),
     ]);
-    const body = overlay.querySelector('#learn-body');
     body.innerHTML = renderCalibration(cal.calibration) + renderRoi(roi.roi) + renderLessons(les.lessons || []);
-  };
+    const applyBtn = body.querySelector('[data-act="apply-calibration"]');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', async () => {
+        applyBtn.disabled = true;
+        applyBtn.textContent = 'Applying…';
+        try {
+          const r = await postJson('/api/outcomes/calibration/apply', {});
+          if (!r.ok) throw new Error(`apply ${r.status}`);
+          await loadLearnings(body);
+          refresh();
+        } catch (e) {
+          applyBtn.disabled = false;
+          applyBtn.textContent = 'Apply calibration';
+          alert('Could not apply calibration.');
+        }
+      });
+    }
+  }
 
   function renderCalibration(c) {
     if (!c) {
@@ -183,7 +203,9 @@
         <thead><tr><th>Dimension</th><th>Win avg</th><th>Loss avg</th><th>Δ</th><th></th></tr></thead>
         <tbody>${dims}</tbody>
       </table>
-      ${recs ? `<ul class="learn-recs">${recs}</ul>` : ''}`;
+      ${recs ? `<ul class="learn-recs">${recs}</ul>` : ''}
+      <button class="btn primary" data-act="apply-calibration">Apply calibration</button>
+      <div class="learn-empty" style="margin-top:6px">Re-weights the score dimensions from this win/loss analysis and rescores the board.</div>`;
   }
 
   function renderRoi(r) {
@@ -217,5 +239,73 @@
         <div class="lesson-body">${esc(l.lesson)}</div>
       </div>`).join('');
     return `<h3>Lessons <span class="learn-count">${lessons.length}</span></h3>${items}`;
+  }
+
+  // ── DIGEST ──────────────────────────────────────────────────────────────
+  window.openDigestModal = async function () {
+    const overlay = showModal(`
+      <h2>Daily Digest</h2>
+      <div class="modal-intro">What changed across the 12-component DoW SBIR feed — new topics, deadlines closing, and your pipeline.</div>
+      <div id="digest-body"><div class="learn-loading">Loading…</div></div>
+      <div class="actions">
+        <button class="btn" data-act="regen">Regenerate</button>
+        <button class="btn primary" data-act="cancel">Close</button>
+      </div>`);
+    overlay.querySelector('[data-act="cancel"]').addEventListener('click', () => overlay.remove());
+    const body = overlay.querySelector('#digest-body');
+    async function load(regen) {
+      body.innerHTML = '<div class="learn-loading">Loading…</div>';
+      const j = await fetch(regen ? '/api/digest/generate' : '/api/digest', regen ? { method: 'POST' } : undefined)
+        .then(r => r.json()).catch(() => ({}));
+      body.innerHTML = renderDigest(j.digest);
+    }
+    overlay.querySelector('[data-act="regen"]').addEventListener('click', () => load(true));
+    await load(false);
+  };
+
+  function digestList(title, opps) {
+    if (!opps || !opps.length) return '';
+    const rows = opps.map(o => {
+      const dd = o.days_remaining;
+      const ddTxt = dd == null ? '' : (dd < 0 ? 'closed' : `${dd}d`);
+      const ddCls = dd == null ? '' : (dd < 7 ? 'critical' : dd < 14 ? 'warning' : 'ok');
+      const link = /^https?:\/\//i.test(o.source_url || '') ? o.source_url : null;
+      const titleHtml = link
+        ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(o.title)}</a>`
+        : esc(o.title);
+      return `<div class="digest-row">
+        <div class="digest-row-title">${titleHtml}</div>
+        <div class="opp-meta">
+          ${o.component ? `<span class="badge">${esc(o.component)}</span>` : ''}
+          ${o.tier ? `<span class="badge">${esc(o.tier)}</span>` : ''}
+          ${o.score != null ? `<span class="badge">score ${Math.round(o.score)}</span>` : ''}
+          ${ddTxt ? `<span class="deadline ${ddCls}">${esc(ddTxt)}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    return `<h3>${esc(title)} <span class="learn-count">${opps.length}</span></h3>${rows}`;
+  }
+
+  function renderDigest(d) {
+    if (!d) return '<div class="learn-empty">No digest available.</div>';
+    const criticalIds = new Set((d.critical_deadlines || []).map(o => o.id));
+    const soon = (d.closing_soon || []).filter(o => !criticalIds.has(o.id));
+    const pipeline = (d.pipeline || []).map(p =>
+      `<div class="digest-row"><div class="digest-row-title">${esc(p.title)}</div>
+        <div class="opp-meta"><span class="badge">${esc(p.status)}</span>${p.deadline ? `<span class="badge">${esc(p.deadline)}</span>` : ''}</div></div>`).join('');
+    return `
+      <div class="learn-stats">
+        <div class="learn-stat"><span class="v">${d.new_count}</span><span class="k">new (24h)</span></div>
+        <div class="learn-stat"><span class="v">${d.prime_count}</span><span class="k">PRIME</span></div>
+        <div class="learn-stat"><span class="v">${d.closing_count}</span><span class="k">closing soon</span></div>
+        <div class="learn-stat"><span class="v">${d.total}</span><span class="k">total topics</span></div>
+      </div>
+      ${digestList('New in the last 24h', d.new_opps)}
+      ${digestList('Critical deadlines', d.critical_deadlines)}
+      ${digestList('Closing soon', soon)}
+      ${digestList('Your PRIME picks', d.top_prime)}
+      ${pipeline ? `<h3>Active pipeline <span class="learn-count">${d.pipeline.length}</span></h3>${pipeline}` : ''}
+      ${d.new_count === 0 && d.total === 0 ? '<div class="learn-empty">No topics yet — hit Refresh to pull the live SBIR feed.</div>' : ''}
+      <div class="learn-empty" style="margin-top:8px">Generated ${esc(String(d.generated_at || '').slice(0, 16).replace('T', ' '))} UTC</div>`;
   }
 })();

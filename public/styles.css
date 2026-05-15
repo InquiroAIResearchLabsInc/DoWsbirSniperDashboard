@@ -73,6 +73,8 @@ header .tagline {
 }
 .refresh-btn:hover { background: var(--amber-dim); }
 .refresh-btn:disabled { opacity: 0.6; cursor: default; }
+.refresh-btn.ghost { background: transparent; color: var(--bone); border-color: var(--border-strong); }
+.refresh-btn.ghost:hover { background: var(--surface-3); border-color: var(--amber-dim); }
 .stat { display: flex; flex-direction: column; align-items: center; }
 .stat-val { font-size: 22px; font-weight: 800; color: var(--bone); }
 .stat-val.amber { color: var(--amber); }
@@ -191,6 +193,9 @@ header .tagline {
 .btn.primary { background: var(--amber); color: #0a0a0a; border-color: var(--amber); }
 .btn.primary:hover { background: var(--amber-dim); }
 .btn.danger { color: var(--red); border-color: var(--border); }
+.btn.dismiss { color: var(--muted); }
+.btn.dismiss:hover { color: var(--red); border-color: var(--red); }
+.btn:disabled { opacity: 0.5; cursor: default; }
 
 .deadline { font-size: 12px; font-weight: 700; }
 .deadline.critical { color: var(--red); }
@@ -437,6 +442,16 @@ header .tagline {
 .lesson-withdrawn, .lesson-no_response { border-left-color: var(--gray); }
 .lesson-head { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
 .lesson-body { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+/* Digest modal rows */
+.digest-row {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
+}
+.digest-row:last-child { border-bottom: none; }
+.digest-row-title { font-size: 13px; font-weight: 600; line-height: 1.35; }
+.digest-row-title a { color: var(--bone); text-decoration: none; }
+.digest-row-title a:hover { color: var(--amber); text-decoration: underline; }
 
 /* Patterns panel (read-only L1) */
 .patterns-list { display: flex; flex-direction: column; gap: 6px; padding: 12px; }

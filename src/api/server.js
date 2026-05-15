@@ -57,6 +57,7 @@ const routes = [
   ['/api/opportunities', require('./routes/opportunities')],
   ['/api/pipeline', require('./routes/pipeline')],
   ['/api/outcomes', require('./routes/outcomes')],
+  ['/api/digest', require('./routes/digest')],
   ['/api/why', require('./routes/why')],
   ['/api/art-matches', require('./routes/art_matches')],
   ['/api/sponsor-pipeline', require('./routes/sponsor_pipeline')],

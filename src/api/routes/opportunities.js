@@ -1,11 +1,14 @@
 const express = require('express');
-const { getDb, safeJson } = require('../../db');
+const { getDb, safeJson, uid, now } = require('../../db');
 const { scoreTopic, persist } = require('../../scoring/engine_topic');
+const { emitReceipt } = require('../../core/receipt');
+const { requireAuth } = require('../../auth/middleware');
 const { emptyStatePayload } = require('../empty_state');
 
 const router = express.Router();
 
 const TIER_VALUES = new Set(['PRIME', 'EVALUATE', 'STRETCH', 'SKIP']);
+const DISMISS_TTL_DAYS = 30;
 
 function clampInt(v, def, min, max) {
   const n = parseInt(v, 10);
@@ -23,6 +26,14 @@ router.get('/', (req, res) => {
              LEFT JOIN scores s ON s.opportunity_id = o.id AND s.tenant_id = ?
              WHERE 1=1`;
   const args = [tenant_id];
+
+  // Hide opportunities this tenant has dismissed, until the dismissal expires
+  // (then they resurrect on their own — no cron needed).
+  if (filters.include_dismissed !== '1') {
+    sql += ` AND o.id NOT IN (SELECT opportunity_id FROM dismissals WHERE tenant_id = ? AND (expires_at IS NULL OR expires_at > ?))`;
+    args.push(tenant_id, now());
+  }
+
   if (filters.component) { sql += ' AND o.component = ?'; args.push(filters.component); }
   if (filters.source) { sql += ' AND o.source = ?'; args.push(filters.source); }
   if (filters.tier) {
@@ -72,6 +83,26 @@ router.post('/:id/score', (req, res) => {
   if (!opp) return res.status(404).json({ error: 'not_found' });
   const result = persist(scoreTopic(opp, req.tenant_id));
   res.json({ score: result });
+});
+
+// Dismiss — hide an opportunity for this tenant. Dismissals auto-expire after
+// DISMISS_TTL_DAYS so a still-relevant topic resurrects on its own.
+router.post('/:id/dismiss', requireAuth, (req, res) => {
+  const db = getDb();
+  const opp = db.prepare('SELECT id FROM opportunities WHERE id = ?').get(req.params.id);
+  if (!opp) return res.status(404).json({ error: 'not_found' });
+  const expires_at = new Date(Date.now() + DISMISS_TTL_DAYS * 86400000).toISOString();
+  db.prepare('DELETE FROM dismissals WHERE tenant_id = ? AND opportunity_id = ?').run(req.tenant_id, req.params.id);
+  db.prepare('INSERT INTO dismissals (id, tenant_id, opportunity_id, dismissed_at, expires_at, reason) VALUES (?,?,?,?,?,?)')
+    .run(uid(), req.tenant_id, req.params.id, now(), expires_at, (req.body && req.body.reason) || null);
+  emitReceipt('opportunity_dismissed', { tenant_id: req.tenant_id, opportunity_id: req.params.id, expires_at });
+  res.json({ ok: true, expires_at });
+});
+
+router.post('/:id/undismiss', requireAuth, (req, res) => {
+  getDb().prepare('DELETE FROM dismissals WHERE tenant_id = ? AND opportunity_id = ?').run(req.tenant_id, req.params.id);
+  emitReceipt('opportunity_undismissed', { tenant_id: req.tenant_id, opportunity_id: req.params.id });
+  res.json({ ok: true });
 });
 
 module.exports = router;
