@@ -310,21 +310,34 @@
   }
 
   // ── OPEN IN DSIP — demo notice ──────────────────────────────────────────
-  // This preview runs on a fixed sample of topics, so a card cannot deep-link
-  // to a real solicitation. Rather than a dead link, explain in plain terms
-  // what the button does in the live product, and offer the real portal.
-  window.openDsipNotice = function (opp) {
+  // The preview uses fixed sample topics, so a card cannot deep-link to a real
+  // solicitation. Explain it in one breath and offer the real portal.
+  window.openDsipNotice = function () {
     const DSIP = 'https://www.dodsbirsttr.mil/topics-app/';
-    const title = (opp && opp.title) ? esc(opp.title) : 'this topic';
     const overlay = showModal(`
       <h2>Open in DSIP</h2>
-      <div class="modal-intro">In the live product, <strong>Open in DSIP</strong> takes you straight to
-        “${title}” on the DoD SBIR/STTR Innovation Portal (DSIP) — the official Department of War site
-        where you read the full solicitation, confirm your eligibility, and submit a proposal.</div>
-      <div class="modal-intro">This preview runs on a fixed set of sample topics, so the direct topic
-        link is switched off here. You can still open the live portal and search it yourself.</div>
+      <div class="modal-intro">In the live product, this opens the topic on the DoD SBIR/STTR
+        Innovation Portal — where you read the full solicitation and apply.</div>
+      <div class="modal-intro">This preview uses sample topics, so the direct link is off.
+        You can still open the portal.</div>
       <div class="actions">
         <a class="btn" href="${DSIP}" target="_blank" rel="noopener noreferrer">Open the DSIP portal →</a>
+        <button class="btn primary" data-act="close">Got it</button>
+      </div>`);
+    overlay.querySelector('[data-act="close"]').addEventListener('click', () => overlay.remove());
+  };
+
+  // ── SCAN — demo notice ──────────────────────────────────────────────────
+  // The preview runs on a fixed sample, so a scan has nothing new to pull.
+  // Explain what the button does in the live product instead of running it.
+  window.openScanNotice = function () {
+    const overlay = showModal(`
+      <h2>Scan</h2>
+      <div class="modal-intro">In the live product, Scan pulls the newest DoW SBIR topics
+        into your feed.</div>
+      <div class="modal-intro">This preview runs on a fixed sample, so there's nothing
+        new to fetch.</div>
+      <div class="actions">
         <button class="btn primary" data-act="close">Got it</button>
       </div>`);
     overlay.querySelector('[data-act="close"]').addEventListener('click', () => overlay.remove());
