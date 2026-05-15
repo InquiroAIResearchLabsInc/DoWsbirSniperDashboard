@@ -1,7 +1,7 @@
 # Phase 0 — Context Loaded
 
 **Branch:** `claude/dsip-sniper-mvp-build-qatZz`
-**Target:** DSIP Sniper · ART Edition (v0.2)
+**Target:** DSIP Sentinel · ART Edition (v0.2)
 **Doctrine:** CLAUDEME v5.0 — Three Laws active.
 **Gate:** Cannot proceed to §1 until this commit lands (per spec §0b).
 
@@ -21,7 +21,7 @@ This document is the §0b receipt: every required read enumerated by file:line, 
 | Outcome / calibration loop to extend | `docs/inquiro-sniper/src/feedback.js` | lines 8–58 (`recordOutcome` — freezes score breakdown, computes `score_accuracy`, auto-runs calibration on threshold); 62–85 (`generateLesson` per terminal status); 88–145 (`runCalibrationReport` — win/loss avg per dimension, predictive flag on Δ > 10, keyword frequency); 147–159 (`generateRecommendations` weight + keyword suggestions, advisory only); 162–197 (`computeROI` per-source ranking, dollars/hour) |
 | Diff engine to reuse | `docs/inquiro-sniper/src/diff.js` | lines 4 (TRACKED_FIELDS — 12 fields); 7–11 (load prev map by source); 15–18 (new-opp branch + emit `new` diff); 19–30 (changed-field loop, only when new value non-empty); 31–35 (closing_soon ≤14d and warning ≤7d via config); 37–42 (closed-set diff for ids missing from fresh) |
 | 3-panel layout reference | `docs/inquiro-sniper/dashboard/index.html` | lines 8–17 (CSS variables — colors that v2 must REPLACE for stealth-bomber palette); 48 (`.main { grid-template-columns: 320px 1fr 340px }`); 64–94 (`.opp-card` + tier badge + score num — primitives to reskin); 96–110 (pipeline card); 112–127 (diff entry); 130–149 (modal pattern + score grid); 188–242 (the three panels — Pipeline left, Opportunities center w/ filter bar, Diff Feed right); 246–296 (pipeline-add and outcome-capture modal HTML — to be retained shape, palette swapped) |
-| v2 build doc end-to-end | `docs/Dsip sniper mvp build strategy v2.md` | read in conversation context |
+| v2 build doc end-to-end | `docs/Dsip sentinel mvp build strategy v2.md` | read in conversation context |
 
 ---
 

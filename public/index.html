@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSIP SNIPER · ART EDITION</title>
+<title>DSIP SENTINEL · ART EDITION</title>
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <header>
-  <h1>DSIP SNIPER</h1>
+  <h1>DSIP SENTINEL</h1>
   <div class="tagline" id="product-tagline">loading…</div>
   <div class="stats-bar">
-    <div class="stat"><div class="stat-val amber" id="stat-snipers">—</div><div class="stat-lbl">Snipers</div></div>
+    <div class="stat"><div class="stat-val amber" id="stat-primes">—</div><div class="stat-lbl">Primes</div></div>
     <div class="stat"><div class="stat-val" id="stat-evaluates">—</div><div class="stat-lbl">Evaluate</div></div>
     <div class="stat"><div class="stat-val red" id="stat-closing">—</div><div class="stat-lbl">Closing</div></div>
     <div class="stat"><div class="stat-val amber" id="stat-art">—</div><div class="stat-lbl">ART Strong</div></div>
@@ -33,25 +33,43 @@
   </div>
   <div class="panel">
     <div class="filter-bar" id="filter-bar">
+      <input type="search" id="filter-q" autocomplete="off" spellcheck="false" placeholder="search…">
       <select id="filter-component">
         <option value="">All components</option>
         <option value="army">Army</option>
+        <option value="navy">Navy</option>
         <option value="air_force">Air Force</option>
         <option value="space_force">Space Force</option>
         <option value="cbd">CBD</option>
         <option value="darpa">DARPA</option>
+        <option value="dla">DLA</option>
         <option value="dmea">DMEA</option>
         <option value="dtra">DTRA</option>
+        <option value="mda">MDA</option>
+        <option value="nga">NGA</option>
+        <option value="osd">OSD</option>
         <option value="socom">SOCOM</option>
       </select>
       <select id="filter-tier">
         <option value="">All tiers</option>
-        <option value="SNIPER">SNIPER only</option>
+        <option value="PRIME">PRIME</option>
         <option value="EVALUATE">EVALUATE</option>
+        <option value="STRETCH">STRETCH</option>
+        <option value="SKIP">SKIP</option>
+      </select>
+      <select id="filter-band" hidden>
+        <option value="">All bands</option>
+        <option value="STRONG">STRONG</option>
+        <option value="PROMISING">PROMISING</option>
+        <option value="WEAK">WEAK</option>
       </select>
       <label>Min score <input type="range" id="filter-score" min="0" max="100" value="0"> <span id="filter-score-val">0</span></label>
     </div>
-    <div class="panel-header" id="center-panel-header">Opportunities <span class="count" id="opp-count">—</span></div>
+    <div class="panel-header" id="center-panel-header">
+      <span id="opp-label">Opportunities</span>
+      <span class="count" id="opp-count">—</span>
+      <a id="filter-clear" href="#" hidden>Clear</a>
+    </div>
     <div class="panel-body scrollbar-thin" id="center-panel-body"></div>
   </div>
   <div class="panel">
@@ -60,13 +78,6 @@
   </div>
 </div>
 
-<footer>
-  <span><span class="label">tenant:</span> <span class="val" id="footer-tenant">…</span></span>
-  <span><span class="label">role:</span> <span class="val" id="footer-role">…</span></span>
-  <span><span class="label">merkle:</span> <span class="val" id="footer-merkle">…</span></span>
-  <span><span class="label">chain:</span> <span class="val" id="footer-chain">…</span></span>
-  <span style="margin-left:auto"><span class="label">DEMO_STEALTH_BOMBER v1.0</span></span>
-</footer>
 
 <div class="modal-overlay" id="why-modal" onclick="if(event.target===this) this.classList.remove('open')">
   <div class="modal scrollbar-thin" id="why-modal-content"></div>

@@ -19,7 +19,7 @@ const root = path.resolve(__dirname, '..', '..');
 module.exports = {
   PORT: int(process.env.PORT, 3000),
   NODE_ENV: process.env.NODE_ENV || 'development',
-  DB_PATH: process.env.DB_PATH || path.join(root, 'data', 'dsip-sniper.db'),
+  DB_PATH: process.env.DB_PATH || path.join(root, 'data', 'dsip-sentinel.db'),
   RECEIPTS_PATH: process.env.RECEIPTS_PATH || path.join(root, 'receipts.jsonl'),
   MERKLE_ROOT_PATH: process.env.MERKLE_ROOT_PATH || path.join(root, 'merkle_root.txt'),
   MERKLE_BATCH_SIZE: int(process.env.MERKLE_BATCH_SIZE, 100),

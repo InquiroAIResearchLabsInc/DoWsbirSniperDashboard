@@ -1,4 +1,4 @@
-# DSIP Sniper · ART Edition
+# DSIP Sentinel · ART Edition
 
 <!-- POSITIONING — Bubba writes the lead paragraph in docs/copy/readme_positioning.md. -->
 <PLACEHOLDER_POSITIONING_PARAGRAPH>
@@ -17,7 +17,7 @@ A DSIP replacement. A proposal writer. A Phase III negotiator. A POM-tracking to
 
 ```bash
 git clone <this-repo>
-cd dsip-sniper
+cd dsip-sentinel
 npm install
 cp .env.example .env   # edit DEMO_TOKEN_SECRET and MAGIC_LINK_SECRET
 npm run db:migrate
@@ -54,7 +54,7 @@ npm run demo:local             # boots from data/demo_snapshot.db if present
 
 - `CLAUDEME.md` — the standard. Three Laws + receipt schema + anti-patterns.
 - `docs/PHASE_0_CONTEXT_LOADED.md` — the §0b commit acknowledging v1→v2 deltas.
-- `docs/Dsip sniper mvp build strategy v2.md` — full v0.2 strategy.
+- `docs/Dsip sentinel mvp build strategy v2.md` — full v0.2 strategy.
 - `docs/ARCHITECTURE.md` — system map.
 - `docs/DEMO_SCRIPT.md` — 5-minute single-wow-moment demo.
 - `docs/PILOT_PLAYBOOK.md` — 7-day, three-touch pilot.
