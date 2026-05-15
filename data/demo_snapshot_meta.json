@@ -1,0 +1,35 @@
+{
+  "snapshot_date": "2026-05-15T01:39:57.567Z",
+  "db_path": "/home/user/DoWsbirSniperDashboard/data/demo_snapshot.db",
+  "profiles": [
+    {
+      "tenant_id": "pilot_afwerx_battle",
+      "display_name": "PILOT — Air Force AFWERX battle network",
+      "role": "pilot"
+    },
+    {
+      "tenant_id": "pilot_army_autonomy",
+      "display_name": "PILOT — Army autonomous ground systems",
+      "role": "pilot"
+    },
+    {
+      "tenant_id": "pilot_darpa_ai",
+      "display_name": "PILOT — DARPA AI assurance",
+      "role": "pilot"
+    },
+    {
+      "tenant_id": "pilot_space_sda",
+      "display_name": "PILOT — Space Force space domain awareness",
+      "role": "pilot"
+    },
+    {
+      "tenant_id": "sandbox",
+      "display_name": "SANDBOX — public demo (resets hourly)",
+      "role": "pilot"
+    }
+  ],
+  "opportunities": 0,
+  "sponsors": 30,
+  "art_matches_generated": 80,
+  "snapshot_version": "0.3.0-phase3"
+}

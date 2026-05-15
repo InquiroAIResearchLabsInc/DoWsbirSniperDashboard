@@ -65,3 +65,60 @@ Three asks (Bubba phrases them, defaults below for reference only):
 - Not a POM-tracking tool.
 
 It is a focused test of whether the matching logic earns the right to a procurement conversation.
+
+## §6 — Token flow (Phase 3)
+
+The exact sequence for sending Gina's link. All four commands live in `scripts/`. No admin UI is required in v0.2.
+
+```bash
+# Step 1 — generate the token
+node scripts/issue_demo_token.js \
+  --tenant gina_sims_review \
+  --ttl 30d \
+  --role director \
+  --base https://dsip-sniper.onrender.com
+
+# Output includes:
+#   token, expires_at (epoch + ISO), tenant_id, role
+#   url:  https://dsip-sniper.onrender.com/?token=<...>
+# Receipt: demo_token_issued
+# Copy the URL into your message.
+```
+
+```bash
+# Step 2 — verify the link before sending
+# Open the URL in an incognito window.
+# Confirm: redirect lands on /dashboard (not the landing page).
+# Confirm: the four demo profiles are visible in the pipeline panel.
+# Confirm: Why This panel opens on click.
+# Confirm: ART Match tab is reachable.
+# If all four pass → send the link.
+```
+
+```bash
+# Step 3 — issue additional tokens as the link gets forwarded
+node scripts/issue_demo_token.js --tenant gina_forward_001 --ttl 14d --role pilot
+node scripts/issue_demo_token.js --tenant gina_forward_002 --ttl 14d --role pilot
+# Each forwarded recipient gets their own tenant. Gina's tenant stays clean.
+```
+
+```bash
+# Step 4 — revoke a token if needed
+node scripts/revoke_demo_token.js --tenant gina_sims_review
+# Writes demo_token_revoked. Subsequent verify() calls return revoked=true.
+
+# Or revoke a single literal token (useful if you minted multiple under one tenant):
+node scripts/revoke_demo_token.js --token <full_token_string>
+```
+
+After revocation, the previously-handed-out URL hits `/?token=<revoked>` → token is treated as invalid → user lands on the public landing page (not an error page).
+
+### Watching the chain
+
+```bash
+node scripts/verify_chain.js
+npm run test:chain
+```
+
+Both will report `ok: true` and the current Merkle root. A break = halt and investigate.
+

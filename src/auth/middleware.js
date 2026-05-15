@@ -2,15 +2,48 @@ const demo = require('./demo_token');
 const magic = require('./magic_link');
 const { ADMIN_TENANT, DEFAULT_TENANT } = require('../core/tenant');
 
+const SANDBOX_TENANT = 'sandbox';
+
+function parseCookies(req) {
+  if (req.cookies) return req.cookies;
+  const header = req.headers && req.headers.cookie;
+  const out = {};
+  if (!header) { req.cookies = out; return out; }
+  for (const part of header.split(';')) {
+    const i = part.indexOf('=');
+    if (i < 0) continue;
+    const k = part.slice(0, i).trim();
+    const v = part.slice(i + 1).trim();
+    if (k) out[k] = decodeURIComponent(v);
+  }
+  req.cookies = out;
+  return out;
+}
+
+function isSandboxRequest(req) {
+  const c = parseCookies(req);
+  if (c.dsip_sandbox === '1') return true;
+  if (req.headers && req.headers['x-dsip-sandbox'] === '1') return true;
+  if (req.query && (req.query.sandbox === '1' || req.query.sandbox === 'true')) return true;
+  return false;
+}
+
 function extractToken(req) {
   const auth = req.headers['authorization'];
   if (auth && auth.toLowerCase().startsWith('bearer ')) return auth.slice(7).trim();
   if (req.query && req.query.t) return String(req.query.t);
-  if (req.cookies && req.cookies.dsip_t) return req.cookies.dsip_t;
+  const c = parseCookies(req);
+  if (c.dsip_t) return c.dsip_t;
   return null;
 }
 
 function attachTenant(req, res, next) {
+  if (isSandboxRequest(req)) {
+    req.tenant_id = SANDBOX_TENANT;
+    req.role = 'pilot';
+    req.auth_kind = 'sandbox';
+    return next();
+  }
   const token = extractToken(req);
   if (!token) {
     req.tenant_id = DEFAULT_TENANT;

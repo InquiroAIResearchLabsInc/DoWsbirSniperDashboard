@@ -10,7 +10,20 @@ app.disable('x-powered-by');
 app.use(express.json({ limit: '256kb' }));
 app.use(attachTenant);
 
-app.use(express.static(path.join(config.ROOT, 'public')));
+const publicRoute = require('./routes/public');
+app.use(publicRoute.router);
+
+app.get('/dashboard', (req, res) => res.sendFile(path.join(config.ROOT, 'public', 'index.html')));
+app.get('/demo', (req, res) => {
+  res.set('Set-Cookie', 'dsip_sandbox=1; Path=/; SameSite=Lax; Max-Age=3600');
+  emitReceipt('sandbox_session_start', {
+    tenant_id: 'sandbox',
+    user_agent: (req.headers['user-agent'] || '').slice(0, 200),
+  });
+  res.sendFile(path.join(config.ROOT, 'public', 'index.html'));
+});
+
+app.use(express.static(path.join(config.ROOT, 'public'), { index: false }));
 
 app.get('/health', (req, res) => {
   const db = getDb();

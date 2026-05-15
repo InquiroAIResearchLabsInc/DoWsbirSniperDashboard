@@ -4,6 +4,7 @@ node_modules/
 data/*.db
 data/*.db-wal
 data/*.db-shm
+!data/demo_snapshot.db
 data/revoked_tokens.json
 receipts.jsonl
 merkle_root.txt

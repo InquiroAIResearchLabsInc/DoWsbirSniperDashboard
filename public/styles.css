@@ -359,3 +359,22 @@ footer {
 }
 footer .label { color: var(--muted); }
 footer .val { color: var(--text-dim); }
+
+/* annotate=true recording overlays (Phase 3 §5c). Off by default. */
+[data-annotate]::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  color: var(--bone);
+  background: rgba(10, 10, 10, 0.85);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+}
+[data-annotate] { position: relative; }

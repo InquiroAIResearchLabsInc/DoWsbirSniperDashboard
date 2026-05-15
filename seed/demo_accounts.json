@@ -126,6 +126,60 @@
           "trl": 6
         }
       ]
+    },
+    {
+      "tenant_id": "sandbox",
+      "display_name": "SANDBOX — public demo (resets hourly)",
+      "role": "pilot",
+      "profile": {
+        "company_name": "Sandbox Demo Co.",
+        "uei": "SANDBOX_UEI_DEMO",
+        "tech_keywords": [
+          "autonomous ground", "off-road autonomy", "robotic combat vehicle",
+          "space domain awareness", "rpo", "rendezvous proximity operations",
+          "trustworthy ai", "ai assurance", "ai governance", "verifiable ai",
+          "battle network", "kill web", "data fusion", "cjadc2", "edge computing"
+        ],
+        "trl_self_declared": 6,
+        "private_match_secured": true,
+        "commercial_viability": true,
+        "pom_commitment_secured": false,
+        "dow_match_secured": false
+      },
+      "phase_ii_techs": [
+        {
+          "topic_code": "A234-001",
+          "title": "Off-road perception and traversability for unmanned ground vehicles",
+          "award_date": "2025-08-15",
+          "originating_component": "army",
+          "tech_keywords": ["autonomous ground", "off-road autonomy", "perception", "ugv", "rcv"],
+          "trl": 6
+        },
+        {
+          "topic_code": "SF234-D2",
+          "title": "Onboard rendezvous and proximity operations decision provenance",
+          "award_date": "2025-10-01",
+          "originating_component": "space_force",
+          "tech_keywords": ["space domain awareness", "rpo", "decision provenance", "onboard autonomy"],
+          "trl": 7
+        },
+        {
+          "topic_code": "DARPA-AIE-2025",
+          "title": "Attestable inference for autonomous decisions in DDIL environments",
+          "award_date": "2025-06-20",
+          "originating_component": "darpa",
+          "tech_keywords": ["trustworthy ai", "attestation", "verifiable ai", "ddil", "data fusion"],
+          "trl": 5
+        },
+        {
+          "topic_code": "AF234-D2-AFWERX",
+          "title": "Edge fusion for kill web composability",
+          "award_date": "2025-09-05",
+          "originating_component": "air_force",
+          "tech_keywords": ["battle network", "kill web", "edge computing", "data fusion", "cjadc2"],
+          "trl": 6
+        }
+      ]
     }
   ]
 }
