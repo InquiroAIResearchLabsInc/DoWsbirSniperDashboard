@@ -1,0 +1,223 @@
+{
+  "_meta": {
+    "version": "0.2.0",
+    "shape": "Mirrors SBIR.gov /public/api/solicitations response. Bootstrap fixture loaded by scripts/seed_load.js bootstrap when the live SBIR API is unreachable. 25 representative DoW SBIR topics across all 12 Sentinel components so the demo shows a credible tier spread instead of 5 rows.",
+    "note": "Topic content is representative of recent DoW SBIR themes. Topic numbers route to components via topic_code prefix (see src/ingest/component_router.js)."
+  },
+  "solicitations": [
+    {
+      "solicitation_number": "DOD-26.4-A",
+      "solicitation_title": "Department of War SBIR 26.4 — Closing Window",
+      "agency": "DOD",
+      "branch": "Multi-Component",
+      "program": "SBIR",
+      "phase": "Phase I",
+      "release_date": "2026-03-20",
+      "open_date": "2026-04-21",
+      "application_due_date": ["2026-05-21"],
+      "solicitation_topics": [
+        {
+          "topic_number": "A254-101",
+          "topic_title": "Decision provenance and audit trail for autonomous combat vehicle command and control",
+          "topic_description": "Develop decision provenance and audit trail infrastructure for autonomous decision accountability in robotic combat vehicle command and control. Requires cryptographic verification, attestation, and verifiable AI so every kill-chain decision is reproducible and evidence-grade.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "DARPA-SN-26-01",
+          "topic_title": "Trustworthy AI infrastructure for autonomous decision accountability in DDIL environments",
+          "topic_description": "Trustworthy AI infrastructure providing autonomous decision accountability, AI governance, and attestation for autonomous systems operating in DDIL and denied environments. Data fusion verification and a tamper-evident audit trail are required.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "SF254-301",
+          "topic_title": "Cryptographic verification and tamper detection for space domain awareness battle management",
+          "topic_description": "Cryptographic verification, tamper detection, and data integrity verification for BMC3 space domain awareness battle management. Decision provenance across heterogeneous SDA sensor feeds with an evidence-grade chain of custody.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "AF254-201",
+          "topic_title": "Edge computing sensor fusion for contested airspace ISR",
+          "topic_description": "Edge computing sensor fusion for ISR in contested airspace with intermittent connectivity. Multi-source fusion and anomaly detection at the tactical edge supporting air operations.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        }
+      ]
+    },
+    {
+      "solicitation_number": "DOD-26.4-B",
+      "solicitation_title": "Department of War SBIR 26.4 — Open",
+      "agency": "DOD",
+      "branch": "Multi-Component",
+      "program": "SBIR",
+      "phase": "Phase I",
+      "release_date": "2026-03-25",
+      "open_date": "2026-04-27",
+      "application_due_date": ["2026-05-27"],
+      "solicitation_topics": [
+        {
+          "topic_number": "A254-102",
+          "topic_title": "Multi-source fusion for threat detection in coalition ISR operations",
+          "topic_description": "Multi-source fusion and threat detection for coalition ISR operations across multi-level security boundaries. Heterogeneous data fusion with access control and a data integrity verification audit trail for shared situational awareness.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "CBD254-401",
+          "topic_title": "Anomaly detection for chemical and biological defense monitoring networks",
+          "topic_description": "Anomaly detection and continuous monitoring for chemical and biological defense sensor networks. Threat detection analytics over distributed monitoring telemetry.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "DTRA254-501",
+          "topic_title": "Verifiable analytics for threat reduction network defense",
+          "topic_description": "Machine learning for network defense and cyber defense supporting threat reduction missions. Threat hunting and anomaly detection across enterprise IT, with an audit trail and data integrity verification so detections are evidence-grade.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "SOCOM254-601",
+          "topic_title": "Autonomous systems for denied-environment special operations resupply",
+          "topic_description": "Autonomous systems for special operations resupply logistics in denied environments with intermittent connectivity. Offline operation and in-transit visibility for contested logistics, with decision provenance and an audit trail for every autonomous routing decision.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "MDA254-701",
+          "topic_title": "Radar signal processing for missile defense track custody",
+          "topic_description": "Radar hardware signal processing for missile defense track custody and monitoring. Sensor processing for interceptor cueing.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        }
+      ]
+    },
+    {
+      "solicitation_number": "DOD-26.4-C",
+      "solicitation_title": "Department of War SBIR 26.4 — Standard Cycle",
+      "agency": "DOD",
+      "branch": "Multi-Component",
+      "program": "SBIR",
+      "phase": "Phase I",
+      "release_date": "2026-04-10",
+      "open_date": "2026-05-12",
+      "application_due_date": ["2026-07-15"],
+      "solicitation_topics": [
+        {
+          "topic_number": "DLA254-801",
+          "topic_title": "In-transit visibility for the defense supply chain",
+          "topic_description": "Supply chain in-transit visibility using asset tracking and data analytics. Logistics telemetry aggregation for depot and distribution monitoring, with an audit trail for sustainment parts.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "AF254-202",
+          "topic_title": "Adaptive intelligent system for air operations battle management",
+          "topic_description": "Adaptive, intelligent system supporting air operations battle management and command and control. Decision support over a C2 system with sensor fusion, anomaly detection, monitoring and logging.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "SF254-302",
+          "topic_title": "Multi-source fusion for LEO constellation space operations",
+          "topic_description": "Multi-source fusion for LEO constellation space operations and PWSA space domain awareness. Sensor fusion across a proliferated space layer.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "DARPA-PA-26-02",
+          "topic_title": "Materials science for adaptive structural sensor skins",
+          "topic_description": "Materials science research for adaptive structural sensor skins on airframes. Embedded sensing for an adaptive system with health monitoring.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "NGA254-901",
+          "topic_title": "Geospatial data analytics for terrain mapping and GEOINT triage",
+          "topic_description": "Geospatial data analytics for terrain mapping and GEOINT triage. Multi-INT analytics over imagery and elevation telemetry.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "DMEA254-001",
+          "topic_title": "Microelectronics test and evaluation tooling for trusted foundry parts",
+          "topic_description": "Test and evaluation tooling for trusted-foundry microelectronics. Developmental testing and verification and validation workflow for assured parts.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "A254-103",
+          "topic_title": "Synthetic training simulation for combat vehicle crew readiness",
+          "topic_description": "Synthetic training and training simulation for combat vehicle crew readiness. Virtual training scenarios for ground maneuver crews.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "DTRA254-502",
+          "topic_title": "Infrared sensor hardware for threat reduction surveillance",
+          "topic_description": "Infrared sensor hardware for threat reduction wide-area surveillance. Detector packaging and optics for standoff monitoring.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        }
+      ]
+    },
+    {
+      "solicitation_number": "DOD-26.4-D",
+      "solicitation_title": "Department of War SBIR 26.4 — Late Cycle",
+      "agency": "DOD",
+      "branch": "Multi-Component",
+      "program": "SBIR",
+      "phase": "Direct to Phase II",
+      "release_date": "2026-04-15",
+      "open_date": "2026-05-15",
+      "application_due_date": ["2026-09-01"],
+      "solicitation_topics": [
+        {
+          "topic_number": "CBD254-402",
+          "topic_title": "Respirator fit-testing hardware for chemical agent protection",
+          "topic_description": "Respirator fit-testing hardware for chemical agent protection. Mechanical seal validation for protective masks against biological agent exposure.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "AF254-203",
+          "topic_title": "Battery and power generation for forward airbase operations",
+          "topic_description": "Battery storage and power generation for forward airbase operations. Energy hardware for expeditionary basing.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "SF254-303",
+          "topic_title": "Propulsion system for satellite deorbit maneuvers",
+          "topic_description": "Propulsion system development for controlled satellite deorbit maneuvers. Thruster hardware for end-of-life disposal.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "SOCOM254-602",
+          "topic_title": "Munitions packaging and kinetic payload optimization",
+          "topic_description": "Munitions packaging and kinetic payload optimization for special operations. Warhead integration and mechanical hardening.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "MDA254-702",
+          "topic_title": "Antenna design and RF hardware for interceptor seekers",
+          "topic_description": "Antenna design and RF hardware for missile interceptor seekers. Radar hardware front-end fabrication for terminal homing.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "OSD254-101",
+          "topic_title": "Vaccine cold-chain pharmaceutical logistics for deployed forces",
+          "topic_description": "Vaccine cold-chain and pharmaceutical logistics handling for deployed forces. Refrigeration hardware and manufacturing process for medical resupply.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        }
+      ]
+    },
+    {
+      "solicitation_number": "DOD-26.4-OPEN",
+      "solicitation_title": "Department of War SBIR 26.4 — Open Topic (Rolling)",
+      "agency": "DOD",
+      "branch": "Multi-Component",
+      "program": "SBIR",
+      "phase": "Phase I",
+      "release_date": "2026-04-01",
+      "open_date": "2026-05-01",
+      "solicitation_topics": [
+        {
+          "topic_number": "DLA254-802",
+          "topic_title": "Manufacturing process improvement for depot maintenance",
+          "topic_description": "Manufacturing process improvement for organic depot maintenance lines. Production tooling for sustainment of legacy parts.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        },
+        {
+          "topic_number": "DARPA-EA-26-03",
+          "topic_title": "Optics fabrication for hyperspectral imaging payloads",
+          "topic_description": "Optics fabrication for hyperspectral imaging payloads. Precision lens grinding and coating for spectral sensor hardware.",
+          "sbir_topic_link": "https://www.dodsbirsttr.mil/topics-app/"
+        }
+      ]
+    }
+  ]
+}
