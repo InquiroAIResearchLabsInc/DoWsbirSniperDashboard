@@ -532,7 +532,7 @@ npm run demo:local
 node scripts/verify_chain.js       # asserts parent_hash chain + Merkle root match
 
 # Deployed smoke
-TEST_URL=https://dsip-sentinel.onrender.com npm run smoke
+TEST_URL=https://dowsbirsniperdashboard.onrender.com npm run smoke
 ```
 
 ---

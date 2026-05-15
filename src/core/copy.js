@@ -16,7 +16,7 @@ function getCopy(key) {
     value = `<MISSING_COPY:${key}>`;
   } else {
     const raw = fs.readFileSync(file, 'utf8');
-    value = stripHeadingAndComments(raw).trim();
+    value = stripHeadingAndComments(raw).replace(/^\s+|\s+$/g, '');
     if (!value) value = `<EMPTY_COPY:${key}>`;
   }
   CACHE.set(key, { value, fetched: now });

@@ -31,7 +31,7 @@ test('component router covers every seeded topic prefix without falling to unkno
 });
 
 test('getCopy returns placeholder token unchanged when file body is a placeholder', () => {
-  const v = getCopy('sandbox_banner');
+  const v = getCopy('sandbox_banner_text');
   assert.ok(v && v.length > 0, 'expected non-empty value from copy loader');
   // Placeholder tokens of the form <PLACEHOLDER_*> must round-trip; the loader
   // must NOT collapse them to empty string.
