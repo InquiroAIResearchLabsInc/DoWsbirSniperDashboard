@@ -36,16 +36,23 @@ function scoreUnscoredForAllTenants() {
   if (!tenants.includes('sandbox')) tenants.push('sandbox');
   const opps = db.prepare('SELECT * FROM opportunities').all().map(o => ({ ...o, is_rolling: o.is_rolling === 1 }));
   let scored = 0;
+  let failed = 0;
   for (const tenant_id of tenants) {
     const existing = new Set(
       db.prepare('SELECT opportunity_id FROM scores WHERE tenant_id = ?').all(tenant_id).map(r => r.opportunity_id)
     );
     for (const opp of opps) {
       if (existing.has(opp.id)) continue;
-      try { persist(scoreTopic(opp, tenant_id)); scored++; } catch (_) {}
+      try {
+        persist(scoreTopic(opp, tenant_id));
+        scored++;
+      } catch (e) {
+        failed++;
+      }
     }
   }
-  return { tenants: tenants.length, scored };
+  if (failed > 0) emitReceipt('score_backfill_partial', { tenant_id: 'admin', scored, failed });
+  return { tenants: tenants.length, scored, failed };
 }
 
 function schedule() {
