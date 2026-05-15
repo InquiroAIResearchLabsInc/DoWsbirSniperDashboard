@@ -1,6 +1,8 @@
 // score_reveal: five sub-score bars fill staggered, then composite counts up.
 // Demo hero animation per spec §15. No green. Amber for Strong.
+// ?annotate=true URL flag adds bone-white aria-label overlays for recording.
 window.scoreReveal = function (container, { sub_scores, weights, composite, band }) {
+  const annotate = new URLSearchParams(location.search).get('annotate') === 'true';
   container.innerHTML = '';
   const rows = [
     { key: 'priority_alignment', label: 'Priority alignment' },
@@ -32,6 +34,12 @@ window.scoreReveal = function (container, { sub_scores, weights, composite, band
   total.classList.add(band.toLowerCase());
   total.innerHTML = `<div class="header"><div class="score ${band === 'Strong' ? 'strong' : ''}" id="composite-score">0</div><div><div class="band ${band === 'Strong' ? 'strong' : ''}">${band}</div></div></div>`;
   container.appendChild(total);
+  if (annotate) {
+    wrap.setAttribute('data-annotate', 'sub-scores');
+    wrap.setAttribute('aria-label', '5-dim score');
+    total.setAttribute('data-annotate', 'composite');
+    total.setAttribute('aria-label', 'composite score');
+  }
   setTimeout(() => animateCount(total.querySelector('#composite-score'), composite, 900), 220 + rows.length * 220);
 };
 
