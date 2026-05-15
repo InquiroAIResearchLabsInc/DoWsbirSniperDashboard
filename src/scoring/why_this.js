@@ -16,8 +16,8 @@ function buildTopicWhy(score, weights, opp) {
       { label: 'Matched keywords', value: score.keywords_matched },
       { label: 'Disqualifier hit (if any)', value: score.disqualified_by || null },
       { label: 'Source link', value: opp ? opp.source_url || null : null },
-      { label: 'DSIP handoff', value: { label: getCopy('dsip_handoff_microcopy'), url: opp ? opp.source_url || null : null } },
-      { label: 'Disagree with this score?', value: { label: getCopy('disagreement_button'), action: 'POST /api/why/disagree' } },
+      { label: 'DSIP handoff', value: { label: getCopy('dsip_button_label'), subtext: getCopy('dsip_button_subtext'), url: opp ? opp.source_url || null : null } },
+      { label: 'Disagree with this score?', value: { label: getCopy('disagreement_label'), confirmation: getCopy('disagreement_confirmation'), action: 'POST /api/why/disagree' } },
     ],
   };
 }
@@ -44,7 +44,7 @@ function buildArtWhy(match, sponsor, phase_ii_tech, weights) {
       }},
       { label: 'Active scouting signals (≤90d)', value: e.active_scouting.notices, has_signal: e.active_scouting.has_signal },
       { label: 'Sponsor contact pathway (public sources only)', value: { sponsor_name: sponsor.name, sponsor_url: sponsor.public_url, parent_command: sponsor.parent_command } },
-      { label: 'This sponsor is wrong', value: { label: getCopy('disagreement_button'), action: 'POST /api/art-matches/:id/disagree' } },
+      { label: 'This sponsor is wrong', value: { label: getCopy('disagreement_label'), confirmation: getCopy('disagreement_confirmation'), action: 'POST /api/art-matches/:id/disagree' } },
     ],
   };
 }

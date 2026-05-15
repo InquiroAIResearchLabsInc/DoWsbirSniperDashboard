@@ -169,10 +169,12 @@
     let title = 'No results';
     let body = '';
     try {
-      const r = await api('/api/copy/empty_state');
-      const v = (r.value || '').trim();
-      title = v.split('\n')[0] || title;
-      body = v.split('\n').slice(1).join(' ').trim();
+      const [t, b] = await Promise.all([
+        api('/api/copy/empty_state_title').catch(() => null),
+        api('/api/copy/empty_state_body').catch(() => null),
+      ]);
+      if (t && t.value) title = t.value;
+      if (b && b.value) body = b.value;
     } catch {}
     wrap.innerHTML = `<div style="font-weight:700;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:0.06em">${escape(title)}</div>
       ${body ? `<div style="font-size:13px;color:var(--text-dim);margin-top:4px">${escape(body)}</div>` : ''}`;

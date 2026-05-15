@@ -68,7 +68,7 @@ The follow-on commit lands four changes that close the gap end-to-end. Each chan
 
 1. **`src/ingest/persist.js`** — new module. Exports `upsertOpportunities(rows, tenant_id, run_id)` with batch semantics, per-row `opportunity_upserted` receipts, and the `stoprule_ingest_invariant` that compares `before_count` to `after_count` and emits `ingest_noop` on no-op.
 2. **`src/api/server.js`** — scheduler invocation moves into the `app.listen` callback and is gated by `NODE_ENV !== 'test'`. The `scheduler_started` receipt now carries `next_runs` per job.
-3. **`seed/opportunities_bootstrap.json`** + `scripts/seed_load.js loadBootstrap()` — curated bootstrap seed (~35 DoW topics, 7 components, tier mix). Idempotent — skips if `opportunities.count > 0`. Emits `bootstrap_completed` on success.
+3. **`scripts/seed_load.js loadBootstrap()`** — mirrors the proven inquiro-sniper `FIRST_SCRAPE` pattern: live SBIR.gov pull first via the existing `src/ingest/sbir_api.js` scraper, fallback to `tests/fixtures/sbir_sample.json` if the live call fails or returns zero rows. Idempotent — skips if `opportunities.count > 0`. Emits `bootstrap_completed` carrying `source_used` (`sbir_gov_live` | `fixture`) so the ledger records which path served the first-deploy data. No hand-curated seed JSON — same real source the daily cron uses.
 4. **`src/scheduler/cron.js`** — daily SBIR job calls `persist.upsertOpportunities(...)` *before* `computeDiffs(...)`. Persist owns the stoprule; diffs continue to own row-by-row diff classification.
 
 Plus, the copy loader leak (`TITLE:` / `BODY:` / `BANNER:` / `CTA:` labels rendering as UI text) is fixed in the same PR by flattening the copy file format — one key per atom of copy, no `LABEL:` prefixes.

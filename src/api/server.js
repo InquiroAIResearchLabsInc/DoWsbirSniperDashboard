@@ -80,55 +80,39 @@ app.use((err, req, res, next) => {
 });
 
 function bootstrapDataIfEmpty() {
-  try {
-    const db = getDb();
-    const oppCount = db.prepare('SELECT COUNT(*) c FROM opportunities').get().c;
-    if (oppCount > 0) return;
-    const fs = require('fs');
-    const path = require('path');
-    const fixturePath = path.join(config.ROOT, 'tests', 'fixtures', 'sbir_sample.json');
-    if (!fs.existsSync(fixturePath)) return;
-    const { normalizeTopic, normalizeSolicitation } = require('../ingest/normalize');
-    const { computeDiffs } = require('../diff/engine');
-    const { scoreTopic, persist } = require('../scoring/engine_topic');
-    const raw = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
-    const opps = [];
-    for (const sol of raw.solicitations || []) {
-      const topics = sol.solicitation_topics || sol.topics || [];
-      if (topics.length) for (const t of topics) opps.push(normalizeTopic(t, sol, sol.agency || 'DOD'));
-      else opps.push(normalizeSolicitation(sol, sol.agency || 'DOD'));
-    }
-    computeDiffs('sbir_gov', opps);
-    const tenants = db.prepare('SELECT tenant_id FROM tenants').all().map(r => r.tenant_id);
-    if (!tenants.includes('default')) tenants.push('default');
-    if (!tenants.includes('sandbox')) tenants.push('sandbox');
-    const allOpps = db.prepare('SELECT * FROM opportunities').all().map(o => ({ ...o, is_rolling: o.is_rolling === 1 }));
-    let scored = 0;
-    for (const tenant_id of tenants) {
-      for (const opp of allOpps) {
-        try { persist(scoreTopic(opp, tenant_id)); scored++; } catch (_) {}
-      }
-    }
-    emitReceipt('boot_fixture_ingest', { tenant_id: 'admin', opportunities: allOpps.length, scored, tenants: tenants.length });
-  } catch (e) {
-    emitReceipt('boot_fixture_ingest_error', { tenant_id: 'admin', error: e.message });
-  }
+  const db = getDb();
+  const oppCount = db.prepare('SELECT COUNT(*) c FROM opportunities').get().c;
+  if (oppCount > 0) return;
+  // loadBootstrap is async (live SBIR scrape with fixture fallback); run it in
+  // the background so app.listen does not wait on the network call.
+  const { loadBootstrap } = require('../../scripts/seed_load');
+  loadBootstrap()
+    .then(out => { if (out && out.skipped) emitReceipt('boot_fixture_skipped', { tenant_id: 'admin', reason: out.reason }); })
+    .catch(e => emitReceipt('boot_fixture_ingest_error', { tenant_id: 'admin', error: e.message }));
 }
 
 function start() {
   getDb();
   bootstrapDataIfEmpty();
-  try { require('../scheduler/cron').schedule(); } catch (e) {
-    emitReceipt('scheduler_start_error', { tenant_id: 'admin', error: e.message });
-  }
+  let schedulerHandle = null;
   const server = app.listen(config.PORT, () => {
     emitReceipt('server_boot', {
       tenant_id: 'admin',
       port: config.PORT,
       env: config.NODE_ENV,
     });
+    if (process.env.NODE_ENV !== 'test') {
+      try { schedulerHandle = require('../scheduler/cron').schedule(); } catch (e) {
+        emitReceipt('scheduler_start_error', { tenant_id: 'admin', error: e.message });
+      }
+    }
     console.log(`DSIP Sentinel · ART Edition listening on :${config.PORT}`);
   });
+  const origClose = server.close.bind(server);
+  server.close = (cb) => {
+    if (schedulerHandle) { try { schedulerHandle.stop(); } catch (_) {} schedulerHandle = null; }
+    return origClose(cb);
+  };
   return server;
 }
 

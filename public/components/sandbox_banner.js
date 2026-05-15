@@ -41,10 +41,10 @@
   if (document.body) place();
   else document.addEventListener('DOMContentLoaded', place);
 
-  fetch('/api/copy/sandbox_banner').then(r => r.ok ? r.json() : null).then(j => {
+  fetch('/api/copy/sandbox_banner_cta').then(r => r.ok ? r.json() : null).then(j => {
     const cta = document.getElementById('sandbox-cta');
     if (!cta) return;
-    const v = (j && j.value) ? j.value : '<MISSING_COPY:sandbox_banner>';
+    const v = (j && j.value) ? j.value : '<MISSING_COPY:sandbox_banner_cta>';
     cta.textContent = v;
     if (/<(PLACEHOLDER|MISSING|EMPTY)_/i.test(v)) bar.classList.add('placeholder-warn');
   }).catch(() => { /* keep loading text */ });

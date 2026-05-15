@@ -77,5 +77,80 @@ function loadSandbox() {
   return (sandbox.phase_ii_techs || []).length;
 }
 
-if (require.main === module) load();
-module.exports = { load, loadSandbox };
+// Bootstrap the opportunities table on first deploy. Mirrors the
+// inquiro-sniper FIRST_SCRAPE pattern: try the live SBIR API first,
+// fall back to the bundled fixture if the API is unreachable or returns
+// zero rows. Idempotent — skip if rows already exist.
+async function loadBootstrap({ force = false, skipLive } = {}) {
+  const db = getDb();
+  const oppCount = db.prepare('SELECT COUNT(*) c FROM opportunities').get().c;
+  if (oppCount > 0 && !force) {
+    return { skipped: true, reason: 'opportunities table already populated', existing_count: oppCount };
+  }
+
+  const { normalizeTopic, normalizeSolicitation } = require('../src/ingest/normalize');
+  const { upsertOpportunities } = require('../src/ingest/persist');
+  const { scoreTopic, persist } = require('../src/scoring/engine_topic');
+
+  const skip = skipLive == null ? process.env.INITIAL_INGEST_SKIP_LIVE === '1' : !!skipLive;
+  let opps = [];
+  let source_used = null;
+  if (!skip) {
+    try {
+      const sbir = require('../src/ingest/sbir_api');
+      const live = await sbir.scrape();
+      opps = Array.isArray(live) ? live : [];
+      source_used = 'sbir_gov_live';
+    } catch (e) {
+      emitReceipt('ingest_error', { tenant_id: 'admin', source: 'sbir_gov', stage: 'bootstrap', error: e.message });
+    }
+  }
+  if (!opps.length) {
+    const fixturePath = path.join(config.ROOT, 'tests', 'fixtures', 'sbir_sample.json');
+    if (fs.existsSync(fixturePath)) {
+      const raw = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+      for (const sol of raw.solicitations || []) {
+        const topics = sol.solicitation_topics || sol.topics || [];
+        if (topics.length) for (const t of topics) opps.push(normalizeTopic(t, sol, sol.agency || 'DOD'));
+        else opps.push(normalizeSolicitation(sol, sol.agency || 'DOD'));
+      }
+      source_used = 'fixture';
+    }
+  }
+
+  const persisted = upsertOpportunities(opps, 'admin');
+
+  const tenants = db.prepare('SELECT tenant_id FROM tenants').all().map(r => r.tenant_id);
+  if (!tenants.includes('default')) tenants.push('default');
+  if (!tenants.includes('sandbox')) tenants.push('sandbox');
+  const allOpps = db.prepare('SELECT * FROM opportunities').all().map(o => ({ ...o, is_rolling: o.is_rolling === 1 }));
+  let scored = 0;
+  for (const tenant_id of tenants) {
+    for (const opp of allOpps) {
+      try { persist(scoreTopic(opp, tenant_id)); scored++; } catch (_) {}
+    }
+  }
+  const components = Array.from(new Set(allOpps.map(o => o.component).filter(Boolean)));
+  emitReceipt('bootstrap_completed', {
+    tenant_id: 'admin',
+    source_used,
+    rows_seeded: persisted.inserted,
+    rows_total: allOpps.length,
+    components_covered: components,
+    scored,
+    tenants: tenants.length,
+  });
+  return { skipped: false, source_used, ...persisted, scored, components };
+}
+
+if (require.main === module) {
+  const arg = process.argv[2];
+  if (arg === 'bootstrap') {
+    loadBootstrap()
+      .then(out => { console.log(JSON.stringify(out, null, 2)); })
+      .catch(e => { console.error('bootstrap failed:', e.message); process.exit(1); });
+  } else {
+    load();
+  }
+}
+module.exports = { load, loadSandbox, loadBootstrap };

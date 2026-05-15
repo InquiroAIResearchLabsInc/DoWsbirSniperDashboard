@@ -13,7 +13,7 @@ const LANDING_PATH = path.join(config.ROOT, 'public', 'landing.html');
 
 function renderLanding() {
   let html = fs.readFileSync(LANDING_PATH, 'utf8');
-  const keys = ['product_tagline', 'readme_positioning', 'sandbox_banner', 'dsip_handoff_microcopy'];
+  const keys = ['product_tagline', 'readme_positioning'];
   for (const k of keys) {
     const v = getCopy(k);
     html = html.split(`{{${k}}}`).join(escapeHtml(v));

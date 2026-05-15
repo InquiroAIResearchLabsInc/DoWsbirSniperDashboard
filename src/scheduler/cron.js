@@ -2,10 +2,32 @@ const cron = require('node-cron');
 const { emitReceipt } = require('../core/receipt');
 const sbir = require('../ingest/sbir_api');
 const { computeDiffs } = require('../diff/engine');
+const { upsertOpportunities } = require('../ingest/persist');
 const aggregator = require('../learning/component_aggregator');
 const { resetSandboxTenant } = require('../learning/individual');
 const { getDb } = require('../db');
 const { scoreTopic, persist } = require('../scoring/engine_topic');
+
+const JOBS = [
+  { name: 'sbir_daily', expression: '0 5 * * *' },
+  { name: 'component_aggregator_nightly', expression: '30 7 * * *' },
+  { name: 'sandbox_reset_hourly', expression: '0 * * * *' },
+];
+
+function nextFireUtc(expression) {
+  // Minimal cron next-fire for 5-field expressions used in JOBS.
+  // Supports literals only; matches the JOBS table above.
+  const [mStr, hStr] = expression.split(' ');
+  const now = new Date();
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), 0, 0));
+  for (let i = 0; i < 60 * 24 * 8; i++) {
+    d.setUTCMinutes(d.getUTCMinutes() + 1);
+    const matchM = mStr === '*' || Number(mStr) === d.getUTCMinutes();
+    const matchH = hStr === '*' || Number(hStr) === d.getUTCHours();
+    if (matchM && matchH) return d.toISOString();
+  }
+  return null;
+}
 
 function scoreUnscoredForAllTenants() {
   const db = getDb();
@@ -27,27 +49,29 @@ function scoreUnscoredForAllTenants() {
 }
 
 function schedule() {
-  cron.schedule('0 5 * * *', async () => {
+  const tasks = [];
+  tasks.push(cron.schedule('0 5 * * *', async () => {
     try {
       const opps = await sbir.scrape();
+      const persisted = upsertOpportunities(opps, 'admin');
       computeDiffs('sbir_gov', opps);
       const s = scoreUnscoredForAllTenants();
-      emitReceipt('cron_run', { tenant_id: 'admin', job: 'sbir_daily', count: opps.length, scoring: s });
+      emitReceipt('cron_run', { tenant_id: 'admin', job: 'sbir_daily', count: opps.length, persisted, scoring: s });
     } catch (e) {
       emitReceipt('cron_error', { tenant_id: 'admin', job: 'sbir_daily', error: e.message });
     }
-  }, { timezone: 'UTC' });
+  }, { timezone: 'UTC' }));
 
-  cron.schedule('30 7 * * *', () => {
+  tasks.push(cron.schedule('30 7 * * *', () => {
     try {
       const out = aggregator.run();
       emitReceipt('cron_run', { tenant_id: 'admin', job: 'component_aggregator_nightly', ...out });
     } catch (e) {
       emitReceipt('cron_error', { tenant_id: 'admin', job: 'component_aggregator_nightly', error: e.message });
     }
-  }, { timezone: 'UTC' });
+  }, { timezone: 'UTC' }));
 
-  cron.schedule('0 * * * *', () => {
+  tasks.push(cron.schedule('0 * * * *', () => {
     try {
       const out = resetSandboxTenant();
       const s = scoreUnscoredForAllTenants();
@@ -55,9 +79,12 @@ function schedule() {
     } catch (e) {
       emitReceipt('cron_error', { tenant_id: 'admin', job: 'sandbox_reset_hourly', error: e.message });
     }
-  }, { timezone: 'UTC' });
+  }, { timezone: 'UTC' }));
 
-  emitReceipt('scheduler_started', { tenant_id: 'admin', jobs: ['sbir_daily@05:00 UTC', 'component_aggregator_nightly@07:30 UTC', 'sandbox_reset_hourly@:00'] });
+  const jobs_registered = JOBS.map(j => j.name);
+  const next_runs = JOBS.map(j => ({ name: j.name, expression: j.expression, next_fire_utc: nextFireUtc(j.expression) }));
+  emitReceipt('scheduler_started', { tenant_id: 'admin', jobs_registered, next_runs });
+  return { tasks, stop() { for (const t of tasks) { try { t.stop(); } catch (_) {} } } };
 }
 
 module.exports = { schedule };
