@@ -5,16 +5,13 @@
 
   async function loadCopy() {
     try {
-      const r = await fetch('/api/admin/stats');
-      // tagline + headers via getCopy keys are surfaced inline via API for now.
-      const tagline = await fetch('/docs/copy/product_tagline.md').then(r => r.ok ? r.text() : '');
-      document.getElementById('product-tagline').textContent = stripHeading(tagline) || '<PLACEHOLDER_PRODUCT_TAGLINE>';
-    } catch { document.getElementById('product-tagline').textContent = '<PLACEHOLDER_PRODUCT_TAGLINE>'; }
+      const r = await api('/api/copy/product_tagline');
+      document.getElementById('product-tagline').textContent = r.value || '';
+    } catch { document.getElementById('product-tagline').textContent = ''; }
   }
 
-  function stripHeading(s) {
-    return (s || '').split('\n').filter(l => !l.startsWith('#') && !l.includes('<!--') && !l.includes('-->') && l.trim()).join(' ').trim();
-  }
+  function isAuthed() { return !!state.role && state.role !== 'anonymous'; }
+  function isAdmin() { return state.role === 'admin'; }
 
   async function refreshHeaderStats() {
     try {
@@ -31,33 +28,30 @@
       document.getElementById('stat-evaluates').textContent = evals;
       document.getElementById('stat-closing').textContent = closing;
     } catch {}
-    try {
-      const v = await api('/api/receipts/verify');
-      document.getElementById('footer-chain').textContent = v.ok ? `ok (n=${v.count})` : 'BROKEN';
-      const m = await api('/api/receipts/merkle');
-      document.getElementById('footer-merkle').textContent = (m.merkle_root || '—').slice(0, 16) + '…';
-    } catch {}
   }
 
   async function whoami() {
     try {
       const me = await api('/api/whoami');
       state.tenant = me.tenant_id; state.role = me.role;
-      document.getElementById('footer-tenant').textContent = me.tenant_id;
-      document.getElementById('footer-role').textContent = me.role;
     } catch {}
   }
 
   async function renderTopics() {
+    if (window.setFilterMode) window.setFilterMode('topics');
     const f = window.getFilters();
-    const q = new URLSearchParams();
-    for (const k of Object.keys(f)) if (f[k]) q.set(k, f[k]);
-    const data = await api(`/api/opportunities?${q.toString()}`).catch(() => ({ opportunities: [] }));
+    const params = new URLSearchParams();
+    for (const k of ['q', 'component', 'tier', 'min_score']) {
+      if (f[k] && f[k] !== '0') params.set(k, f[k]);
+    }
+    const data = await api(`/api/opportunities?${params.toString()}`).catch(() => ({ opportunities: [] }));
     const opps = data.opportunities || [];
     document.getElementById('opp-count').textContent = opps.length;
     const center = document.getElementById('center-panel-body');
     center.innerHTML = '';
-    if (data.empty_state) {
+    if (opps.length === 0) {
+      center.appendChild(await renderZeroResults());
+    } else if (data.empty_state) {
       const banner = document.createElement('div');
       banner.className = 'card';
       banner.style.borderLeft = '2px solid var(--amber)';
@@ -90,29 +84,54 @@
   }
 
   async function renderArt() {
+    if (window.setFilterMode) window.setFilterMode('art');
     const center = document.getElementById('center-panel-body');
     center.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px">Loading ART matches…</div>';
     const techs = await api('/api/art-matches/techs').catch(() => ({ techs: [] }));
     const phaseIITechs = techs.techs || [];
+
+    // Trigger compute for each tech once (so the matches table is populated for filtering)
+    for (const t of phaseIITechs) {
+      try {
+        await api('/api/art-matches/compute', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phase_ii_tech_id: t.id }) });
+      } catch {}
+    }
+
+    const f = window.getFilters();
+    const params = new URLSearchParams();
+    if (f.q) params.set('q', f.q);
+    if (f.component) params.set('component', f.component);
+    if (f.band) params.set('band', f.band);
+    if (f.min_score && f.min_score !== '0') params.set('min_score', f.min_score);
+
+    const data = await api(`/api/art-matches?${params.toString()}`).catch(() => ({ matches: [] }));
+    const matches = data.matches || [];
+    document.getElementById('opp-count').textContent = matches.length;
+
+    center.innerHTML = '';
     if (phaseIITechs.length === 0) {
       center.innerHTML = `<div class="card" style="color:var(--muted);font-size:13px">No Phase II techs declared. Declare one via POST /api/art-matches/techs.</div>`;
+    } else if (matches.length === 0) {
+      center.appendChild(await renderZeroResults());
     } else {
-      center.innerHTML = '';
+      // Group by tech for readability
+      const byTech = new Map();
+      for (const m of matches) {
+        if (!byTech.has(m.phase_ii_tech_id)) byTech.set(m.phase_ii_tech_id, []);
+        byTech.get(m.phase_ii_tech_id).push(m);
+      }
       for (const t of phaseIITechs) {
-        // Trigger match computation
-        try {
-          await api('/api/art-matches/compute', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phase_ii_tech_id: t.id }) });
-        } catch {}
+        const forTech = byTech.get(t.id) || [];
+        if (forTech.length === 0) continue;
         const header = document.createElement('div');
         header.className = 'card';
         header.innerHTML = `<div style="font-weight:600">${escape(t.title)}</div>
           <div class="opp-meta"><span class="badge">${escape(t.topic_code)}</span><span class="badge">${escape(t.originating_component)}</span><span class="badge">TRL ${t.trl || '?'}</span></div>`;
         center.appendChild(header);
-        const matches = await api('/api/art-matches').catch(() => ({ matches: [] }));
-        const forTech = (matches.matches || []).filter(m => m.phase_ii_tech_id === t.id).slice(0, 5);
-        for (const m of forTech) center.appendChild(window.renderArtMatchCard(m));
+        for (const m of forTech.slice(0, 5)) center.appendChild(window.renderArtMatchCard(m));
       }
     }
+
     // SBA flag in left panel
     const left = document.getElementById('left-panel-body');
     left.innerHTML = '';
@@ -126,17 +145,38 @@
       const sp = await api('/api/sponsor-pipeline');
       left.appendChild(window.renderSponsorPipelinePanel(sp.sponsor_pipeline || []));
     } catch {}
-    document.getElementById('opp-count').textContent = (phaseIITechs.length || 0) + ' techs';
+  }
+
+  async function renderZeroResults() {
+    const wrap = document.createElement('div');
+    wrap.className = 'card';
+    wrap.style.borderLeft = '2px solid var(--muted)';
+    let title = 'No results';
+    let body = '';
+    try {
+      const r = await api('/api/copy/empty_state');
+      const v = (r.value || '').trim();
+      title = v.split('\n')[0] || title;
+      body = v.split('\n').slice(1).join(' ').trim();
+    } catch {}
+    wrap.innerHTML = `<div style="font-weight:700;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:0.06em">${escape(title)}</div>
+      ${body ? `<div style="font-size:13px;color:var(--text-dim);margin-top:4px">${escape(body)}</div>` : ''}`;
+    return wrap;
   }
 
   async function renderPatterns() {
+    if (window.setFilterMode) window.setFilterMode('patterns');
     const center = document.getElementById('center-panel-body');
     center.innerHTML = '';
     const r = await api('/api/admin/component-patterns').catch(() => ({ patterns: [] }));
-    center.appendChild(window.renderComponentPatternsStatic(r.patterns || []));
+    const f = window.getFilters ? window.getFilters() : {};
+    const patterns = (r.patterns || []).filter(p => !f.component || p.component === f.component);
+    document.getElementById('opp-count').textContent = patterns.length;
+    center.appendChild(window.renderComponentPatternsStatic(patterns));
   }
 
   async function renderAdmin() {
+    if (window.setFilterMode) window.setFilterMode('admin');
     const center = document.getElementById('center-panel-body');
     center.innerHTML = '';
     const r = await api('/api/admin/recent-receipts?limit=20').catch(() => ({ receipts: [] }));

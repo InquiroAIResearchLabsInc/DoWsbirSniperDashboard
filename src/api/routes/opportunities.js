@@ -2,9 +2,16 @@ const express = require('express');
 const { getDb, safeJson } = require('../../db');
 const { scoreTopic, persist } = require('../../scoring/engine_topic');
 const { emptyStatePayload } = require('../empty_state');
-const { emitReceipt } = require('../../core/receipt');
 
 const router = express.Router();
+
+const TIER_VALUES = new Set(['PRIME', 'EVALUATE', 'STRETCH', 'SKIP']);
+
+function clampInt(v, def, min, max) {
+  const n = parseInt(v, 10);
+  if (!Number.isFinite(n)) return def;
+  return Math.min(Math.max(n, min), max);
+}
 
 router.get('/', (req, res) => {
   const db = getDb();
@@ -18,9 +25,25 @@ router.get('/', (req, res) => {
   const args = [tenant_id];
   if (filters.component) { sql += ' AND o.component = ?'; args.push(filters.component); }
   if (filters.source) { sql += ' AND o.source = ?'; args.push(filters.source); }
-  if (filters.tier) { sql += ' AND s.score_tier = ?'; args.push(filters.tier); }
-  if (filters.min_score) { sql += ' AND s.fit_score >= ?'; args.push(Number(filters.min_score)); }
-  sql += ' ORDER BY s.fit_score DESC, o.close_date ASC LIMIT 200';
+  if (filters.tier) {
+    const tier = String(filters.tier).toUpperCase();
+    if (TIER_VALUES.has(tier)) { sql += ' AND s.score_tier = ?'; args.push(tier); }
+  }
+  if (filters.min_score) {
+    const ms = Number(filters.min_score);
+    if (Number.isFinite(ms) && ms > 0) { sql += ' AND s.fit_score >= ?'; args.push(ms); }
+  }
+  if (filters.q) {
+    const q = `%${String(filters.q).trim()}%`;
+    if (q.length > 2) {
+      sql += ' AND (o.title LIKE ? COLLATE NOCASE OR o.description LIKE ? COLLATE NOCASE OR o.topic_code LIKE ? COLLATE NOCASE)';
+      args.push(q, q, q);
+    }
+  }
+  const limit = clampInt(filters.limit, 50, 1, 200);
+  const offset = clampInt(filters.offset, 0, 0, 100000);
+  sql += ' ORDER BY s.fit_score DESC, o.close_date ASC LIMIT ? OFFSET ?';
+  args.push(limit, offset);
 
   const rows = db.prepare(sql).all(...args).map(r => ({
     ...r,
@@ -28,14 +51,12 @@ router.get('/', (req, res) => {
     keywords_matched: safeJson(r.keywords_matched, []),
   }));
 
-  emitReceipt('opportunities_listed', { tenant_id, returned: rows.length, filters });
-
   const primes = rows.filter(r => r.score_tier === 'PRIME');
   if (primes.length === 0) {
     const fallback = rows.filter(r => r.score_tier === 'EVALUATE').slice(0, 3);
-    return res.json({ ...emptyStatePayload({ tenant_id, fallback_opps: fallback }), opportunities: rows });
+    return res.json({ ...emptyStatePayload({ tenant_id, fallback_opps: fallback }), opportunities: rows, total_returned: rows.length });
   }
-  res.json({ opportunities: rows, empty_state: false });
+  res.json({ opportunities: rows, empty_state: false, total_returned: rows.length });
 });
 
 router.get('/:id', (req, res) => {
