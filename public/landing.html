@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>DSIP SENTINEL · ART EDITION</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -29,6 +30,7 @@
     font-size: 15px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -153,6 +155,36 @@
   .placeholder-warn {
     color: var(--amber);
     font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* ── Mobile / iPhone ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    html, body { height: auto; min-height: 100%; }
+    body { overflow: visible; }
+    header {
+      padding: 14px 18px;
+      padding-left: max(18px, env(safe-area-inset-left));
+      padding-right: max(18px, env(safe-area-inset-right));
+    }
+    main {
+      justify-content: flex-start;
+      padding: 36px 20px;
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+    }
+    .tagline { font-size: 24px; margin-bottom: 18px; }
+    .positioning { font-size: 15px; margin-bottom: 28px; }
+    .ctas { flex-direction: column; gap: 12px; margin-bottom: 36px; }
+    .cta { justify-content: center; padding: 15px 24px; }
+    .stat-row { flex-wrap: wrap; gap: 20px 36px; }
+    .stat-val { font-size: 21px; }
+    footer {
+      flex-direction: column;
+      gap: 4px;
+      text-align: center;
+      padding: 12px 18px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
   }
 </style>
 </head>
