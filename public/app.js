@@ -82,9 +82,8 @@
       center.appendChild(await renderZeroResults());
     } else if (data.empty_state) {
       const banner = document.createElement('div');
-      banner.className = 'card';
-      banner.style.borderLeft = '2px solid var(--amber)';
-      banner.innerHTML = `<div style="font-weight:700;color:var(--amber);font-size:13px;text-transform:uppercase;letter-spacing:0.06em">${escape(data.title || '')}</div><div style="font-size:13px;color:var(--text-dim);margin-top:4px">${escape(data.body || '')}</div>`;
+      banner.className = 'empty-banner';
+      banner.innerHTML = `<div class="empty-banner-title">${escape(data.title || '')}</div><div class="empty-banner-body">${escape(data.body || '')}</div>`;
       center.appendChild(banner);
     }
     for (const o of opps) center.appendChild(window.renderOpportunityCard(o));

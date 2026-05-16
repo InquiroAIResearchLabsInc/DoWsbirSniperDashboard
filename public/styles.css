@@ -323,6 +323,28 @@ header h1 {
 .deadline.warning { color: rgba(226, 232, 240, 0.7); }
 .deadline.ok { color: rgba(226, 232, 240, 0.5); }
 
+/* Empty-state banner — the "warning, not critical" pattern. A faint amber
+   tint and a 3px amber left border carry the signal; the title is amber but
+   the body stays bone white so amber never sits on an amber-adjacent fill. */
+.empty-banner {
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 3px solid #F59E0B;
+  border-radius: 0 4px 4px 0;
+  padding: 14px;
+}
+.empty-banner-title {
+  color: #F59E0B;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.empty-banner-body {
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
 .diff-entry {
   border-left: 2px solid var(--border);
   padding: 10px 12px;
