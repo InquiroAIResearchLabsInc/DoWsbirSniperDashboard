@@ -280,10 +280,10 @@
   function setTab(name) {
     state.tab = name;
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t.dataset.tab === name);
-    if (name === 'topics') renderTopics().catch(e => console.error('[sentinel] renderTopics:', e));
-    if (name === 'art') renderArt().catch(e => console.error('[sentinel] renderArt:', e));
-    if (name === 'patterns') renderPatterns().catch(e => console.error('[sentinel] renderPatterns:', e));
-    if (name === 'admin') renderAdmin().catch(e => console.error('[sentinel] renderAdmin:', e));
+    if (name === 'topics') return renderTopics().catch(e => console.error('[sentinel] renderTopics:', e));
+    if (name === 'art') return renderArt().catch(e => console.error('[sentinel] renderArt:', e));
+    if (name === 'patterns') return renderPatterns().catch(e => console.error('[sentinel] renderPatterns:', e));
+    if (name === 'admin') return renderAdmin().catch(e => console.error('[sentinel] renderAdmin:', e));
   }
 
   function refreshAll() {
@@ -324,7 +324,12 @@
       digestBtn.addEventListener('click', () => { if (window.openDigestModal) window.openDigestModal(); });
       if (isAuthed()) digestBtn.hidden = false;
     }
-    setTab('topics');
+    // The tour layers over the live UI, so it starts only once the
+    // opportunities feed has rendered — not on DOMContentLoaded.
+    await setTab('topics');
+    if (window.initTour) {
+      try { window.initTour(); } catch (e) { console.error('[sentinel] initTour:', e); }
+    }
     refreshHeaderStats();
     setInterval(refreshHeaderStats, 30000);
   });
