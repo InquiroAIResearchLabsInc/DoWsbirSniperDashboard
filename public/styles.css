@@ -954,16 +954,21 @@ footer .val { color: var(--text-dim); }
    A pure overlay layer — these rules style only .tour-* nodes that tour.js
    appends to <body>, and never touch an existing component. */
 
-.tour-backdrop {
+/* The spotlight is a box whose oversized box-shadow dims the rest of the
+   screen. pointer-events:none — every click passes straight through to the
+   page, so the dimmer can never swallow the interaction a step waits for. */
+.tour-spotlight {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.72);
   z-index: 1000;
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72);
+  pointer-events: none;
   opacity: 0;
-  transition: clip-path 250ms ease, -webkit-clip-path 250ms ease, opacity 300ms ease;
+  transition: opacity 300ms ease, top 250ms ease, left 250ms ease,
+              width 250ms ease, height 250ms ease;
 }
-.tour-backdrop.tour-in { opacity: 1; }
-.tour-backdrop.tour-out { opacity: 0; }
+.tour-spotlight.tour-in { opacity: 1; }
+.tour-spotlight.tour-out { opacity: 0; }
 
 .tour-tooltip {
   position: fixed;
@@ -1002,7 +1007,6 @@ footer .val { color: var(--text-dim); }
   font-size: 13px;
   color: #E2E8F0;
   line-height: 1.6;
-  white-space: pre-line;
 }
 .tour-prompt {
   font-family: Arial, sans-serif;
@@ -1046,7 +1050,6 @@ footer .val { color: var(--text-dim); }
   color: #E2E8F0;
   text-align: center;
   max-width: 420px;
-  white-space: pre-line;
 }
 
 .tour-hotspot {
@@ -1096,13 +1099,18 @@ footer .val { color: var(--text-dim); }
 }
 .tour-replay-link.is-visible { display: block; }
 
-/* Mobile — single column. The tooltip becomes near-full-width and the
-   hotspot label flips below the dot so it never runs off-screen. */
+/* Mobile — the tooltip docks to the bottom of the screen so it can never
+   cover the spotlit target; tour.js scrolls the target into the clear space
+   above it. The hotspot label flips below the dot to stay on-screen. */
+.tour-tooltip-docked {
+  left: 16px;
+  right: 16px;
+  top: auto;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  max-width: none;
+}
 @media (max-width: 720px) {
-  .tour-tooltip {
-    max-width: calc(100vw - 32px);
-    padding: 16px 18px;
-  }
+  .tour-tooltip { padding: 16px 18px; }
   .tour-skip { top: 10px; right: 12px; }
   .tour-transition-msg { font-size: 14px; }
   .tour-hotspot-label {

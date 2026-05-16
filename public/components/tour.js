@@ -1,15 +1,16 @@
 // tour.js — native, zero-dependency guided tour.
 //
-// Phase 1 (guided): a spotlight backdrop + tooltip walks the user through the
-// four Golden-Path steps; each step advances on the real interaction, not a
-// Next button. Phase 2 (free explore): three pulsing hotspots mark the
-// remaining key elements for 45s, then fade permanently.
+// Phase 1 (guided): a spotlight + tooltip walks the user through the four
+// Golden-Path steps; each step advances on the real interaction, not a Next
+// button. Phase 2 (free explore): three pulsing hotspots mark the remaining
+// key elements for 45s, then fade permanently.
 //
-// This module is a pure UI layer. It appends nodes over the existing DOM and
-// removes them when done — it modifies no existing component and writes no
-// receipts. Tour state lives in localStorage so the tour runs once per
-// browser. Entry point: initTour(), called from app.js once opportunities are
-// on screen.
+// The spotlight is a single element with a huge box-shadow — everything
+// outside its rect is dimmed. It is pointer-events:none, so every click
+// passes straight through to the page (the tour advances on the intended
+// interaction; nothing is trapped). This module appends only .tour-* nodes
+// and modifies no existing component. It writes no receipts. Tour state lives
+// in localStorage so the tour runs once per browser. Entry point: initTour().
 (function () {
   'use strict';
 
@@ -23,12 +24,13 @@
   var HOTSPOT_LIFE_MS = 45000;
   var HOTSPOT_FADE_MS = 1000;
   var FADE_IN_MS = 20;
+  var RELAYOUT_MS = 90;         // re-measure after a scroll-into-view settles
   var MOBILE_MAX = 720;
 
   // phase: 0 idle · 1 guided · 2 transitioning · 3 hotspots · 4 done
   var state = {
     phase: 0, step: 0,
-    backdrop: null, tooltip: null, tooltipBody: null, skipLink: null,
+    spotlight: null, tooltip: null, tooltipBody: null, skipLink: null,
     transition: null, transitionMsg: null, replay: null,
     hotspots: [], stepTeardown: null,
     timers: [], p1Listeners: [], p2Listeners: [],
@@ -74,6 +76,7 @@
   function winW() { return (typeof window !== 'undefined' && window.innerWidth) || 1440; }
   function winH() { return (typeof window !== 'undefined' && window.innerHeight) || 900; }
   function isMobile() { return winW() <= MOBILE_MAX; }
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function rectOf(el) {
     if (!el || typeof el.getBoundingClientRect !== 'function') return null;
     return el.getBoundingClientRect();
@@ -101,10 +104,15 @@
     for (var i = 0; i < state.timers.length; i++) { try { clearTimeout(state.timers[i]); } catch (e) { /* noop */ } }
     state.timers.length = 0;
   }
+  // Bring the target into the viewport so the spotlight lands on something the
+  // user can actually see — critical on mobile, where the feed scrolls.
+  function scrollIntoView(el) {
+    if (!el || typeof el.scrollIntoView !== 'function') return;
+    try { el.scrollIntoView({ block: 'center', inline: 'nearest' }); }
+    catch (e) { try { el.scrollIntoView(); } catch (e2) { /* noop */ } }
+  }
 
   // --- copy -----------------------------------------------------------------
-  // The copy atoms may still hold their <PLACEHOLDER_*> token; that token is
-  // rendered verbatim by design — it signals to Bubba that copy is unwritten.
   function copyFor(key) { return copyCache[key] || ''; }
 
   function loadCopy() {
@@ -132,43 +140,48 @@
     }
   }
 
-  // --- spotlight geometry ---------------------------------------------------
-  function clipString(rect) {
+  // --- spotlight + tooltip geometry ----------------------------------------
+  // The spotlight is a box whose oversized box-shadow dims everything around
+  // it. A null/empty rect collapses the box to a point — a full-screen dim.
+  function layoutSpotlight(rect) {
+    var el = state.spotlight;
+    if (!el) return;
     var W = winW(), H = winH();
     if (!rect || (!rect.width && !rect.height)) {
-      return 'polygon(0px 0px, ' + W + 'px 0px, ' + W + 'px ' + H + 'px, 0px ' + H + 'px)';
+      el.style.left = Math.round(W / 2) + 'px';
+      el.style.top = Math.round(H / 2) + 'px';
+      el.style.width = '0px';
+      el.style.height = '0px';
+      return;
     }
-    var xl = Math.max(0, Math.round(rect.left - PAD));
-    var xr = Math.min(W, Math.round(rect.right + PAD));
-    var yt = Math.max(0, Math.round(rect.top - PAD));
-    var yb = Math.min(H, Math.round(rect.bottom + PAD));
-    return 'polygon(' +
-      '0px 0px, 0px ' + H + 'px, ' +
-      xl + 'px ' + H + 'px, ' + xl + 'px ' + yt + 'px, ' +
-      xr + 'px ' + yt + 'px, ' + xr + 'px ' + yb + 'px, ' +
-      xl + 'px ' + yb + 'px, ' + xl + 'px ' + H + 'px, ' +
-      W + 'px ' + H + 'px, ' + W + 'px 0px)';
-  }
-  function setClip(backdrop, rect) {
-    if (!backdrop) return;
-    var s = clipString(rect);
-    backdrop.style.clipPath = s;
-    backdrop.style.webkitClipPath = s;
+    var xl = clamp(rect.left - PAD, 0, W);
+    var yt = clamp(rect.top - PAD, 0, H);
+    var xr = clamp(rect.right + PAD, 0, W);
+    var yb = clamp(rect.bottom + PAD, 0, H);
+    el.style.left = Math.round(xl) + 'px';
+    el.style.top = Math.round(yt) + 'px';
+    el.style.width = Math.round(Math.max(0, xr - xl)) + 'px';
+    el.style.height = Math.round(Math.max(0, yb - yt)) + 'px';
   }
 
-  // Tooltip sits on the side of the target with the most room and never
-  // covers it. Bottom-third or very wide targets push the tooltip above/below.
+  // On mobile the tooltip docks to the bottom of the screen (CSS) so it can
+  // never cover the target. On desktop it sits on whichever side of the
+  // target has the most room, and is clamped inside the viewport.
   function placeTooltip(tip, rect) {
-    var W = winW(), H = winH(), M = 16, mobile = isMobile();
+    if (isMobile()) {
+      tip.classList.add('tour-tooltip-docked');
+      tip.style.left = '';
+      tip.style.top = '';
+      return;
+    }
+    tip.classList.remove('tour-tooltip-docked');
+    var W = winW(), H = winH(), M = 16;
     var tr = rectOf(tip) || { width: 0, height: 0 };
-    var tw = tr.width || (mobile ? Math.min(320, W - 32) : 320);
+    var tw = tr.width || 320;
     var th = tr.height || 170;
     var left, top;
     if (!rect || (!rect.width && !rect.height)) {
       left = (W - tw) / 2; top = (H - th) / 2;
-    } else if (mobile) {
-      left = (W - tw) / 2;
-      top = (rect.top > H / 2) ? rect.top - th - M : rect.bottom + M;
     } else {
       var wide = rect.width > W * 0.6;
       var lowThird = rect.top > H * 2 / 3;
@@ -181,8 +194,8 @@
         top = rect.top;
       }
     }
-    left = Math.max(M, Math.min(left, W - tw - M));
-    top = Math.max(M, Math.min(top, H - th - M));
+    left = clamp(left, M, Math.max(M, W - tw - M));
+    top = clamp(top, M, Math.max(M, H - th - M));
     tip.style.left = Math.round(left) + 'px';
     tip.style.top = Math.round(top) + 'px';
   }
@@ -192,9 +205,9 @@
     if (state.phase !== 0) return;
     state.phase = 1;
 
-    state.backdrop = mk('div', 'tour-backdrop');
-    document.body.appendChild(state.backdrop);
-    fadeIn(state.backdrop);
+    state.spotlight = mk('div', 'tour-spotlight');
+    document.body.appendChild(state.spotlight);
+    fadeIn(state.spotlight);
 
     state.skipLink = mk('a', 'tour-skip');
     state.skipLink.setAttribute('href', '#');
@@ -214,15 +227,16 @@
 
   function targetsFor(n) {
     if (n === 1) {
-      var col = document.querySelector('.panel.center');
-      var cards = document.querySelectorAll('#center-panel-body .card.opp');
-      return { spot: col, anchor: (cards && cards[0]) || col };
+      var card = (document.querySelectorAll('#center-panel-body .card.opp') || [])[0]
+        || document.querySelector('#center-panel-body .card')
+        || document.querySelector('.panel.center');
+      return { spot: card, anchor: card };
     }
     if (n === 2) {
-      var card = document.querySelector('.card.opp.prime')
+      var why = document.querySelector('.card.opp.prime')
         || document.querySelector('.card.opp.evaluate')
         || (document.querySelectorAll('#center-panel-body .card.opp') || [])[0];
-      return { spot: card, anchor: card };
+      return { spot: why, anchor: why };
     }
     if (n === 3) {
       return { spot: document.querySelector('.tabs'), anchor: document.querySelector('.tab[data-tab="art"]') };
@@ -259,10 +273,10 @@
   }
 
   function layoutStep(n) {
-    if (!state.backdrop) return;
+    if (!state.spotlight) return;
     var t = targetsFor(n);
     var spotRect = rectOf(t.spot);
-    setClip(state.backdrop, spotRect);
+    layoutSpotlight(spotRect);
     if (state.tooltip) placeTooltip(state.tooltip, rectOf(t.anchor) || spotRect);
   }
 
@@ -300,7 +314,7 @@
     if (n > 4) { endPhase1(); return; }
     if (state.stepTeardown) { try { state.stepTeardown(); } catch (e) { /* noop */ } state.stepTeardown = null; }
     state.step = n;
-    // The Why panel opened in step 2 lives below the backdrop; close it once
+    // The Why panel opened in step 2 lives below the spotlight; close it once
     // the tour moves on so it does not surface uninvited later.
     if (n >= 3) {
       var wm = document.getElementById('why-modal');
@@ -310,7 +324,14 @@
     state.tooltip = buildTooltip(n);
     document.body.appendChild(state.tooltip);
     fadeIn(state.tooltip);
+
+    var t = targetsFor(n);
+    scrollIntoView(t.spot || t.anchor);
     layoutStep(n);
+    // Re-measure once the scroll-into-view has settled.
+    var id = setTimeout(function () { if (state.step === n) layoutStep(n); }, RELAYOUT_MS);
+    state.timers.push(id);
+
     wireStep(n);
   }
 
@@ -329,8 +350,8 @@
     lsSet(KEY_DONE, 'true');
     teardownPhase1();
 
-    // Backdrop holds (full-dim, no cutout) under the transition card.
-    setClip(state.backdrop, null);
+    // Spotlight collapses to a full-screen dim under the transition card.
+    layoutSpotlight(null);
 
     state.transition = mk('div', 'tour-transition');
     state.transitionMsg = mk('div', 'tour-transition-msg');
@@ -341,10 +362,10 @@
 
     var t1 = setTimeout(function () {
       if (state.transition) state.transition.classList.add('tour-out');
-      if (state.backdrop) state.backdrop.classList.add('tour-out');
+      if (state.spotlight) state.spotlight.classList.add('tour-out');
       var t2 = setTimeout(function () {
         removeNode(state.transition); state.transition = null; state.transitionMsg = null;
-        removeNode(state.backdrop); state.backdrop = null;
+        removeNode(state.spotlight); state.spotlight = null;
         startPhase2();
       }, BACKDROP_FADE_MS);
       state.timers.push(t2);
@@ -358,7 +379,7 @@
     lsSet(KEY_DONE, 'true');
     teardownPhase1();
     removeNode(state.transition); state.transition = null; state.transitionMsg = null;
-    removeNode(state.backdrop); state.backdrop = null;
+    removeNode(state.spotlight); state.spotlight = null;
     startPhase2();
   }
 
