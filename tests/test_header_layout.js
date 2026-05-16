@@ -45,14 +45,18 @@ test('PRIMES counter is not hardcoded amber in the markup', () => {
     'PRIMES must not carry a hardcoded amber class');
 });
 
-test('SCAN button contains ⟳ icon and DAILY BRIEF label is absent', () => {
-  assert.ok(HEADER.includes('id="refresh-btn"'), 'SCAN button present');
-  assert.ok(HEADER.includes('⟳'), 'SCAN button contains ⟳ icon');
-  assert.equal(HEADER.includes('Daily Brief'), false, 'DAILY BRIEF label removed from header');
-  assert.equal(HEADER.includes('DAILY BRIEF'), false, 'no DAILY BRIEF variant present');
-  // Brief button is present and renamed
-  assert.ok(HEADER.includes('id="digest-btn"'), 'BRIEF button present');
-  assert.ok(/id="digest-btn"[^>]*>BRIEF</.test(HEADER), 'digest-btn labelled BRIEF');
+test('SCAN and BRIEF buttons live in the filter bar, not the header', () => {
+  // Header must NOT contain the action buttons — they belong beside the score slider
+  assert.equal(HEADER.includes('id="refresh-btn"'), false, 'SCAN button must not be in the header');
+  assert.equal(HEADER.includes('id="digest-btn"'), false, 'BRIEF button must not be in the header');
+  assert.equal(HEADER.includes('Daily Brief'), false, 'old Daily Brief label absent everywhere in header');
+
+  // Buttons must be inside the filter-bar
+  const filterBar = (HTML.match(/id="filter-bar"[\s\S]*?<\/div>/) || [''])[0];
+  assert.ok(HTML.includes('id="refresh-btn"'), 'SCAN button present in page');
+  assert.ok(HTML.includes('⟳'), 'SCAN button contains ⟳ icon');
+  assert.ok(HTML.includes('id="digest-btn"'), 'BRIEF button present in page');
+  assert.ok(/id="digest-btn"[^>]*>BRIEF</.test(HTML), 'digest-btn labelled BRIEF');
 });
 
 test('header is a 48px band; counter strip does not stretch', () => {
