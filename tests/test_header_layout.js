@@ -68,6 +68,22 @@ test('header is a 48px band; counter strip does not stretch', () => {
   assert.match(lbl, /letter-spacing:\s*0\.1em/, 'counter label letter-spacing is 0.1em');
 });
 
+test('h1 does not grow (counters sit immediately right of logo)', () => {
+  // h1 must NOT have flex: 1 — that would push counters to centre.
+  const h1Rule = (CSS.match(/header h1\s*\{([^}]*)\}/) || [])[1] || '';
+  assert.ok(h1Rule, 'header h1 rule found');
+  assert.equal(h1Rule.includes('flex: 1'), false,
+    'h1 must not have flex: 1 — that centres the counters instead of hugging the logo');
+  assert.ok(h1Rule.includes('flex: 0') || h1Rule.includes('flex:0'),
+    'h1 must have flex: 0 0 auto so counters sit immediately right of the logo');
+});
+
+test('scan_button copy file has the ⟳ icon label', () => {
+  const copy = fs.readFileSync(
+    path.join(__dirname, '..', 'docs', 'copy', 'scan_button.md'), 'utf8');
+  assert.ok(copy.includes('⟳'), 'scan_button.md must contain the ⟳ icon so the API returns the right label');
+});
+
 test('rail width is 40px in collapsed state', () => {
   const collapsedRule = (CSS.match(/\.panel\.side\.collapsed\s*\{([^}]*)\}/) || [])[1] || '';
   assert.match(collapsedRule, /width:\s*40px/, 'collapsed rail width is 40px');
