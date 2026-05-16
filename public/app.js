@@ -3,14 +3,6 @@
 
   async function api(p, opts) { const r = await fetch(p, opts); if (!r.ok) throw new Error(`${p} ${r.status}`); return r.json(); }
 
-  async function loadCopy() {
-    const el = document.getElementById('product-tagline');
-    try {
-      const { value } = await api('/api/copy/product_tagline');
-      el.textContent = (value || '').replace(/\s+/g, ' ').trim() || '<PLACEHOLDER_PRODUCT_TAGLINE>';
-    } catch { el.textContent = '<PLACEHOLDER_PRODUCT_TAGLINE>'; }
-  }
-
   // The scan button's label comes from docs/copy/scan_button.md via getCopy().
   // A copy file that is missing, empty, or still holding a placeholder token
   // resolves to an angle-bracket token (e.g. <PLACEHOLDER_SCAN_BUTTON>) — never
@@ -55,7 +47,10 @@
       const primes = list.filter(o => o.score_tier === 'PRIME').length;
       const evals = list.filter(o => o.score_tier === 'EVALUATE').length;
       const closing = list.filter(o => o.days_remaining != null && o.days_remaining <= 14).length;
-      const pr = document.getElementById('stat-primes'); if (pr) pr.textContent = primes;
+      // PRIMES goes amber only while there is a prime to act on; at zero it
+      // drops to bone so it stops competing for attention.
+      const pr = document.getElementById('stat-primes');
+      if (pr) { pr.textContent = primes; pr.className = 'stat-val' + (primes > 0 ? ' amber' : ''); }
       const ev = document.getElementById('stat-evaluates'); if (ev) ev.textContent = evals;
       // CLOSING counter is red only while there is something closing; at zero
       // it drops to a muted bone so it stops competing for attention.
@@ -87,9 +82,8 @@
       center.appendChild(await renderZeroResults());
     } else if (data.empty_state) {
       const banner = document.createElement('div');
-      banner.className = 'card';
-      banner.style.borderLeft = '2px solid var(--amber)';
-      banner.innerHTML = `<div style="font-weight:700;color:var(--amber);font-size:13px;text-transform:uppercase;letter-spacing:0.06em">${escape(data.title || '')}</div><div style="font-size:13px;color:var(--text-dim);margin-top:4px">${escape(data.body || '')}</div>`;
+      banner.className = 'empty-banner';
+      banner.innerHTML = `<div class="empty-banner-title">${escape(data.title || '')}</div><div class="empty-banner-body">${escape(data.body || '')}</div>`;
       center.appendChild(banner);
     }
     for (const o of opps) center.appendChild(window.renderOpportunityCard(o));
@@ -100,15 +94,18 @@
     if (isAuthed()) {
       try {
         const pl = await api('/api/pipeline');
-        document.getElementById('pipeline-count').textContent = (pl.pipeline || []).length;
+        const plCount = (pl.pipeline || []).length;
+        document.getElementById('pipeline-count').textContent = plCount;
+        railSync('left', plCount, plCount > 0);
         left.appendChild(window.renderPipelinePanel(pl.pipeline || []));
-      } catch { document.getElementById('pipeline-count').textContent = 0; }
+      } catch { document.getElementById('pipeline-count').textContent = 0; railSync('left', 0, false); }
       try {
         const prof = await api('/api/profile');
         if (prof.profile) left.appendChild(window.renderYourLens(prof.profile));
       } catch {}
     } else {
       document.getElementById('pipeline-count').textContent = 0;
+      railSync('left', 0, false);
       left.appendChild(renderSignedOutBanner('pipeline and your-lens require a pilot token'));
     }
 
@@ -117,9 +114,14 @@
     right.innerHTML = '';
     try {
       const diffs = await api('/api/admin/diffs?days=14');
-      document.getElementById('diff-count').textContent = (diffs.diffs || []).length;
-      right.appendChild(window.renderDiffFeed(diffs.diffs || []));
-    } catch {}
+      const list = diffs.diffs || [];
+      document.getElementById('diff-count').textContent = list.length;
+      // While the diff feed is collapsed its badge is the only ambient signal:
+      // amber when something is closing soon (≤14d), bone white otherwise.
+      const closingSoon = list.some(d => d.days_remaining != null && d.days_remaining >= 0 && d.days_remaining <= 14);
+      railSync('right', list.length, closingSoon);
+      right.appendChild(window.renderDiffFeed(list));
+    } catch { railSync('right', 0, false); }
   }
 
   async function renderArt() {
@@ -283,11 +285,14 @@
 
   function escape(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 
+  function railSync(side, count, alert) {
+    if (window.setPanelRail) window.setPanelRail(side, count, alert);
+  }
+
   window.app = { refreshAll, setTab };
 
   document.addEventListener('DOMContentLoaded', async () => {
     await whoami();
-    await loadCopy();
     await loadScanLabel();
     window.wireFilterBar(() => setTab(state.tab));
     for (const t of document.querySelectorAll('.tab')) t.addEventListener('click', () => setTab(t.dataset.tab));

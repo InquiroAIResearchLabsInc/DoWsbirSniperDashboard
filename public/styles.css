@@ -34,28 +34,38 @@ body {
   flex-direction: column;
 }
 
+/* Header — one unified band, three zones. The brand anchors left, the counter
+   band sits at the true horizontal centre (it is the primary read), and the
+   actions anchor right. Left and right zones flex equally so the centre stays
+   centred regardless of their content width. */
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 12px 20px;
+  padding: 0 20px;
+  height: 56px;
   display: flex;
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
 }
 header h1 {
+  flex: 1 1 0;
   font-size: 17px;
   font-weight: 800;
   letter-spacing: 0.18em;
   color: var(--bone);
   text-transform: uppercase;
 }
-header .tagline {
-  color: var(--muted);
-  font-size: 13px;
-  font-style: italic;
+.header-actions {
+  flex: 1 1 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
 }
-.stats-bar { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+/* Counter band — centred, single row. Each counter is a stacked number/label.
+   A faint vertical rule sits midway in the 32px gap between counters. */
+.stats-bar { flex: 0 0 auto; display: flex; gap: 32px; align-items: center; }
 
 /* Scan button — the one amber outline button: it is the header's primary action */
 .refresh-btn {
@@ -77,16 +87,89 @@ header .tagline {
 /* Daily Brief — a quiet ghost button, never amber */
 .refresh-btn.ghost { background: transparent; color: var(--bone); border-color: var(--border-strong); }
 .refresh-btn.ghost:hover { background: var(--surface-3); border-color: rgba(226, 232, 240, 0.4); }
-.stat { display: flex; flex-direction: column; align-items: center; }
-.stat-val { font-size: 22px; font-weight: 800; color: var(--bone); }
+.stat { position: relative; display: flex; flex-direction: column; align-items: center; }
+.stat + .stat::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 20px;
+  background: rgba(226, 232, 240, 0.12);
+}
+.stat-val { font-size: 22px; font-weight: 800; color: var(--bone); line-height: 1.1; }
 .stat-val.amber { color: var(--amber); }
 .stat-val.red { color: var(--red); }
 .stat-val.closing-zero { color: rgba(226, 232, 240, 0.3); }
-.stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.stat-lbl {
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 2px;
+}
 
-.layout { flex: 1; display: grid; grid-template-columns: 320px 1fr 360px; min-height: 0; }
+.layout { flex: 1; display: flex; min-height: 0; }
 .panel { border-right: 1px solid var(--border); display: flex; flex-direction: column; min-height: 0; }
 .panel:last-child { border-right: none; }
+
+/* Collapsible side rails (desktop). Pipeline and Diff feed default to a 32px
+   rail and expand on demand — the centre opportunities feed is the primary
+   surface and should not compete on load. The centre flexes fluidly as the
+   rails open/close, so no JS width calculation is needed. Mobile keeps its
+   own tap-to-open behaviour (mobile_nav.js) — the rails stay hidden there. */
+@media (min-width: 721px) {
+  .panel.center { flex: 1 1 0; min-width: 0; }
+  .panel.side { flex-shrink: 0; overflow: hidden; transition: width 200ms ease; }
+  #left-panel { width: 240px; }
+  #right-panel { width: 360px; }
+  .panel.side.collapsed { width: 32px; }
+  .panel.side.collapsed > .panel-header,
+  .panel.side.collapsed > .panel-body { display: none; }
+  .panel.side.collapsed > .panel-rail { display: flex; }
+}
+
+.panel-rail {
+  display: none;
+  width: 32px;
+  flex-shrink: 0;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  background: var(--surface);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.panel-rail:hover { background: var(--surface-2); }
+.rail-arrow { color: var(--bone); font-size: 13px; line-height: 1; }
+.rail-label {
+  writing-mode: vertical-rl;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+/* Rail badge — the only ambient signal while a panel is collapsed: amber when
+   the panel holds something that needs attention, bone white otherwise. */
+.rail-badge { font-size: 10px; font-weight: 700; color: var(--bone); font-variant-numeric: tabular-nums; }
+.rail-badge.alert { color: var(--amber); }
+
+.panel-collapse {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
+  font-family: var(--font);
+}
+.panel-collapse:hover { color: var(--bone); }
 .panel-header {
   padding: 11px 16px;
   border-bottom: 1px solid var(--border);
@@ -239,6 +322,28 @@ header .tagline {
 /* 8–14 days is bone, not amber — the only amber on a card is the score */
 .deadline.warning { color: rgba(226, 232, 240, 0.7); }
 .deadline.ok { color: rgba(226, 232, 240, 0.5); }
+
+/* Empty-state banner — the "warning, not critical" pattern. A faint amber
+   tint and a 3px amber left border carry the signal; the title is amber but
+   the body stays bone white so amber never sits on an amber-adjacent fill. */
+.empty-banner {
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 3px solid #F59E0B;
+  border-radius: 0 4px 4px 0;
+  padding: 14px;
+}
+.empty-banner-title {
+  color: #F59E0B;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.empty-banner-body {
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 13px;
+  margin-top: 6px;
+}
 
 .diff-entry {
   border-left: 2px solid var(--border);
@@ -649,24 +754,25 @@ footer .val { color: var(--text-dim); }
 
   header {
     flex-wrap: wrap;
+    height: auto;
     gap: 10px 14px;
     padding: 13px 16px 12px;
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
   }
   header h1 { font-size: 15px; letter-spacing: 0.14em; flex: 1 1 auto; }
-  header .tagline { display: none; }
 
   .stats-bar {
-    margin-left: 0;
     flex: 1 1 100%;
     gap: 4px;
     justify-content: space-between;
     border-top: 1px solid var(--border);
     padding-top: 11px;
   }
+  .header-actions { flex: 1 1 100%; gap: 10px; }
+  .stat + .stat::before { display: none; }
   .refresh-btn {
-    flex: 1 1 100%;
+    flex: 1 1 0;
     padding: 13px;
     min-height: 46px;
     font-size: 13px;
@@ -701,6 +807,8 @@ footer .val { color: var(--text-dim); }
   .layout { display: flex; flex-direction: column; }
   .panel { border-right: none; border-bottom: 1px solid var(--border); min-height: 0; }
   .panel:last-child { border-bottom: none; }
+  /* Desktop rails do not apply here — mobile keeps mobile_nav's tap-to-open. */
+  .panel-collapse { display: none; }
   .panel.m-primary { order: -1; }
   .panel-body { overflow: visible; flex: none; }
 

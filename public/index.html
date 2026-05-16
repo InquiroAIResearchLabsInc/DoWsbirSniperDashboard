@@ -9,16 +9,17 @@
 <body>
 <header>
   <h1>DSIP SENTINEL</h1>
-  <div class="tagline" id="product-tagline">loading…</div>
   <div class="stats-bar">
-    <div class="stat"><div class="stat-val amber" id="stat-primes">—</div><div class="stat-lbl">Primes</div></div>
+    <div class="stat"><div class="stat-val" id="stat-primes">—</div><div class="stat-lbl">Primes</div></div>
     <div class="stat"><div class="stat-val" id="stat-evaluates">—</div><div class="stat-lbl">Evaluate</div></div>
-    <div class="stat"><div class="stat-val red" id="stat-closing">—</div><div class="stat-lbl">Closing</div></div>
+    <div class="stat"><div class="stat-val" id="stat-closing">—</div><div class="stat-lbl">Closing</div></div>
     <div class="stat"><div class="stat-val" id="stat-art">—</div><div class="stat-lbl">ART Strong</div></div>
     <div class="stat"><div class="stat-val" id="stat-pipeline">—</div><div class="stat-lbl">Pipeline</div></div>
   </div>
-  <button id="digest-btn" class="refresh-btn ghost" type="button" hidden>Daily Brief</button>
-  <button id="refresh-btn" class="refresh-btn" type="button" hidden>Scan</button>
+  <div class="header-actions">
+    <button id="digest-btn" class="refresh-btn ghost" type="button" hidden>Daily Brief</button>
+    <button id="refresh-btn" class="refresh-btn" type="button" hidden>Scan</button>
+  </div>
 </header>
 
 <div class="tabs">
@@ -29,11 +30,19 @@
 </div>
 
 <div class="layout">
-  <div class="panel">
-    <div class="panel-header" id="left-panel-header">Pipeline <span class="count" id="pipeline-count">0</span></div>
+  <div class="panel side" id="left-panel">
+    <button class="panel-rail" id="left-rail" type="button" aria-label="Expand pipeline">
+      <span class="rail-arrow">&rsaquo;</span>
+      <span class="rail-label">Pipeline</span>
+      <span class="rail-badge" id="pipeline-rail-badge">0</span>
+    </button>
+    <div class="panel-header" id="left-panel-header">
+      <button class="panel-collapse" data-collapse="left" type="button" aria-label="Collapse pipeline">&lsaquo;</button>
+      Pipeline <span class="count" id="pipeline-count">0</span>
+    </div>
     <div class="panel-body scrollbar-thin" id="left-panel-body"></div>
   </div>
-  <div class="panel">
+  <div class="panel center">
     <div class="filter-bar" id="filter-bar">
       <input type="search" id="filter-q" autocomplete="off" spellcheck="false" placeholder="search…">
       <select id="filter-component">
@@ -73,8 +82,16 @@
     </div>
     <div class="panel-body scrollbar-thin" id="center-panel-body"></div>
   </div>
-  <div class="panel">
-    <div class="panel-header" id="right-panel-header">Diff feed <span class="count" id="diff-count">—</span></div>
+  <div class="panel side" id="right-panel">
+    <button class="panel-rail" id="right-rail" type="button" aria-label="Expand diff feed">
+      <span class="rail-arrow">&rsaquo;</span>
+      <span class="rail-label">Diff feed</span>
+      <span class="rail-badge" id="diff-rail-badge">0</span>
+    </button>
+    <div class="panel-header" id="right-panel-header">
+      <button class="panel-collapse" data-collapse="right" type="button" aria-label="Collapse diff feed">&lsaquo;</button>
+      Diff feed <span class="count" id="diff-count">—</span>
+    </div>
     <div class="panel-body scrollbar-thin" id="right-panel-body"></div>
   </div>
 </div>
@@ -98,6 +115,7 @@
 <script src="/components/sba_flag.js"></script>
 <script src="/components/filter_bar.js"></script>
 <script src="/components/mobile_nav.js"></script>
+<script src="/components/panel_collapse.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>
