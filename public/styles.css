@@ -48,12 +48,13 @@ header {
   flex-shrink: 0;
 }
 header h1 {
-  flex: 1 1 0;
+  flex: 0 0 auto;
   font-size: 17px;
   font-weight: 800;
   letter-spacing: 0.18em;
   color: var(--bone);
   text-transform: uppercase;
+  margin-right: 16px;
 }
 .header-actions {
   flex: 1 1 0;
