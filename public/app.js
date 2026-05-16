@@ -1,7 +1,15 @@
 (function () {
   const state = { tab: 'topics', tenant: null, role: null, auth_kind: null, scanLabel: 'Scan' };
 
-  async function api(p, opts) { const r = await fetch(p, opts); if (!r.ok) throw new Error(`${p} ${r.status}`); return r.json(); }
+  async function api(p, opts) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 10000);
+    try {
+      const r = await fetch(p, { signal: ctrl.signal, ...opts });
+      if (!r.ok) throw new Error(`${p} ${r.status}`);
+      return r.json();
+    } finally { clearTimeout(t); }
+  }
 
   // The scan button's label comes from docs/copy/scan_button.md via getCopy().
   // A copy file that is missing, empty, or still holding a placeholder token
@@ -68,7 +76,7 @@
 
   async function renderTopics() {
     if (window.setFilterMode) window.setFilterMode('topics');
-    const f = window.getFilters();
+    const f = window.getFilters ? window.getFilters() : {};
     const params = new URLSearchParams();
     for (const k of ['q', 'component', 'tier', 'min_score']) {
       if (f[k] && f[k] !== '0') params.set(k, f[k]);
@@ -148,7 +156,7 @@
       } catch {}
     }
 
-    const f = window.getFilters();
+    const f = window.getFilters ? window.getFilters() : {};
     const params = new URLSearchParams();
     if (f.q) params.set('q', f.q);
     if (f.component) params.set('component', f.component);
@@ -272,10 +280,10 @@
   function setTab(name) {
     state.tab = name;
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t.dataset.tab === name);
-    if (name === 'topics') renderTopics();
-    if (name === 'art') renderArt();
-    if (name === 'patterns') renderPatterns();
-    if (name === 'admin') renderAdmin();
+    if (name === 'topics') renderTopics().catch(e => console.error('[sentinel] renderTopics:', e));
+    if (name === 'art') renderArt().catch(e => console.error('[sentinel] renderArt:', e));
+    if (name === 'patterns') renderPatterns().catch(e => console.error('[sentinel] renderPatterns:', e));
+    if (name === 'admin') renderAdmin().catch(e => console.error('[sentinel] renderAdmin:', e));
   }
 
   function refreshAll() {
