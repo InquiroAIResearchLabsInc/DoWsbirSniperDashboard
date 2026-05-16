@@ -30,11 +30,19 @@
 </div>
 
 <div class="layout">
-  <div class="panel">
-    <div class="panel-header" id="left-panel-header">Pipeline <span class="count" id="pipeline-count">0</span></div>
+  <div class="panel side" id="left-panel">
+    <button class="panel-rail" id="left-rail" type="button" aria-label="Expand pipeline">
+      <span class="rail-arrow">&rsaquo;</span>
+      <span class="rail-label">Pipeline</span>
+      <span class="rail-badge" id="pipeline-rail-badge">0</span>
+    </button>
+    <div class="panel-header" id="left-panel-header">
+      <button class="panel-collapse" data-collapse="left" type="button" aria-label="Collapse pipeline">&lsaquo;</button>
+      Pipeline <span class="count" id="pipeline-count">0</span>
+    </div>
     <div class="panel-body scrollbar-thin" id="left-panel-body"></div>
   </div>
-  <div class="panel">
+  <div class="panel center">
     <div class="filter-bar" id="filter-bar">
       <input type="search" id="filter-q" autocomplete="off" spellcheck="false" placeholder="search…">
       <select id="filter-component">
@@ -74,8 +82,16 @@
     </div>
     <div class="panel-body scrollbar-thin" id="center-panel-body"></div>
   </div>
-  <div class="panel">
-    <div class="panel-header" id="right-panel-header">Diff feed <span class="count" id="diff-count">—</span></div>
+  <div class="panel side" id="right-panel">
+    <button class="panel-rail" id="right-rail" type="button" aria-label="Expand diff feed">
+      <span class="rail-arrow">&rsaquo;</span>
+      <span class="rail-label">Diff feed</span>
+      <span class="rail-badge" id="diff-rail-badge">0</span>
+    </button>
+    <div class="panel-header" id="right-panel-header">
+      <button class="panel-collapse" data-collapse="right" type="button" aria-label="Collapse diff feed">&lsaquo;</button>
+      Diff feed <span class="count" id="diff-count">—</span>
+    </div>
     <div class="panel-body scrollbar-thin" id="right-panel-body"></div>
   </div>
 </div>
@@ -99,6 +115,7 @@
 <script src="/components/sba_flag.js"></script>
 <script src="/components/filter_bar.js"></script>
 <script src="/components/mobile_nav.js"></script>
+<script src="/components/panel_collapse.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>

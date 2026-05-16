@@ -95,15 +95,18 @@
     if (isAuthed()) {
       try {
         const pl = await api('/api/pipeline');
-        document.getElementById('pipeline-count').textContent = (pl.pipeline || []).length;
+        const plCount = (pl.pipeline || []).length;
+        document.getElementById('pipeline-count').textContent = plCount;
+        railSync('left', plCount, plCount > 0);
         left.appendChild(window.renderPipelinePanel(pl.pipeline || []));
-      } catch { document.getElementById('pipeline-count').textContent = 0; }
+      } catch { document.getElementById('pipeline-count').textContent = 0; railSync('left', 0, false); }
       try {
         const prof = await api('/api/profile');
         if (prof.profile) left.appendChild(window.renderYourLens(prof.profile));
       } catch {}
     } else {
       document.getElementById('pipeline-count').textContent = 0;
+      railSync('left', 0, false);
       left.appendChild(renderSignedOutBanner('pipeline and your-lens require a pilot token'));
     }
 
@@ -112,9 +115,14 @@
     right.innerHTML = '';
     try {
       const diffs = await api('/api/admin/diffs?days=14');
-      document.getElementById('diff-count').textContent = (diffs.diffs || []).length;
-      right.appendChild(window.renderDiffFeed(diffs.diffs || []));
-    } catch {}
+      const list = diffs.diffs || [];
+      document.getElementById('diff-count').textContent = list.length;
+      // While the diff feed is collapsed its badge is the only ambient signal:
+      // amber when something is closing soon (≤14d), bone white otherwise.
+      const closingSoon = list.some(d => d.days_remaining != null && d.days_remaining >= 0 && d.days_remaining <= 14);
+      railSync('right', list.length, closingSoon);
+      right.appendChild(window.renderDiffFeed(list));
+    } catch { railSync('right', 0, false); }
   }
 
   async function renderArt() {
@@ -277,6 +285,10 @@
   }
 
   function escape(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+
+  function railSync(side, count, alert) {
+    if (window.setPanelRail) window.setPanelRail(side, count, alert);
+  }
 
   window.app = { refreshAll, setTab };
 
