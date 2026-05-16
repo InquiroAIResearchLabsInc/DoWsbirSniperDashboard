@@ -871,7 +871,9 @@ footer .val { color: var(--text-dim); }
   .panel:last-child { border-bottom: none; }
   /* Desktop rails do not apply here — mobile keeps mobile_nav's tap-to-open. */
   .panel-collapse { display: none; }
-  .panel.m-primary { order: -1; }
+  /* Opportunities panel sits below the two collapsible side panels on mobile
+     so Pipeline and Diff feed are visible at the top, not buried at the bottom. */
+  .panel.m-primary { order: 1; }
   .panel-body { overflow: visible; flex: none; }
 
   .panel.m-collapsible > .panel-header {
