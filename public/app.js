@@ -3,14 +3,6 @@
 
   async function api(p, opts) { const r = await fetch(p, opts); if (!r.ok) throw new Error(`${p} ${r.status}`); return r.json(); }
 
-  async function loadCopy() {
-    const el = document.getElementById('product-tagline');
-    try {
-      const { value } = await api('/api/copy/product_tagline');
-      el.textContent = (value || '').replace(/\s+/g, ' ').trim() || '<PLACEHOLDER_PRODUCT_TAGLINE>';
-    } catch { el.textContent = '<PLACEHOLDER_PRODUCT_TAGLINE>'; }
-  }
-
   // The scan button's label comes from docs/copy/scan_button.md via getCopy().
   // A copy file that is missing, empty, or still holding a placeholder token
   // resolves to an angle-bracket token (e.g. <PLACEHOLDER_SCAN_BUTTON>) — never
@@ -55,7 +47,10 @@
       const primes = list.filter(o => o.score_tier === 'PRIME').length;
       const evals = list.filter(o => o.score_tier === 'EVALUATE').length;
       const closing = list.filter(o => o.days_remaining != null && o.days_remaining <= 14).length;
-      const pr = document.getElementById('stat-primes'); if (pr) pr.textContent = primes;
+      // PRIMES goes amber only while there is a prime to act on; at zero it
+      // drops to bone so it stops competing for attention.
+      const pr = document.getElementById('stat-primes');
+      if (pr) { pr.textContent = primes; pr.className = 'stat-val' + (primes > 0 ? ' amber' : ''); }
       const ev = document.getElementById('stat-evaluates'); if (ev) ev.textContent = evals;
       // CLOSING counter is red only while there is something closing; at zero
       // it drops to a muted bone so it stops competing for attention.
@@ -287,7 +282,6 @@
 
   document.addEventListener('DOMContentLoaded', async () => {
     await whoami();
-    await loadCopy();
     await loadScanLabel();
     window.wireFilterBar(() => setTab(state.tab));
     for (const t of document.querySelectorAll('.tab')) t.addEventListener('click', () => setTab(t.dataset.tab));
