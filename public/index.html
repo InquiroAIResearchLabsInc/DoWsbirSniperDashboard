@@ -10,15 +10,19 @@
 <header>
   <h1>DSIP SENTINEL</h1>
   <div class="stats-bar">
-    <div class="stat"><div class="stat-val" id="stat-primes">—</div><div class="stat-lbl">Primes</div></div>
-    <div class="stat"><div class="stat-val" id="stat-evaluates">—</div><div class="stat-lbl">Evaluate</div></div>
-    <div class="stat"><div class="stat-val" id="stat-closing">—</div><div class="stat-lbl">Closing</div></div>
-    <div class="stat"><div class="stat-val" id="stat-art">—</div><div class="stat-lbl">ART Strong</div></div>
-    <div class="stat"><div class="stat-val" id="stat-pipeline">—</div><div class="stat-lbl">Pipeline</div></div>
+    <span class="stat"><span class="stat-val" id="stat-primes">—</span><span class="stat-lbl">PRIMES</span></span>
+    <span class="stat-sep">·</span>
+    <span class="stat"><span class="stat-val" id="stat-evaluates">—</span><span class="stat-lbl">EVALUATE</span></span>
+    <span class="stat-sep">·</span>
+    <span class="stat"><span class="stat-val" id="stat-closing">—</span><span class="stat-lbl">CLOSING</span></span>
+    <span class="stat-sep">·</span>
+    <span class="stat"><span class="stat-val" id="stat-art">—</span><span class="stat-lbl">ART STRONG</span></span>
+    <span class="stat-sep">·</span>
+    <span class="stat"><span class="stat-val" id="stat-pipeline">—</span><span class="stat-lbl">PIPELINE</span></span>
   </div>
   <div class="header-actions">
-    <button id="digest-btn" class="refresh-btn ghost" type="button" hidden>Daily Brief</button>
-    <button id="refresh-btn" class="refresh-btn" type="button" hidden>Scan</button>
+    <button id="digest-btn" class="refresh-btn ghost" type="button" hidden>BRIEF</button>
+    <button id="refresh-btn" class="refresh-btn" type="button" hidden>⟳ SCAN DoW TOPICS</button>
   </div>
 </header>
 
@@ -32,8 +36,8 @@
 <div class="layout">
   <div class="panel side" id="left-panel">
     <button class="panel-rail" id="left-rail" type="button" aria-label="Expand pipeline">
-      <span class="rail-arrow">&rsaquo;</span>
-      <span class="rail-label">Pipeline</span>
+      <span class="rail-arrow">▶</span>
+      <span class="rail-label">PIPELINE</span>
       <span class="rail-badge" id="pipeline-rail-badge">0</span>
     </button>
     <div class="panel-header" id="left-panel-header">
@@ -84,8 +88,8 @@
   </div>
   <div class="panel side" id="right-panel">
     <button class="panel-rail" id="right-rail" type="button" aria-label="Expand diff feed">
-      <span class="rail-arrow">&rsaquo;</span>
-      <span class="rail-label">Diff feed</span>
+      <span class="rail-arrow">◀</span>
+      <span class="rail-label">DIFF FEED</span>
       <span class="rail-badge" id="diff-rail-badge">0</span>
     </button>
     <div class="panel-header" id="right-panel-header">

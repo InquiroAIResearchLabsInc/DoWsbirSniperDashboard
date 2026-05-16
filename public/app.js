@@ -21,8 +21,8 @@
       const { value } = await api('/api/copy/scan_button');
       let label = (value || '').replace(/\s+/g, ' ').trim();
       if (/^<.*>$/.test(label)) label = '';
-      state.scanLabel = label || 'Scan';
-    } catch { state.scanLabel = 'Scan'; }
+      state.scanLabel = label || '⟳ SCAN DoW TOPICS';
+    } catch { state.scanLabel = '⟳ SCAN DoW TOPICS'; }
     if (btn) btn.textContent = state.scanLabel;
   }
 
@@ -58,7 +58,7 @@
       // PRIMES goes amber only while there is a prime to act on; at zero it
       // drops to bone so it stops competing for attention.
       const pr = document.getElementById('stat-primes');
-      if (pr) { pr.textContent = primes; pr.className = 'stat-val' + (primes > 0 ? ' amber' : ''); }
+      if (pr) { pr.textContent = primes; pr.className = 'stat-val' + (primes > 0 ? ' amber' : ' primes-zero'); }
       const ev = document.getElementById('stat-evaluates'); if (ev) ev.textContent = evals;
       // CLOSING counter is red only while there is something closing; at zero
       // it drops to a muted bone so it stops competing for attention.
@@ -306,7 +306,17 @@
     for (const t of document.querySelectorAll('.tab')) t.addEventListener('click', () => setTab(t.dataset.tab));
     const refreshBtn = document.getElementById('refresh-btn');
     if (refreshBtn) {
-      refreshBtn.addEventListener('click', () => { if (window.openScanNotice) window.openScanNotice(); });
+      refreshBtn.addEventListener('click', () => {
+        refreshBtn.textContent = '⟳ SCANNING...';
+        refreshBtn.classList.add('scanning');
+        refreshBtn.disabled = true;
+        if (window.openScanNotice) window.openScanNotice();
+        setTimeout(() => {
+          refreshBtn.textContent = state.scanLabel;
+          refreshBtn.classList.remove('scanning');
+          refreshBtn.disabled = false;
+        }, 3000);
+      });
       if (isAuthed()) refreshBtn.hidden = false;
     }
     const digestBtn = document.getElementById('digest-btn');

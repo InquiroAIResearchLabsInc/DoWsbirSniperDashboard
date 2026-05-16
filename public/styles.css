@@ -34,15 +34,14 @@ body {
   flex-direction: column;
 }
 
-/* Header — one unified band, three zones. The brand anchors left, the counter
-   band sits at the true horizontal centre (it is the primary read), and the
-   actions anchor right. Left and right zones flex equally so the centre stays
-   centred regardless of their content width. */
+/* Header — one unified left-to-right band: brand anchors left, inline counter
+   strip sits immediately right of the brand (32px gap), actions anchor right.
+   48px band keeps the chrome shallow so the content dominates. */
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 0 20px;
-  height: 56px;
+  height: 48px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -61,11 +60,11 @@ header h1 {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
-/* Counter band — centred, single row. Each counter is a stacked number/label.
-   A faint vertical rule sits midway in the 32px gap between counters. */
-.stats-bar { flex: 0 0 auto; display: flex; gap: 32px; align-items: center; }
+/* Counter strip — inline, immediately right of brand. Each counter is
+   number + label on one line; a faint · separates the groups. */
+.stats-bar { flex: 0 0 auto; display: flex; gap: 8px; align-items: center; }
 
 /* Scan button — the one amber outline button: it is the header's primary action */
 .refresh-btn {
@@ -84,30 +83,25 @@ header h1 {
 }
 .refresh-btn:hover { background: rgba(245, 158, 11, 0.12); }
 .refresh-btn:disabled { opacity: 0.6; cursor: default; }
-/* Daily Brief — a quiet ghost button, never amber */
-.refresh-btn.ghost { background: transparent; color: var(--bone); border-color: var(--border-strong); }
-.refresh-btn.ghost:hover { background: var(--surface-3); border-color: rgba(226, 232, 240, 0.4); }
-.stat { position: relative; display: flex; flex-direction: column; align-items: center; }
-.stat + .stat::before {
-  content: '';
-  position: absolute;
-  left: -16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 20px;
-  background: rgba(226, 232, 240, 0.12);
-}
-.stat-val { font-size: 22px; font-weight: 800; color: var(--bone); line-height: 1.1; }
+/* BRIEF — no border, no fill; secondary action, least prominent in header */
+.refresh-btn.ghost { background: transparent; color: var(--bone); border: none; }
+.refresh-btn.ghost:hover { background: transparent; color: rgba(226, 232, 240, 0.75); }
+/* Pulse animation while a scan is in progress */
+@keyframes scan-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.refresh-btn.scanning { animation: scan-pulse 1s ease-in-out infinite; pointer-events: none; }
+/* Each counter is number + label inline on one line. */
+.stat { display: inline-flex; align-items: baseline; gap: 4px; }
+.stat-sep { color: rgba(226, 232, 240, 0.2); font-size: 14px; }
+.stat-val { font-size: 13px; font-weight: 800; color: var(--bone); font-variant-numeric: tabular-nums; }
 .stat-val.amber { color: var(--amber); }
 .stat-val.red { color: var(--red); }
-.stat-val.closing-zero { color: rgba(226, 232, 240, 0.3); }
+.stat-val.closing-zero { color: var(--muted); }
+.stat-val.primes-zero { color: var(--muted); }
 .stat-lbl {
-  font-size: 9px;
+  font-size: 10px;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-top: 2px;
+  letter-spacing: 0.1em;
 }
 
 .layout { flex: 1; display: flex; min-height: 0; }
@@ -124,7 +118,7 @@ header h1 {
   .panel.side { flex-shrink: 0; overflow: hidden; transition: width 200ms ease; }
   #left-panel { width: 240px; }
   #right-panel { width: 360px; }
-  .panel.side.collapsed { width: 32px; }
+  .panel.side.collapsed { width: 40px; }
   .panel.side.collapsed > .panel-header,
   .panel.side.collapsed > .panel-body { display: none; }
   .panel.side.collapsed > .panel-rail { display: flex; }
@@ -132,7 +126,7 @@ header h1 {
 
 .panel-rail {
   display: none;
-  width: 32px;
+  width: 40px;
   flex-shrink: 0;
   height: 100%;
   flex-direction: column;
@@ -144,7 +138,10 @@ header h1 {
   cursor: pointer;
   font-family: var(--font);
 }
-.panel-rail:hover { background: var(--surface-2); }
+.panel-rail:hover { background: rgba(226, 232, 240, 0.04); }
+/* Inner border faces the centre panel — right edge on the left rail, left on right */
+#left-rail { border-right: 1px solid rgba(226, 232, 240, 0.1); }
+#right-rail { border-left: 1px solid rgba(226, 232, 240, 0.1); }
 .rail-arrow { color: var(--bone); font-size: 13px; line-height: 1; }
 .rail-label {
   writing-mode: vertical-rl;
@@ -349,24 +346,23 @@ header h1 {
 .deadline.warning { color: rgba(226, 232, 240, 0.7); }
 .deadline.ok { color: rgba(226, 232, 240, 0.5); }
 
-/* Empty-state banner — the "warning, not critical" pattern. A faint amber
-   tint and a 3px amber left border carry the signal; the title is amber but
-   the body stays bone white so amber never sits on an amber-adjacent fill. */
+/* Empty-state banner — a barely-visible amber tint and a 3px amber left
+   border carry the signal. The body stays muted bone — amber never fills. */
 .empty-banner {
-  background: rgba(245, 158, 11, 0.08);
+  background: rgba(245, 158, 11, 0.06);
   border-left: 3px solid #F59E0B;
   border-radius: 0 4px 4px 0;
   padding: 14px;
 }
 .empty-banner-title {
   color: #F59E0B;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 .empty-banner-body {
-  color: rgba(226, 232, 240, 0.7);
+  color: rgba(226, 232, 240, 0.65);
   font-size: 13px;
   margin-top: 6px;
 }
