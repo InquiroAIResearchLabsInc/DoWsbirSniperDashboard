@@ -71,6 +71,7 @@ function makeEl(tag) {
   };
   el.click = () => el.dispatchEvent('click');
   el.getBoundingClientRect = () => el._rect;
+  el.scrollIntoView = () => {};
   return el;
 }
 
@@ -246,7 +247,7 @@ test('initTour starts the tour when no tour state is stored', (t) => {
   const env = buildEnv();
   const tour = load(env);
   tour.initTour();
-  const backdrop = env.document.querySelector('.tour-backdrop');
+  const backdrop = env.document.querySelector('.tour-spotlight');
   const tip = env.document.querySelector('.tour-tooltip');
   assert.ok(backdrop, 'backdrop renders on a first visit');
   assert.ok(tip, 'step tooltip renders');
@@ -260,7 +261,7 @@ test('initTour does nothing when the tour is fully completed', (t) => {
   env.localStorage.setItem('sentinel_tour_hotspots_dismissed', 'true');
   const tour = load(env);
   tour.initTour();
-  assert.equal(env.document.querySelector('.tour-backdrop'), null, 'no backdrop');
+  assert.equal(env.document.querySelector('.tour-spotlight'), null, 'no backdrop');
   assert.equal(env.document.querySelector('.tour-hotspot'), null, 'no hotspots');
 });
 
@@ -270,7 +271,7 @@ test('initTour recovers Phase 2 hotspots after a reload mid-explore', (t) => {
   env.localStorage.setItem('sentinel_tour_completed', 'true');
   const tour = load(env);
   tour.initTour();
-  assert.equal(env.document.querySelector('.tour-backdrop'), null, 'guided phase does not replay');
+  assert.equal(env.document.querySelector('.tour-spotlight'), null, 'guided phase does not replay');
   assert.equal(env.document.querySelectorAll('.tour-hotspot').length, 3, 'hotspots restored');
 });
 
@@ -281,7 +282,7 @@ test('skip() marks the tour complete and jumps to Phase 2 hotspots', (t) => {
   tour.initTour();
   tour.skip();
   assert.equal(env.localStorage.getItem('sentinel_tour_completed'), 'true', 'tour marked complete');
-  assert.equal(env.document.querySelector('.tour-backdrop'), null, 'backdrop removed');
+  assert.equal(env.document.querySelector('.tour-spotlight'), null, 'backdrop removed');
   assert.equal(env.document.querySelectorAll('.tour-hotspot').length, 3, 'hotspots appear after skip');
 });
 
@@ -330,7 +331,7 @@ test('Phase 1 completes: Admin dwell shows the transition card and fades the bac
   assert.equal(env.localStorage.getItem('sentinel_tour_completed'), 'true', 'tour marked complete');
 
   t.mock.timers.tick(3000); // transition hold → backdrop fades
-  const backdrop = env.document.querySelector('.tour-backdrop');
+  const backdrop = env.document.querySelector('.tour-spotlight');
   assert.ok(backdrop && backdrop.classList.contains('tour-out'), 'backdrop is fading out');
 });
 
@@ -374,4 +375,17 @@ test('"Take the tour again" clears tour state and reloads the page', (t) => {
   assert.equal(env.localStorage.getItem('sentinel_tour_completed'), null, 'completed flag cleared');
   assert.equal(env.localStorage.getItem('sentinel_tour_hotspots_dismissed'), null, 'hotspot flag cleared');
   assert.equal(env.reloads(), 1, 'page reload requested');
+});
+
+test('on a mobile viewport the tooltip docks instead of covering the target', (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const env = buildEnv();
+  env.window.innerWidth = 390;
+  env.window.innerHeight = 844;
+  const tour = load(env);
+  tour.initTour();
+  const tip = env.document.querySelector('.tour-tooltip');
+  assert.ok(tip, 'tooltip renders');
+  assert.ok(tip.classList.contains('tour-tooltip-docked'), 'tooltip is docked on mobile');
+  assert.equal(tip.style.top, '', 'no JS top offset — CSS docks it to the bottom');
 });
