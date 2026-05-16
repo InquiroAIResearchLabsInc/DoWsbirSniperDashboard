@@ -163,13 +163,13 @@
 
   function renderLink(el, item) {
     if (!item.url) { renderText(el, { text: item.text }); return; }
-    const a = document.createElement('a');
-    a.className = 'btn';
-    a.href = item.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.textContent = item.text || item.url;
-    el.appendChild(a);
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = item.text || item.url;
+    btn.addEventListener('click', () => {
+      if (window.openExternalNotice) window.openExternalNotice(item.text || 'External link', item.url);
+    });
+    el.appendChild(btn);
   }
 
   function renderAction(el, item) {
@@ -182,13 +182,13 @@
       wrap.appendChild(hint);
     }
     if (item.url) {
-      const a = document.createElement('a');
-      a.className = 'btn primary';
-      a.href = item.url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = item.button || 'Open';
-      wrap.appendChild(a);
+      const btn = document.createElement('button');
+      btn.className = 'btn primary';
+      btn.textContent = item.button || 'Open';
+      btn.addEventListener('click', () => {
+        if (window.openExternalNotice) window.openExternalNotice(item.button || 'External link', item.url);
+      });
+      wrap.appendChild(btn);
     } else if (item.disagree) {
       const btn = document.createElement('button');
       btn.className = 'btn';

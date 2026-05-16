@@ -19,11 +19,14 @@ window.renderArtMatchCard = function (m) {
     <div class="row"><span class="key">Recency boost</span><span>${Math.round(m.sub_score_recency || 0)}</span></div>
     <div class="card-actions">
       <button class="btn" data-action="why">Why this?</button>
-      <a class="btn" href="${escape(m.sponsor_url || '#')}" target="_blank" rel="noopener">Open SAM.gov</a>
+      <button class="btn" data-action="sam">Open SAM.gov</button>
       <button class="btn primary" data-action="pursue">Add to Sponsor Pipeline</button>
       <button class="btn danger" data-action="wrong">This sponsor is wrong</button>
     </div>
     <div class="art-reveal" data-reveal></div>`;
+  div.querySelector('[data-action="sam"]').addEventListener('click', () => {
+    if (window.openExternalNotice) window.openExternalNotice('Open SAM.gov', m.sponsor_url || '');
+  });
   div.querySelector('[data-action="why"]').addEventListener('click', async () => {
     const r = await fetch(`/api/why/art/${encodeURIComponent(m.id)}`);
     const j = await r.json();

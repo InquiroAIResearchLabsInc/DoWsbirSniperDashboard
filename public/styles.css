@@ -67,29 +67,42 @@ header h1 {
    number + label on one line; a faint · separates the groups. */
 .stats-bar { flex: 0 0 auto; display: flex; gap: 8px; align-items: center; }
 
-/* Scan button — the one amber outline button: it is the header's primary action */
-.refresh-btn {
+/* filter-actions — SCAN + BRIEF sit flush right in the filter bar, same
+   row as the score slider. margin-left:auto pushes them to the far right
+   regardless of how many filters precede them. */
+.filter-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+/* SCAN — amber outline; matches the filter bar's own border treatment */
+.filter-btn {
   background: transparent;
   color: #F59E0B;
   border: 1px solid #F59E0B;
-  border-radius: 5px;
-  padding: 9px 15px;
-  font-size: 12px;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
   font-family: var(--font);
   white-space: nowrap;
+  line-height: 1;
 }
-.refresh-btn:hover { background: rgba(245, 158, 11, 0.12); }
-.refresh-btn:disabled { opacity: 0.6; cursor: default; }
-/* BRIEF — no border, no fill; secondary action, least prominent in header */
-.refresh-btn.ghost { background: transparent; color: var(--bone); border: none; }
-.refresh-btn.ghost:hover { background: transparent; color: rgba(226, 232, 240, 0.75); }
+.filter-btn:hover { background: rgba(245, 158, 11, 0.1); }
+.filter-btn:disabled { opacity: 0.6; cursor: default; }
+/* BRIEF — ghost text, no outline; secondary action */
+.filter-btn.ghost { color: rgba(226, 232, 240, 0.55); border: none; padding: 6px 8px; }
+.filter-btn.ghost:hover { color: var(--bone); background: transparent; }
 /* Pulse animation while a scan is in progress */
 @keyframes scan-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-.refresh-btn.scanning { animation: scan-pulse 1s ease-in-out infinite; pointer-events: none; }
+.filter-btn.scanning { animation: scan-pulse 1s ease-in-out infinite; pointer-events: none; }
+/* Legacy .refresh-btn kept for any external callers — maps to filter-btn visually */
+.refresh-btn { display: none; }
 /* Each counter is number + label inline on one line. */
 .stat { display: inline-flex; align-items: baseline; gap: 4px; }
 .stat-sep { color: rgba(226, 232, 240, 0.2); font-size: 14px; }
@@ -678,8 +691,21 @@ header h1 {
 }
 .digest-row:last-child { border-bottom: none; }
 .digest-row-title { font-size: 13px; font-weight: 600; line-height: 1.35; }
-.digest-row-title a { color: var(--bone); text-decoration: none; }
-.digest-row-title a:hover { color: var(--amber); text-decoration: underline; }
+/* ext-link-btn — looks like a text link, behaves like a button that opens a
+   demo notice instead of navigating away to a potentially 404 .gov URL */
+.ext-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--bone);
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.ext-link-btn:hover { color: var(--amber); text-decoration: underline; }
 
 /* Patterns panel (read-only L1) */
 .patterns-list { display: flex; flex-direction: column; gap: 6px; padding: 12px; }

@@ -20,10 +20,7 @@
     <span class="stat-sep">·</span>
     <span class="stat"><span class="stat-val" id="stat-pipeline">—</span><span class="stat-lbl">PIPELINE</span></span>
   </div>
-  <div class="header-actions">
-    <button id="digest-btn" class="refresh-btn ghost" type="button" hidden>BRIEF</button>
-    <button id="refresh-btn" class="refresh-btn" type="button" hidden>⟳ SCAN DoW TOPICS</button>
-  </div>
+  <div class="header-actions"></div>
 </header>
 
 <div class="tabs">
@@ -78,6 +75,10 @@
         <option value="WEAK">WEAK</option>
       </select>
       <label>Min score <input type="range" id="filter-score" min="0" max="100" value="0"> <span id="filter-score-val">0</span></label>
+      <div class="filter-actions">
+        <button id="digest-btn" class="filter-btn ghost" type="button" hidden>BRIEF</button>
+        <button id="refresh-btn" class="filter-btn" type="button" hidden>⟳ SCAN DoW TOPICS</button>
+      </div>
     </div>
     <div class="panel-header" id="center-panel-header">
       <span id="opp-label">Opportunities</span>

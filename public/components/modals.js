@@ -18,6 +18,14 @@
     box.innerHTML = bodyHtml;
     overlay.appendChild(box);
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    // Delegate clicks on any [data-ext-url] button so external-link intercept
+    // works inside template-literal-built modal content (e.g. digest titles).
+    box.addEventListener('click', e => {
+      const btn = e.target.closest('[data-ext-url]');
+      if (btn && window.openExternalNotice) {
+        window.openExternalNotice(btn.dataset.extLabel || btn.textContent, btn.dataset.extUrl);
+      }
+    });
     document.addEventListener('keydown', function onEsc(e) {
       if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', onEsc); }
     });
@@ -271,7 +279,7 @@
       const ddCls = dd == null ? '' : (dd < 7 ? 'critical' : dd < 14 ? 'warning' : 'ok');
       const link = /^https?:\/\//i.test(o.source_url || '') ? o.source_url : null;
       const titleHtml = link
-        ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(o.title)}</a>`
+        ? `<button class="ext-link-btn" data-ext-url="${esc(link)}" data-ext-label="${esc(o.title)}">${esc(o.title)}</button>`
         : esc(o.title);
       return `<div class="digest-row">
         <div class="digest-row-title">${titleHtml}</div>
@@ -318,10 +326,27 @@
       <h2>Open in DSIP</h2>
       <div class="modal-intro">In the live product, this opens the topic on the DoD SBIR/STTR
         Innovation Portal — where you read the full solicitation and apply.</div>
-      <div class="modal-intro">This preview uses sample topics, so the direct link is off.
-        You can still open the portal.</div>
+      <div class="modal-intro">This preview uses sample topics, so the direct link is off.</div>
       <div class="actions">
-        <a class="btn" href="${DSIP}" target="_blank" rel="noopener noreferrer">Open the DSIP portal →</a>
+        <button class="btn" data-ext-url="${esc(DSIP)}" data-ext-label="DoD SBIR/STTR Innovation Portal">Open the DSIP portal →</button>
+        <button class="btn primary" data-act="close">Got it</button>
+      </div>`);
+    overlay.querySelector('[data-act="close"]').addEventListener('click', () => overlay.remove());
+  };
+
+  // ── EXTERNAL LINK NOTICE ────────────────────────────────────────────────
+  // All outbound links route here instead of navigating. Shows what the link
+  // would do in the live product; keeps the demo self-contained.
+  window.openExternalNotice = function (label, url) {
+    let domain = '';
+    try { domain = new URL(url).hostname; } catch (_) { domain = url || 'an external source'; }
+    const overlay = showModal(`
+      <h2>${esc(label || 'External Link')}</h2>
+      <div class="modal-intro">In the live product, this opens the source listing on
+        <strong>${esc(domain)}</strong>.</div>
+      <div class="modal-intro">This preview uses sample data — live .gov source links
+        are not connected in the sandbox demo.</div>
+      <div class="actions">
         <button class="btn primary" data-act="close">Got it</button>
       </div>`);
     overlay.querySelector('[data-act="close"]').addEventListener('click', () => overlay.remove());
