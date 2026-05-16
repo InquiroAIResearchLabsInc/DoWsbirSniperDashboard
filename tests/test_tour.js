@@ -295,14 +295,34 @@ test('clicking an opportunity title advances Phase 1 to step 2', (t) => {
   assert.equal(env.document.querySelector('.tour-tooltip').getAttribute('data-step'), '2');
 });
 
-test('clicking "Why this?" advances Phase 1 to step 3', (t) => {
+// Step 2 holds while the Why panel is open and resumes to step 3 only once
+// the user closes it — so the panel can't block step 3's tab.
+function walkToStep3(env, t) {
+  env.document.querySelectorAll('#center-panel-body .opp-title')[0].click();
+  env.document.querySelectorAll('#center-panel-body [data-action="why"]')[0].click();
+  env.whyModal.classList.add('open');     // openWhyPanel() runs async in the app
+  t.mock.timers.tick(200);                // poll sees the panel open
+  env.whyModal.classList.remove('open');  // user closes the panel
+  t.mock.timers.tick(200);                // poll sees it closed → advance
+}
+
+test('step 2 resumes to step 3 only after the Why panel is closed', (t) => {
   t.mock.timers.enable({ apis: ['setTimeout'] });
   const env = buildEnv();
   const tour = load(env);
   tour.initTour();
   env.document.querySelectorAll('#center-panel-body .opp-title')[0].click();
   env.document.querySelectorAll('#center-panel-body [data-action="why"]')[0].click();
-  assert.equal(env.document.querySelector('.tour-tooltip').getAttribute('data-step'), '3');
+  env.whyModal.classList.add('open');
+  t.mock.timers.tick(200);
+  assert.equal(env.document.querySelector('.tour-tooltip').getAttribute('data-step'), '2',
+    'tour holds on step 2 while the panel is open');
+  assert.equal(env.document.querySelector('.tour-spotlight').style.display, 'none',
+    'tour steps aside so the panel is fully usable');
+  env.whyModal.classList.remove('open');
+  t.mock.timers.tick(200);
+  assert.equal(env.document.querySelector('.tour-tooltip').getAttribute('data-step'), '3',
+    'closing the panel advances to step 3');
 });
 
 test('clicking the ART Match tab advances Phase 1 to step 4', (t) => {
@@ -310,8 +330,7 @@ test('clicking the ART Match tab advances Phase 1 to step 4', (t) => {
   const env = buildEnv();
   const tour = load(env);
   tour.initTour();
-  env.document.querySelectorAll('#center-panel-body .opp-title')[0].click();
-  env.document.querySelectorAll('#center-panel-body [data-action="why"]')[0].click();
+  walkToStep3(env, t);
   env.tabs.art.click();
   assert.equal(env.document.querySelector('.tour-tooltip').getAttribute('data-step'), '4');
 });
@@ -321,8 +340,7 @@ test('Phase 1 completes: Admin dwell shows the transition card and fades the bac
   const env = buildEnv();
   const tour = load(env);
   tour.initTour();
-  env.document.querySelectorAll('#center-panel-body .opp-title')[0].click();
-  env.document.querySelectorAll('#center-panel-body [data-action="why"]')[0].click();
+  walkToStep3(env, t);
   env.tabs.art.click();
   env.tabs.admin.click();
 

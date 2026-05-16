@@ -25,6 +25,8 @@
   var HOTSPOT_FADE_MS = 1000;
   var FADE_IN_MS = 20;
   var RELAYOUT_MS = 90;         // re-measure after a scroll-into-view settles
+  var WHY_POLL_MS = 200;        // how often step 2 checks the Why panel state
+  var WHY_POLL_MAX = 30;        // give up waiting for the panel after ~6s
   var MOBILE_MAX = 720;
 
   // phase: 0 idle · 1 guided · 2 transitioning · 3 hotspots · 4 done
@@ -33,6 +35,7 @@
     spotlight: null, tooltip: null, tooltipBody: null, skipLink: null,
     transition: null, transitionMsg: null, replay: null,
     hotspots: [], stepTeardown: null,
+    whyWatching: false, whySeenOpen: false, whyPolls: 0,
     timers: [], p1Listeners: [], p2Listeners: [],
   };
 
@@ -291,7 +294,10 @@
     if (n === 1) {
       bindAll(document.querySelectorAll('#center-panel-body .opp-title'), 'click', go, cleanup);
     } else if (n === 2) {
-      bindAll(document.querySelectorAll('#center-panel-body [data-action="why"]'), 'click', go, cleanup);
+      // Opening the Why panel is async. Rather than race it, the tour steps
+      // aside while the panel is up and resumes once the user closes it — so
+      // they actually read the rationale and step 3's tab is never blocked.
+      bindAll(document.querySelectorAll('#center-panel-body [data-action="why"]'), 'click', watchWhy, cleanup);
     } else if (n === 3) {
       bindOne(document.querySelector('.tab[data-tab="art"]'), 'click', go, cleanup);
     } else if (n === 4) {
@@ -309,11 +315,51 @@
     };
   }
 
+  // While the Why panel is open the tour hides itself so the panel — and its
+  // Close button — are fully usable; the skip link stays as the escape hatch.
+  function setTourVisible(visible) {
+    var disp = visible ? '' : 'none';
+    if (state.spotlight) state.spotlight.style.display = disp;
+    if (state.tooltip) state.tooltip.style.display = disp;
+  }
+
+  function watchWhy() {
+    if (state.whyWatching || state.phase !== 1 || state.step !== 2) return;
+    state.whyWatching = true;
+    state.whySeenOpen = false;
+    state.whyPolls = 0;
+    pollWhy();
+  }
+
+  function pollWhy() {
+    if (state.phase !== 1 || state.step !== 2) { state.whyWatching = false; return; }
+    var wm = document.getElementById('why-modal');
+    var open = !!(wm && wm.classList && wm.classList.contains('open'));
+    if (open && !state.whySeenOpen) {
+      state.whySeenOpen = true;
+      setTourVisible(false);
+    } else if (state.whySeenOpen && !open) {
+      state.whyWatching = false;
+      advanceStep(3);
+      return;
+    }
+    state.whyPolls += 1;
+    if (!state.whySeenOpen && state.whyPolls > WHY_POLL_MAX) {
+      state.whyWatching = false;
+      advanceStep(3);
+      return;
+    }
+    var id = setTimeout(pollWhy, WHY_POLL_MS);
+    state.timers.push(id);
+  }
+
   function advanceStep(n) {
     if (state.phase !== 1) return;
     if (n > 4) { endPhase1(); return; }
     if (state.stepTeardown) { try { state.stepTeardown(); } catch (e) { /* noop */ } state.stepTeardown = null; }
     state.step = n;
+    state.whyWatching = false;
+    if (state.spotlight) state.spotlight.style.display = '';
     // The Why panel opened in step 2 lives below the spotlight; close it once
     // the tour moves on so it does not surface uninvited later.
     if (n >= 3) {
