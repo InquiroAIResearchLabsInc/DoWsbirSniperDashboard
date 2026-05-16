@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const config = require('../core/config');
 const { getDb } = require('../db');
@@ -13,14 +14,32 @@ app.use(attachTenant);
 const publicRoute = require('./routes/public');
 app.use(publicRoute.router);
 
-app.get('/dashboard', (req, res) => res.sendFile(path.join(config.ROOT, 'public', 'index.html')));
+// Asset cache-busting. A CDN/edge cache in front of a custom domain will keep
+// serving a stale app.js/styles.css long after a deploy — hard refresh and
+// incognito can't reach past it. Stamping every local asset URL with the
+// deploy's commit SHA makes each deploy request URLs the cache has never seen,
+// so the browser always loads the just-deployed bundle.
+const ASSET_VERSION = String(process.env.RENDER_GIT_COMMIT || Date.now()).slice(0, 12);
+let _indexHtml = null;
+function indexHtml() {
+  if (_indexHtml == null) {
+    const raw = fs.readFileSync(path.join(config.ROOT, 'public', 'index.html'), 'utf8');
+    _indexHtml = raw.replace(/(href|src)="(\/[^"]+\.(?:js|css))"/g, `$1="$2?v=${ASSET_VERSION}"`);
+  }
+  return _indexHtml;
+}
+function sendIndex(res) {
+  res.set('Cache-Control', 'no-store').type('html').send(indexHtml());
+}
+
+app.get('/dashboard', (req, res) => sendIndex(res));
 app.get('/demo', (req, res) => {
   res.set('Set-Cookie', 'dsip_sandbox=1; Path=/; SameSite=Lax; Max-Age=3600');
   emitReceipt('sandbox_session_start', {
     tenant_id: 'sandbox',
     user_agent: (req.headers['user-agent'] || '').slice(0, 200),
   });
-  res.sendFile(path.join(config.ROOT, 'public', 'index.html'));
+  sendIndex(res);
 });
 
 app.use(express.static(path.join(config.ROOT, 'public'), {
