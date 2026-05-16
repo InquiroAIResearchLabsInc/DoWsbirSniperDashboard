@@ -23,7 +23,12 @@ app.get('/demo', (req, res) => {
   res.sendFile(path.join(config.ROOT, 'public', 'index.html'));
 });
 
-app.use(express.static(path.join(config.ROOT, 'public'), { index: false }));
+app.use(express.static(path.join(config.ROOT, 'public'), {
+  index: false,
+  setHeaders(res, filePath) {
+    if (/\.(js|css|html)$/.test(filePath)) res.set('Cache-Control', 'no-store');
+  },
+}));
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
