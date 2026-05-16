@@ -948,3 +948,165 @@ footer .val { color: var(--text-dim); }
   .stat-val { font-size: 15px; }
   .stat-lbl { font-size: 7.5px; }
 }
+
+/* === TOUR ===================================================================
+   Guided 4-step spotlight tour (Phase 1) + free-explore hotspots (Phase 2).
+   A pure overlay layer — these rules style only .tour-* nodes that tour.js
+   appends to <body>, and never touch an existing component. */
+
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 1000;
+  opacity: 0;
+  transition: clip-path 250ms ease, -webkit-clip-path 250ms ease, opacity 300ms ease;
+}
+.tour-backdrop.tour-in { opacity: 1; }
+.tour-backdrop.tour-out { opacity: 0; }
+
+.tour-tooltip {
+  position: fixed;
+  background: #141414;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-left: 3px solid #F59E0B;
+  padding: 20px 24px;
+  max-width: 320px;
+  z-index: 1001;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 250ms ease, left 250ms ease, top 250ms ease;
+}
+.tour-tooltip.tour-in { opacity: 1; }
+
+.tour-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tour-step-num {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(226, 232, 240, 0.55);
+  white-space: nowrap;
+}
+.tour-dashes { display: flex; gap: 6px; }
+.tour-dash { width: 18px; height: 2px; background: rgba(226, 232, 240, 0.15); }
+.tour-dash.done { background: rgba(245, 158, 11, 0.3); }
+.tour-dash.active { background: #F59E0B; }
+
+.tour-body {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: #E2E8F0;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+.tour-prompt {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #F59E0B;
+  margin-top: 12px;
+}
+
+.tour-skip {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  z-index: 1002;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.4);
+  text-decoration: none;
+  cursor: pointer;
+}
+.tour-skip:hover { color: rgba(226, 232, 240, 0.7); }
+
+.tour-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 1003;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  pointer-events: none;
+}
+.tour-transition.tour-in { opacity: 1; }
+.tour-transition.tour-out { opacity: 0; }
+.tour-transition-msg {
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #E2E8F0;
+  text-align: center;
+  max-width: 420px;
+  white-space: pre-line;
+}
+
+.tour-hotspot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #F59E0B;
+  z-index: 950;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 1s ease;
+  animation: tour-pulse 1.8s ease infinite;
+}
+.tour-hotspot.tour-in { opacity: 1; }
+.tour-hotspot.tour-out { opacity: 0; }
+@keyframes tour-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+.tour-hotspot-label {
+  position: absolute;
+  left: 16px;
+  top: -3px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #E2E8F0;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+.tour-hotspot-label.show { opacity: 1; }
+
+.tour-replay-link {
+  display: none;
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #E2E8F0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  border-top: 1px solid var(--border);
+}
+.tour-replay-link.is-visible { display: block; }
+
+/* Mobile — single column. The tooltip becomes near-full-width and the
+   hotspot label flips below the dot so it never runs off-screen. */
+@media (max-width: 720px) {
+  .tour-tooltip {
+    max-width: calc(100vw - 32px);
+    padding: 16px 18px;
+  }
+  .tour-skip { top: 10px; right: 12px; }
+  .tour-transition-msg { font-size: 14px; }
+  .tour-hotspot-label {
+    left: -4px;
+    top: 16px;
+  }
+}
